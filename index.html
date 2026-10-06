@@ -207,7 +207,7 @@ select.mini{width:auto;max-width:300px;min-height:38px;padding:4px 10px}
 .graph-tools label select{margin-left:2px}
 
 .entry{display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px;margin-top:12px;align-items:start}
-.who-list{display:flex;flex-direction:column;gap:3px;max-height:640px;overflow:auto;padding:2px;position:sticky;top:10px}
+.who-list{display:flex;flex-direction:column;gap:3px;padding:2px}
 .who{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid transparent;background:none;border-radius:9px;padding:7px 10px;cursor:pointer;min-height:40px}
 .who:hover{background:var(--surface)}
 .who.on{background:var(--surface);border-color:var(--blue);font-weight:700}
@@ -228,7 +228,7 @@ input.code{font-size:26px;letter-spacing:.3em;text-align:center}
 .acct{font-size:14px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:860px){
   .entry{grid-template-columns:minmax(0,1fr)}
-  .who-list{flex-direction:row;flex-wrap:wrap;max-height:170px;position:static}
+  .who-list{flex-direction:row;flex-wrap:wrap}
   .mqs li{grid-template-columns:minmax(0,1fr) 40px}
   .mqs li input{grid-column:1/-1}
   .qrows li{grid-template-columns:minmax(0,1fr)}
@@ -236,7 +236,6 @@ input.code{font-size:26px;letter-spacing:.3em;text-align:center}
   .srows .nm{grid-column:1/-1}
   .srows .st{display:none}
   #detail dl{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .who-list{flex-direction:row;flex-wrap:wrap;max-height:190px}
   .fields{grid-template-columns:minmax(0,1fr)}
   h2{font-size:26px}
 }
@@ -1388,7 +1387,8 @@ function viewEntry(c){
   var h='<div class="headrow"><div><h2>Anotar respuestas</h2><p class="lead">Toma cada papel, elige al estudiante que lo escribió y toca los nombres que puso.</p></div><button class="btn primary" data-action="view" data-view="results">Ver sociograma</button></div>';
   if(c.students.length<2)return h+'<p class="note">Agrega estudiantes en Editar.</p>';
   var me=c.students.filter(function(s){return s.id===ui.editSid;})[0];
-  h+='<p class="save" style="margin-top:14px">'+done+' de '+c.students.length+' papeles anotados</p>';
+  var left=c.students.length-done;
+  h+='<p class="save" style="margin-top:14px">'+done+' de '+c.students.length+' papeles anotados · '+(left?'Faltan '+left:'Todos listos')+'</p>';
   h+='<div class="entry"><div class="who-list" id="wholist" aria-label="Estudiantes">'+c.students.map(function(s){
     var ok=!!c.answers[s.id];
     return '<button class="who'+(s.id===ui.editSid?' on':'')+'" data-action="entryWho" data-id="'+s.id+'"'+(s.id===ui.editSid?' aria-current="true"':'')+'><span class="dot'+(ok?' ok':'')+'" aria-hidden="true"></span>'+esc(s.name)+'<span class="sr">'+(ok?', anotado':', pendiente')+'</span></button>';
@@ -1604,7 +1604,7 @@ var actions={
     ui.manual=null;ui.manualOn=false;ui.importing=false;ui.impName='';ui.view='entry';ui.editSid=c.students[0].id;ui.q='all';ui.selected=null;
     touch();render();window.scrollTo(0,0);toast('Clase creada. Ahora anota los papeles.');
   },
-  entryWho:function(b){ui.editSid=b.getAttribute('data-id');render();var f=document.querySelector('.form .chip');if(f)f.focus();if(window.innerWidth<860){var fm=document.querySelector('.form');if(fm)fm.scrollIntoView({block:'start'});}},
+  entryWho:function(b){ui.editSid=b.getAttribute('data-id');render();var f=document.querySelector('.form .chip');if(f)f.focus();var fm=document.querySelector('.form');if(fm&&(window.innerWidth<860||fm.getBoundingClientRect().top<0))fm.scrollIntoView({block:'start'});},
   entryNext:function(){
     var c=cls();if(!c||!ui.editSid)return;
     if(!c.answers[ui.editSid])c.answers[ui.editSid]={};
