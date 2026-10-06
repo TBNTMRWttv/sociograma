@@ -271,6 +271,16 @@ if(CFG.url)CFG.url=String(CFG.url).trim().replace(/\/+$/,'').replace(/\/(rest|au
 var CLOUD=!!(CFG.url&&CFG.key&&/^https:\/\//.test(CFG.url)&&!/PEGA/i.test(CFG.url+CFG.key));
 var SB=null,cloud={status:'starting',user:null,email:'',step:'email',msg:'',busy:false,checkedAt:0};
 function cloudKey(){return cloud.user?'sociograma.cloud.'+cloud.user.id:null;}
+/* "Recordarme": when on, the login and a copy of the classes stay in localStorage; when off, only in sessionStorage (gone when the browser closes). */
+var REMEMBER_KEY='sociograma.remember';
+function remembered(){try{return localStorage.getItem(REMEMBER_KEY)!=='0';}catch(e){return true;}}
+function keepStore(){try{return remembered()?localStorage:sessionStorage;}catch(e){return null;}}
+function dropStore(){try{return remembered()?sessionStorage:localStorage;}catch(e){return null;}}
+var authStorage={
+  getItem:function(k){try{var v=localStorage.getItem(k);return v!==null?v:sessionStorage.getItem(k);}catch(e){return null;}},
+  setItem:function(k,v){try{keepStore().setItem(k,v);dropStore().removeItem(k);}catch(e){}},
+  removeItem:function(k){try{localStorage.removeItem(k);}catch(e){}try{sessionStorage.removeItem(k);}catch(e){}}
+};
 function cloudMsg(e,fallback,isCode){
   var m=String(e&&e.message||'').toLowerCase();
   if(/rate|seconds|too many|security purposes/.test(m))return 'Espera un minuto antes de pedir otro código.';
@@ -294,7 +304,7 @@ function cloudSaveFailed(e){
 }
 function bootCloud(){
   if(!window.supabase||!window.supabase.createClient){cloud.status='error';cloud.msg='No se pudo cargar el sistema de cuentas. Revisa la conexión y recarga la página.';render();return;}
-  SB=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'sociograma-auth'}});
+  SB=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'sociograma-auth',storage:authStorage}});
   SB.auth.onAuthStateChange(function(ev,session){
     if(ev==='SIGNED_OUT'){cloudSignedOut();}
     else if(session&&session.user&&(!cloud.user||cloud.user.id!==session.user.id)&&cloud.status!=='checking'){cloudSignedIn(session.user);}
@@ -331,7 +341,7 @@ function loadCloudData(){
   SB.from('teacher_data').select('data').maybeSingle().then(function(r){
     if(r.error)throw r.error;
     var remote=r.data?migrate(JSON.parse(JSON.stringify(r.data.data||{}))):null,cached=null,legacy=null;
-    try{var raw=localStorage.getItem(cloudKey());cached=raw?migrate(JSON.parse(raw)):null;}catch(e){}
+    try{var raw=authStorage.getItem(cloudKey());cached=raw?migrate(JSON.parse(raw)):null;}catch(e){}
     try{var lr=localStorage.getItem(LS_KEY);legacy=lr?migrate(JSON.parse(lr)):null;}catch(e){}
     var push=false;
     if(remote){state=remote;if(cached&&(cached.updatedAt||0)>(remote.updatedAt||0)){state=cached;push=true;}}
@@ -352,7 +362,7 @@ function loadCloudData(){
   }).catch(function(e){cloud.status='error';cloud.msg=cloudMsg(e,'No se pudieron cargar tus clases. Intenta de nuevo en un momento.');render();});
 }
 function cloudSignedOut(){
-  try{var k=cloudKey();if(k)localStorage.removeItem(k);}catch(e){}
+  var k=cloudKey();if(k)authStorage.removeItem(k);
   caps.doc=null;clearTimeout(saveTimer);cloud.user=null;cloud.step='email';cloud.status='login';cloud.msg='';
   state={v:2,updatedAt:0,activeId:null,classes:[]};imp=null;ui.importing=false;ui.manualOn=false;ui.view='results';
   render();
@@ -373,6 +383,7 @@ function viewCloud(){
   if(cloud.step==='email'){
     h+='<p class="lead">Entra con el correo con el que te suscribiste a Generación EPI. Te enviaremos un código.</p>'+(cloud.msg?'<p class="note" role="alert">'+esc(cloud.msg)+'</p>':'')+
       '<div class="field" style="max-width:420px;margin-top:22px"><label for="c-email">Correo</label><input type="email" id="c-email" autocomplete="email" inputmode="email" value="'+esc(cloud.email)+'" placeholder="nombre@colegio.edu"></div>'+
+      '<label class="check"><input type="checkbox" id="c-remember" data-change="cRemember"'+(remembered()?' checked':'')+'>Recordarme en este dispositivo</label>'+
       '<div class="row" style="margin-top:14px"><button class="btn primary" data-action="cSend"'+(cloud.busy?' disabled':'')+'>'+(cloud.busy?'Enviando…':'Enviar código')+'</button></div>';
   }else{
     h+='<p class="lead">Te enviamos un código a '+esc(cloud.email)+'. Revisa también la carpeta de spam.</p>'+(cloud.msg?'<p class="note" role="alert">'+esc(cloud.msg)+'</p>':'')+
@@ -434,7 +445,7 @@ function migrate(s){
   s.v=2;return s;
 }
 function loadLocal(){try{var raw=localStorage.getItem(LS_KEY);return raw?migrate(JSON.parse(raw)):null;}catch(e){lsOK=false;return null;}}
-function saveLocal(){if(CLOUD&&!cloud.user)return;try{localStorage.setItem(CLOUD?cloudKey():LS_KEY,JSON.stringify(state));lsOK=true;}catch(e){lsOK=false;}}
+function saveLocal(){if(CLOUD&&!cloud.user)return;try{if(CLOUD){keepStore().setItem(cloudKey(),JSON.stringify(state));dropStore().removeItem(cloudKey());}else localStorage.setItem(LS_KEY,JSON.stringify(state));lsOK=true;}catch(e){lsOK=false;}}
 var state=(CLOUD?null:loadLocal())||{v:2,updatedAt:0,activeId:null,classes:[]};
 var ui={view:'results',q:'all',selected:null,show:{pos:true,neg:true,mutual:false},armed:null,importing:false,impMsg:'',impName:'',impPaste:'',impCheck:false,editSid:null,addName:'',manual:null,manualOn:false};
 var caps={doc:null,downloads:null,save:'local'};
@@ -1701,6 +1712,7 @@ var changes={
   qFilter:function(el){ui.q=el.value;ui.selected=null;render();var s=document.querySelector('[data-change="qFilter"]');if(s)s.focus();},
   show:function(el){ui.show[el.getAttribute('data-k')]=el.checked;drawGraph();},
   impCheck:function(el){ui.impCheck=el.checked;},
+  cRemember:function(el){try{localStorage.setItem(REMEMBER_KEY,el.checked?'1':'0');}catch(e){}},
   mNames:function(el){var n=manualNames(el.value).length,c=$('#m-count');if(c)c.textContent=n===1?'1 estudiante':n+' estudiantes';},
   impFile:function(el){var f=el.files&&el.files[0];if(f)readFile(f);},
   impRole:function(el){
