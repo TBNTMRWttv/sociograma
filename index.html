@@ -132,11 +132,6 @@ main{padding:28px 0 64px}
 .node{cursor:grab;touch-action:none}
 .node:focus{outline:none}
 .node:focus-visible circle.body{stroke:var(--blue);stroke-width:5}
-.legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
-.legend span{display:inline-flex;align-items:center;gap:7px}
-.legend i{display:inline-block;width:14px;height:14px;border-radius:50%}
-.legend i.l{width:26px;height:0;border-radius:0;border-top:3px solid var(--pos)}
-.legend i.l.n{border-top:3px dashed var(--neg)}
 .i-popular{background:var(--pos-fill)} .i-rechazo{background:var(--neg)} .i-controversial{background:var(--amber)} .i-invisible{background:var(--grey)} .i-promedio{background:var(--surface);border:2px solid var(--ink)}
 #detail{padding:12px 16px;border-bottom:1px solid var(--line)}
 #detail .who-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -297,6 +292,17 @@ body.modal-open{overflow:hidden}
 .rename input{flex:1;min-width:180px;font-size:20px;font-weight:700}
 .btn.locked{opacity:.6;cursor:not-allowed;display:inline-flex;align-items:center;gap:7px}
 .btn.locked:hover{opacity:.8}
+.mapkey{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 28px;padding:14px 16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.mapkey h4{margin:0 0 6px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.mapkey ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.mapkey li{display:flex;align-items:center;gap:10px}
+.mapkey li strong{color:var(--ink);font-weight:600}
+.mapkey li i{display:inline-block;width:14px;height:14px;border-radius:50%;flex:none}
+.mapkey .kl{flex:none}
+.knum{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);color:var(--ink);font-weight:700;font-size:12px;flex:none}
+.howto{margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
+.howto summary{cursor:pointer;font-weight:600;color:var(--heading);min-height:28px}
+.howto ul{margin:8px 0 4px;padding-left:20px;display:grid;gap:6px;color:var(--ink);max-width:90ch}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -976,7 +982,7 @@ function boot(){
 
 /* ---------- analysis ---------- */
 var STATUS={
-  popular:'Popular',rechazo:'Rechazo alto',controversial:'Controversial',invisible:'Poco visible',promedio:'Promedio'
+  popular:'Popular',rechazo:'Rechazo alto',controversial:'Controversial',invisible:'Aislado',promedio:'Promedio'
 };
 function zs(arr){
   var n=arr.length||1,mean=0,i;for(i=0;i<arr.length;i++)mean+=arr[i];mean/=n;
@@ -1774,16 +1780,14 @@ function viewResults(c){
     return open?list:'<details class="qdetails"><summary>Ver las preguntas ('+c.questions.length+')</summary>'+list+'</details>';
   }
   function secMap(tall){
-    return '<div class="graph-layout"><div class="graph-card'+(tall?' tall':'')+'"><div class="graph-tools">'+
+    return '<div class="graph-layout">'+HOWTO+'<div class="graph-card'+(tall?' tall':'')+'"><div class="graph-tools">'+
       '<label><input type="checkbox" data-change="show" data-k="pos"'+(ui.show.pos?' checked':'')+'>Elecciones</label>'+
       '<label><input type="checkbox" data-change="show" data-k="neg"'+(ui.show.neg?' checked':'')+'>Rechazos</label>'+
       '<label><input type="checkbox" data-change="show" data-k="mutual"'+(ui.show.mutual?' checked':'')+'>Solo mutuos</label>'+
       '<span class="spacer"></span>'+
       '<button class="btn small" data-action="relayout">Reordenar mapa</button>'+
       (caps.downloads?'<button class="btn small" data-action="png">Descargar imagen</button>':'')+
-      '</div><div id="detail" aria-live="polite"></div><div id="graph"></div><div class="legend">'+
-      '<span><i class="l"></i>Elección</span><span><i class="l n"></i>Rechazo</span><span>Línea gruesa: mutuo</span><span>Número: compañeros que lo eligen</span>'+
-      Object.keys(STATUS).map(function(k){return '<span><i class="i-'+k+'"></i>'+STATUS[k]+'</span>';}).join('')+
+      '</div><div id="detail" aria-live="polite"></div><div id="graph"></div>'+mapKey()+
       '</div></div></div>';
   }
   function li(id,txt){return '<li><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button><span>'+txt+'</span></li>';}
@@ -1811,6 +1815,28 @@ function viewResults(c){
 }
 var LOCK_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 var LOCK_BTNS='<button class="btn locked" data-action="lockedEdit" aria-disabled="true" title="Necesitas una suscripción para editar">'+LOCK_ICON+'Anotar respuestas</button><button class="btn locked" data-action="lockedEdit" aria-disabled="true" title="Necesitas una suscripción para editar">'+LOCK_ICON+'Editar</button>';
+/* map key: small drawn samples of each kind of arrow, and what each color means */
+function keyLine(kind,mutual){
+  var c=kind==='pos'?'var(--pos)':'var(--neg)',w=mutual?4:2,dash=kind==='neg'?(mutual?'7 5':'5 4'):'none';
+  var head=function(x,dir){return '<path d="M'+x+' 7l'+(-7*dir)+' -5v10z" style="fill:'+c+'"/>';};
+  return '<svg class="kl" width="46" height="14" viewBox="0 0 46 14" aria-hidden="true"><line x1="'+(mutual?8:2)+'" y1="7" x2="38" y2="7" style="stroke:'+c+';stroke-width:'+w+';stroke-dasharray:'+dash+'"/>'+head(45,1)+(mutual?head(1,-1):'')+'</svg>';
+}
+var STATUS_HELP={popular:'muchos lo eligen',rechazo:'muchos lo rechazan',controversial:'lo eligen y lo rechazan',invisible:'casi nadie lo nombra',promedio:'dentro de lo normal'};
+function mapKey(){
+  return '<div class="mapkey"><div class="kgroup"><h4>Flechas</h4><ul>'+
+    '<li>'+keyLine('pos',false)+'<span>Lo elige</span></li>'+
+    '<li>'+keyLine('neg',false)+'<span>Lo rechaza</span></li>'+
+    '<li>'+keyLine('pos',true)+'<span>Se eligen los dos</span></li>'+
+    '<li>'+keyLine('neg',true)+'<span>Se rechazan los dos</span></li></ul></div>'+
+    '<div class="kgroup"><h4>Círculos</h4><ul><li><span class="knum">3</span><span>Cuántos compañeros lo eligen. Más grande, más elegido.</span></li></ul></div>'+
+    '<div class="kgroup"><h4>Colores</h4><ul>'+Object.keys(STATUS).map(function(k){return '<li><i class="i-'+k+'"></i><span><strong>'+STATUS[k]+'</strong>: '+STATUS_HELP[k]+'</span></li>';}).join('')+'</ul></div></div>';
+}
+var HOWTO='<details class="howto"><summary>Cómo leer el mapa</summary><ul>'+
+  '<li>Cada círculo es un estudiante. El número dice cuántos compañeros lo eligieron.</li>'+
+  '<li>Una flecha continua va de quien elige a quien fue elegido. Una flecha punteada roja es un rechazo.</li>'+
+  '<li>Una flecha gruesa con punta en los dos lados quiere decir que los dos se eligieron (o se rechazaron) entre sí.</li>'+
+  '<li>El color de cada círculo resume cómo está ese estudiante en el grupo. La lista de colores está debajo del mapa.</li>'+
+  '<li>Toca un estudiante para ver solo sus flechas y sus datos. Arrastra los círculos para ordenar el mapa.</li></ul></details>';
 var RTABS=[['resumen','Resumen'],['mapa','Mapa'],['estudiantes','Estudiantes'],['todo','Ver todo']];
 function viewEdit(c){
   var h='<div class="headrow"><h2>Editar '+esc(c.name)+'</h2><button class="btn primary" data-action="view" data-view="results">Listo</button></div>'+
@@ -1980,12 +2006,12 @@ function graphSVG(c,A,P,o){
   function related(id){if(!sel||id===sel)return true;var s=m[sel];return s.pos.indexOf(id)>=0||s.neg.indexOf(id)>=0||s.posBy.indexOf(id)>=0||s.negBy.indexOf(id)>=0;}
   function edge(a,b,t,mutual,curved){
     var pa=P[a],pb=P[b],dx=pb.x-pa.x,dy=pb.y-pa.y,d=Math.sqrt(dx*dx+dy*dy)||1;dx/=d;dy/=d;
-    var ra=nodeR(m[a]),rb=nodeR(m[b])+(mutual?0:4);
+    var ra=nodeR(m[a])+(mutual?4:0),rb=nodeR(m[b])+4;
     var x1=pa.x+dx*ra,y1=pa.y+dy*ra,x2=pb.x-dx*rb,y2=pb.y-dy*rb,path;
     if(curved){path='M'+f(x1)+' '+f(y1)+'Q'+f((x1+x2)/2-dy*curved)+' '+f((y1+y2)/2+dx*curved)+' '+f(x2)+' '+f(y2);}
     else{path='M'+f(x1)+' '+f(y1)+'L'+f(x2)+' '+f(y2);}
     var dim=sel&&a!==sel&&b!==sel;
-    return '<path d="'+path+'" fill="none" stroke="'+col[t]+'" stroke-width="'+(mutual?4.5:1.8)+'" stroke-linecap="round"'+(t==='neg'?' stroke-dasharray="'+(mutual?'10 7':'6 5')+'"':'')+(mutual?'':' marker-end="url(#ah-'+t+(o.exp?'-x':'')+')"')+' opacity="'+(dim?0.08:(mutual?0.9:0.7))+'"/>';
+    return '<path d="'+path+'" fill="none" stroke="'+col[t]+'" stroke-width="'+(mutual?4.5:1.8)+'" stroke-linecap="round"'+(t==='neg'?' stroke-dasharray="'+(mutual?'10 7':'6 5')+'"':'')+' marker-end="url(#'+(mutual?'ahm-':'ah-')+t+(o.exp?'-x':'')+')"'+(mutual?' marker-start="url(#ahs-'+t+(o.exp?'-x':'')+')"':'')+' opacity="'+(dim?0.08:(mutual?0.9:0.7))+'"/>';
   }
   var e='',i,j;
   for(i=0;i<ids.length;i++)for(j=i+1;j<ids.length;j++){
@@ -2011,7 +2037,10 @@ function graphSVG(c,A,P,o){
       '<text x="'+f(p.x)+'" y="'+f(p.y+5)+'" text-anchor="middle" font-size="15" font-weight="700" fill="'+txt+'">'+n.er+'</text>'+
       '<text x="'+f(p.x)+'" y="'+f(p.y+r+17)+'" text-anchor="middle" font-size="14" fill="'+col.ink+'" stroke="'+col.surface+'" stroke-width="4" paint-order="stroke" stroke-linejoin="round">'+esc(shortName(A.names[id]))+'</text></g>';
   });
-  function marker(t){return '<marker id="ah-'+t+(o.exp?'-x':'')+'" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0.5L10 5L0 9.5z" fill="'+col[t]+'"/></marker>';}
+  function marker(t){var x=o.exp?'-x':'';return '<marker id="ah-'+t+x+'" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0.5L10 5L0 9.5z" fill="'+col[t]+'"/></marker>'+
+    /* mutual lines are thicker, so their heads are drawn smaller to end up a similar size; one head at each end */
+    '<marker id="ahm-'+t+x+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="3.6" markerHeight="3.6" orient="auto"><path d="M0 0.5L10 5L0 9.5z" fill="'+col[t]+'"/></marker>'+
+    '<marker id="ahs-'+t+x+'" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.6" markerHeight="3.6" orient="auto"><path d="M10 0.5L0 5L10 9.5z" fill="'+col[t]+'"/></marker>';}
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+GW+' '+GH+'"'+(o.exp?' width="'+GW*2+'" height="'+GH*2+'"':'')+' font-family="Atkinson Hyperlegible, Arial, Helvetica, sans-serif" role="group" aria-label="Mapa del grupo"><defs>'+marker('pos')+marker('neg')+'</defs>'+
     (o.exp?'<rect width="'+GW+'" height="'+GH+'" fill="'+col.surface+'"/>':'')+e+nodes+'</svg>';
 }
