@@ -74,7 +74,7 @@ p{margin:0}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 
-.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.wrap{max-width:2200px;margin:0 auto;padding:0 clamp(16px,3vw,56px)}
 .top{background:var(--surface);border-bottom:3px solid var(--gold-bar)}
 .top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
 
@@ -262,6 +262,33 @@ body.modal-open{overflow:hidden}
 .modal-foot .grow{flex:1}
 #toast{z-index:90}
 @media (max-width:600px){.modal{padding:16px}.share-add{grid-template-columns:minmax(0,1fr) auto}.share-add input{grid-column:1/-1}}
+.tabsbar{display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap;margin-top:20px;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;max-width:100%;min-width:0;scrollbar-width:none;margin-bottom:-1px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:10px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;min-height:44px}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--heading);border-bottom-color:var(--gold-bar)}
+.qpick{display:flex;gap:8px;align-items:center;margin-left:auto;min-width:0;padding-bottom:8px;color:var(--muted);font-size:15px}
+.qpick select{max-width:min(340px,60vw)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,2fr);gap:14px;margin-top:20px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.stat-n{font-family:var(--display);font-size:34px;font-weight:800;line-height:1.1;color:var(--heading)}
+.stat-n small{font-size:17px;font-weight:600;color:var(--muted)}
+.stat-l{color:var(--muted);font-size:15px}
+.stat.warn{border-color:var(--neg);box-shadow:inset 4px 0 0 var(--neg)}
+.stat.warn .stat-n{color:var(--neg)}
+.meter{display:block;height:6px;border-radius:99px;background:var(--grey-soft);margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--pos-fill)}
+.mix{display:flex;height:14px;border-radius:99px;overflow:hidden;margin:8px 0 6px;background:var(--grey-soft)}
+.mix i{display:block;height:100%}
+.mix i.i-promedio{border:0;background:var(--muted);opacity:.35}
+.mixkey{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--muted)}
+.mixkey span{display:inline-flex;align-items:center;gap:6px}
+.mixkey i{display:inline-block;width:11px;height:11px;border-radius:50%}
+.qdetails summary{cursor:pointer;color:var(--heading);font-weight:600;min-height:32px}
+.graph-card.tall #graph svg{max-height:calc(100vh - 190px)}
+@media (max-width:1100px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stats .mixcard{grid-column:1/-1}}
+@media (max-width:600px){.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stat{padding:12px}.stat-n{font-size:24px}.stat-n small{font-size:14px}.stat-l{font-size:13px}.qpick{margin-left:0;width:100%}.qpick select{flex:1;min-width:0;width:100%;max-width:none}.tab{padding:10px 9px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -477,7 +504,7 @@ function migrate(s){
 function loadLocal(){try{var raw=localStorage.getItem(LS_KEY);return raw?migrate(JSON.parse(raw)):null;}catch(e){lsOK=false;return null;}}
 function saveLocal(){if(CLOUD&&!cloud.user)return;try{if(CLOUD){keepStore().setItem(cloudKey(),JSON.stringify(privateState()));dropStore().removeItem(cloudKey());}else localStorage.setItem(LS_KEY,JSON.stringify(state));lsOK=true;}catch(e){lsOK=false;}}
 var state=(CLOUD?null:loadLocal())||{v:2,updatedAt:0,activeId:null,classes:[]};
-var ui={view:'results',q:'all',selected:null,show:{pos:true,neg:true,mutual:false},armed:null,importing:false,impMsg:'',impName:'',impPaste:'',impCheck:false,editSid:null,addName:'',manual:null,manualOn:false};
+var ui={tab:(function(){try{return localStorage.getItem('sociograma.tab')||'resumen';}catch(e){return 'resumen';}})(),view:'results',q:'all',selected:null,show:{pos:true,neg:true,mutual:false},armed:null,importing:false,impMsg:'',impName:'',impPaste:'',impCheck:false,editSid:null,addName:'',manual:null,manualOn:false};
 var caps={doc:null,downloads:null,save:'local'};
 var layoutCache={};
 var imp=null,armT=null;
@@ -1696,50 +1723,82 @@ function viewResults(c){
     return h+'<p class="lead">'+(c.students.length<3?'Esta clase tiene menos de 3 estudiantes.':'Ninguna pregunta está en uso.')+' Toca Editar para corregirlo.</p>';
   }
   var missing=c.students.length-A.answered;
-  h+='<p class="lead">'+A.answered+' de '+c.students.length+' estudiantes respondieron. Hay '+A.mutualPairs+' '+(A.mutualPairs===1?'elección mutua':'elecciones mutuas')+(ui.q==='all'?' en el grupo.':' en esta pregunta.')+'</p>';
-  if(missing>0)h+='<p class="note">'+(missing===1?'Falta 1 respuesta.':'Faltan '+missing+' respuestas.')+' Los resultados pueden cambiar cuando estén completas.</p>';
-  var dups=ro?[]:dupSuggestions(c,all);
-  if(dups.length){
-    h+='<div class="dups"><h3>¿Son la misma persona?</h3><p>Estos nombres se parecen. Si es la misma persona, únelos para no contarla dos veces.</p><ul>'+dups.map(function(d){
-      return '<li><span><strong>'+esc(d.from.name)+'</strong> y <strong>'+esc(d.into.name)+'</strong></span><span class="row"><button class="btn small primary" data-action="dupYes" data-from="'+d.from.id+'" data-into="'+d.into.id+'">Unir</button><button class="btn small" data-action="dupNo" data-key="'+d.key+'">Son distintas</button></span></li>';
-    }).join('')+'</ul></div>';
-  }
-  h+='<ul class="qlist" aria-label="Preguntas del formulario">'+c.questions.map(function(q){return '<li>'+kindBadge(q.kind)+'<span>'+esc(q.text)+'</span></li>';}).join('')+'</ul>';
-  h+='<div class="graph-layout"><div class="graph-card"><div class="graph-tools">'+
-    (active.length>1?'<label>Pregunta<select data-change="qFilter" class="mini">'+optionsHTML([['all','Todas']].concat(active.map(function(q){return [q.id,clip(q.text,58)];})),ui.q)+'</select></label>':'')+
-    '<label><input type="checkbox" data-change="show" data-k="pos"'+(ui.show.pos?' checked':'')+'>Elecciones</label>'+
-    '<label><input type="checkbox" data-change="show" data-k="neg"'+(ui.show.neg?' checked':'')+'>Rechazos</label>'+
-    '<label><input type="checkbox" data-change="show" data-k="mutual"'+(ui.show.mutual?' checked':'')+'>Solo mutuos</label>'+
-    '<span class="spacer"></span>'+
-    '<button class="btn small" data-action="relayout">Reordenar mapa</button>'+
-    (caps.downloads?'<button class="btn small" data-action="png">Descargar imagen</button>':'')+
-    '</div><div id="detail" aria-live="polite"></div><div id="graph"></div><div class="legend">'+
-    '<span><i class="l"></i>Elección</span><span><i class="l n"></i>Rechazo</span><span>Línea gruesa: mutuo</span><span>Número: compañeros que lo eligen</span>'+
-    Object.keys(STATUS).map(function(k){return '<span><i class="i-'+k+'"></i>'+STATUS[k]+'</span>';}).join('')+
-    '</div></div></div>';
-
+  var tab=RTABS.some(function(t){return t[0]===ui.tab;})?ui.tab:'resumen';ui.tab=tab;
   var rej=A.ids.filter(function(id){return A.m[id].status==='rechazo';});
   var none=A.ids.filter(function(id){return A.m[id].er===0;});
   var noMut=A.ids.filter(function(id){var n=A.m[id];return n.answered&&n.pos.length>0&&n.mutPos===0&&n.er>0;});
-  function li(id,txt){return '<li><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button><span>'+txt+'</span></li>';}
-  h+='<div class="section"><h3>Requieren atención</h3>';
-  if(!rej.length&&!none.length&&!noMut.length){h+='<p class="lead" style="margin-top:0">Nadie aparece en riesgo con estas respuestas.</p>';}
-  else{
-    h+='<div class="attention">';
-    if(rej.length)h+='<div class="col"><h4>Rechazo alto</h4><p class="why">Reciben muchos más rechazos que el resto del grupo.</p><ul>'+rej.map(function(id){return li(id,A.m[id].rr+' rechazos, '+A.m[id].er+' elecciones');}).join('')+'</ul></div>';
-    if(none.length)h+='<div class="col b"><h4>Sin elecciones</h4><p class="why">Nadie los nombró en las preguntas de elección.</p><ul>'+none.map(function(id){return li(id,A.m[id].rr+' rechazos');}).join('')+'</ul></div>';
-    if(noMut.length)h+='<div class="col c"><h4>Sin elección mutua</h4><p class="why">Eligieron a compañeros que no los eligieron de vuelta.</p><ul>'+noMut.map(function(id){return li(id,A.m[id].er+' elecciones recibidas');}).join('')+'</ul></div>';
-    h+='</div>';
-  }
-  h+='</div>';
+  var flagged={};rej.concat(none,noMut).forEach(function(id){flagged[id]=1;});
 
-  var order=A.ids.slice().sort(function(a,b){return (A.m[b].rr-A.m[a].rr)||(A.m[a].er-A.m[b].er);});
-  h+='<div class="section"><div class="row" style="justify-content:space-between;margin-bottom:12px"><h3>Resultados por estudiante</h3>'+(caps.downloads?'<button class="btn small" data-action="csv">Descargar tabla para Excel</button>':'')+'</div>'+
-   '<div class="table-wrap"><table class="results"><thead><tr><th scope="col">Estudiante</th><th scope="col">Lo eligen</th><th scope="col">Lo rechazan</th><th scope="col">Elecciones mutuas</th><th scope="col">Rechazos mutuos</th><th scope="col">Estatus</th></tr></thead><tbody>'+
-   order.map(function(id){var n=A.m[id];return '<tr><td><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button>'+(n.answered?'':' <span class="save">no respondió</span>')+'</td><td>'+n.er+'</td><td>'+n.rr+'</td><td>'+n.mutPos+'</td><td>'+n.mutNeg+'</td><td><span class="badge '+n.status+'">'+STATUS[n.status]+'</span></td></tr>';}).join('')+
-   '</tbody></table></div><p class="method">Los números cuentan compañeros distintos. El estatus compara las elecciones y los rechazos que recibe cada estudiante con el promedio de su grupo (método sociométrico de Coie y Dodge). Es una señal para observar, no un diagnóstico.</p></div>';
+  /* tab bar, with the question filter that applies to every tab */
+  h+='<div class="tabsbar"><div class="tabs" role="tablist" aria-label="Qué ver">'+RTABS.map(function(t){
+    return '<button role="tab" class="tab'+(t[0]===tab?' on':'')+'" aria-selected="'+(t[0]===tab)+'" data-action="tab" data-tab="'+t[0]+'">'+t[1]+'</button>';
+  }).join('')+'</div>'+
+  (active.length>1?'<label class="qpick">Pregunta<select data-change="qFilter" class="mini">'+optionsHTML([['all','Todas']].concat(active.map(function(q){return [q.id,clip(q.text,58)];})),ui.q)+'</select></label>':'')+'</div>';
+
+  function secStats(){
+    var counts={};Object.keys(STATUS).forEach(function(k){counts[k]=0;});A.ids.forEach(function(id){counts[A.m[id].status]++;});
+    var tot=A.ids.length||1,pct=Math.round(A.answered/c.students.length*100),nf=Object.keys(flagged).length;
+    return '<div class="stats">'+
+      '<div class="stat"><span class="stat-n">'+A.answered+'<small> de '+c.students.length+'</small></span><span class="stat-l">respondieron</span><span class="meter" aria-hidden="true"><i style="width:'+pct+'%"></i></span></div>'+
+      '<div class="stat"><span class="stat-n">'+A.mutualPairs+'</span><span class="stat-l">'+(A.mutualPairs===1?'elección mutua':'elecciones mutuas')+'</span></div>'+
+      '<div class="stat'+(nf?' warn':'')+'"><span class="stat-n">'+nf+'</span><span class="stat-l">'+(nf===1?'requiere atención':'requieren atención')+'</span></div>'+
+      '<div class="stat mixcard"><span class="stat-l">Cómo está el grupo</span><span class="mix" aria-hidden="true">'+Object.keys(STATUS).filter(function(k){return counts[k];}).map(function(k){
+        return '<i class="i-'+k+'" style="width:'+(counts[k]/tot*100)+'%"></i>';}).join('')+'</span>'+
+        '<span class="mixkey">'+Object.keys(STATUS).filter(function(k){return counts[k];}).map(function(k){return '<span><i class="i-'+k+'"></i>'+STATUS[k]+' '+counts[k]+'</span>';}).join('')+'</span></div>'+
+    '</div>';
+  }
+  function secNotes(){
+    var x='';
+    if(missing>0)x+='<p class="note">'+(missing===1?'Falta 1 respuesta.':'Faltan '+missing+' respuestas.')+' Los resultados pueden cambiar cuando estén completas.</p>';
+    var dups=ro?[]:dupSuggestions(c,all);
+    if(dups.length){
+      x+='<div class="dups"><h3>¿Son la misma persona?</h3><p>Estos nombres se parecen. Si es la misma persona, únelos para no contarla dos veces.</p><ul>'+dups.map(function(d){
+        return '<li><span><strong>'+esc(d.from.name)+'</strong> y <strong>'+esc(d.into.name)+'</strong></span><span class="row"><button class="btn small primary" data-action="dupYes" data-from="'+d.from.id+'" data-into="'+d.into.id+'">Unir</button><button class="btn small" data-action="dupNo" data-key="'+d.key+'">Son distintas</button></span></li>';
+      }).join('')+'</ul></div>';
+    }
+    return x;
+  }
+  function secQuestions(open){
+    var list='<ul class="qlist" aria-label="Preguntas del formulario">'+c.questions.map(function(q){return '<li>'+kindBadge(q.kind)+'<span>'+esc(q.text)+'</span></li>';}).join('')+'</ul>';
+    return open?list:'<details class="qdetails"><summary>Ver las preguntas ('+c.questions.length+')</summary>'+list+'</details>';
+  }
+  function secMap(tall){
+    return '<div class="graph-layout"><div class="graph-card'+(tall?' tall':'')+'"><div class="graph-tools">'+
+      '<label><input type="checkbox" data-change="show" data-k="pos"'+(ui.show.pos?' checked':'')+'>Elecciones</label>'+
+      '<label><input type="checkbox" data-change="show" data-k="neg"'+(ui.show.neg?' checked':'')+'>Rechazos</label>'+
+      '<label><input type="checkbox" data-change="show" data-k="mutual"'+(ui.show.mutual?' checked':'')+'>Solo mutuos</label>'+
+      '<span class="spacer"></span>'+
+      '<button class="btn small" data-action="relayout">Reordenar mapa</button>'+
+      (caps.downloads?'<button class="btn small" data-action="png">Descargar imagen</button>':'')+
+      '</div><div id="detail" aria-live="polite"></div><div id="graph"></div><div class="legend">'+
+      '<span><i class="l"></i>Elección</span><span><i class="l n"></i>Rechazo</span><span>Línea gruesa: mutuo</span><span>Número: compañeros que lo eligen</span>'+
+      Object.keys(STATUS).map(function(k){return '<span><i class="i-'+k+'"></i>'+STATUS[k]+'</span>';}).join('')+
+      '</div></div></div>';
+  }
+  function li(id,txt){return '<li><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button><span>'+txt+'</span></li>';}
+  function secAttention(){
+    var x='<div class="section"><h3>Requieren atención</h3>';
+    if(!rej.length&&!none.length&&!noMut.length)return x+'<p class="lead" style="margin-top:0">Nadie aparece en riesgo con estas respuestas.</p></div>';
+    x+='<div class="attention">';
+    if(rej.length)x+='<div class="col"><h4>Rechazo alto</h4><p class="why">Reciben muchos más rechazos que el resto del grupo.</p><ul>'+rej.map(function(id){return li(id,A.m[id].rr+' rechazos, '+A.m[id].er+' elecciones');}).join('')+'</ul></div>';
+    if(none.length)x+='<div class="col b"><h4>Sin elecciones</h4><p class="why">Nadie los nombró en las preguntas de elección.</p><ul>'+none.map(function(id){return li(id,A.m[id].rr+' rechazos');}).join('')+'</ul></div>';
+    if(noMut.length)x+='<div class="col c"><h4>Sin elección mutua</h4><p class="why">Eligieron a compañeros que no los eligieron de vuelta.</p><ul>'+noMut.map(function(id){return li(id,A.m[id].er+' elecciones recibidas');}).join('')+'</ul></div>';
+    return x+'</div><p class="method">Toca un nombre para verlo en el mapa.</p></div>';
+  }
+  function secTable(){
+    var order=A.ids.slice().sort(function(a,b){return (A.m[b].rr-A.m[a].rr)||(A.m[a].er-A.m[b].er);});
+    return '<div class="section"><div class="row" style="justify-content:space-between;margin-bottom:12px"><h3>Resultados por estudiante</h3>'+(caps.downloads?'<button class="btn small" data-action="csv">Descargar tabla para Excel</button>':'')+'</div>'+
+     '<div class="table-wrap"><table class="results"><thead><tr><th scope="col">Estudiante</th><th scope="col">Lo eligen</th><th scope="col">Lo rechazan</th><th scope="col">Elecciones mutuas</th><th scope="col">Rechazos mutuos</th><th scope="col">Estatus</th></tr></thead><tbody>'+
+     order.map(function(id){var n=A.m[id];return '<tr><td><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button>'+(n.answered?'':' <span class="save">no respondió</span>')+'</td><td>'+n.er+'</td><td>'+n.rr+'</td><td>'+n.mutPos+'</td><td>'+n.mutNeg+'</td><td><span class="badge '+n.status+'">'+STATUS[n.status]+'</span></td></tr>';}).join('')+
+     '</tbody></table></div><p class="method">Los números cuentan compañeros distintos. El estatus compara las elecciones y los rechazos que recibe cada estudiante con el promedio de su grupo (método sociométrico de Coie y Dodge). Es una señal para observar, no un diagnóstico.</p></div>';
+  }
+  if(tab==='resumen')h+=secStats()+secNotes()+secAttention()+'<div class="section">'+secQuestions(false)+'</div>';
+  else if(tab==='mapa')h+=secMap(true);
+  else if(tab==='estudiantes')h+=secTable();
+  else h+=secStats()+secNotes()+secQuestions(true)+secMap(false)+secAttention()+secTable();
   return h;
 }
+var RTABS=[['resumen','Resumen'],['mapa','Mapa'],['estudiantes','Estudiantes'],['todo','Ver todo']];
 function viewEdit(c){
   var h='<div class="headrow"><h2>Editar '+esc(c.name)+'</h2><button class="btn primary" data-action="view" data-view="results">Listo</button></div>'+
    '<p class="lead">Corrige lo que no se haya leído bien. Cada cambio se guarda solo.</p>';
@@ -1963,8 +2022,9 @@ function mountGraph(){
     if(!drag.moved&&Math.abs(e.clientX-drag.x0)+Math.abs(e.clientY-drag.y0)<6)return;
     drag.moved=true;
     var c=cls(),svg=host.querySelector('svg');if(!c||!svg||!layoutCache[c.id])return;
-    var r=svg.getBoundingClientRect(),p=layoutCache[c.id].pos[drag.id];if(!p)return;
-    p.x=clamp((e.clientX-r.left)/r.width*GW,30,GW-30);p.y=clamp((e.clientY-r.top)/r.height*GH,30,GH-45);
+    var p=layoutCache[c.id].pos[drag.id],m=svg.getScreenCTM();if(!p||!m)return;
+    var pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;pt=pt.matrixTransform(m.inverse());
+    p.x=clamp(pt.x,30,GW-30);p.y=clamp(pt.y,30,GH-45);
     drawGraph();
   };
   host.onpointerup=function(e){
@@ -2124,7 +2184,12 @@ var actions={
   },
   dupYes:function(b){var c=cls();if(!c)return;mergeStudents(c,b.getAttribute('data-from'),b.getAttribute('data-into'));ui.selected=null;touch();render();toast('Nombres unidos');},
   dupNo:function(b){var c=cls();if(!c)return;c.notDup.push(b.getAttribute('data-key'));touch();render();},
-  select:function(b){ui.selected=b.getAttribute('data-id');drawGraph();var g=$('#graph');if(g&&g.scrollIntoView)g.scrollIntoView({block:'center',behavior:'smooth'});},
+  select:function(b){
+    ui.selected=b.getAttribute('data-id');
+    if(!$('#graph')){ui.tab='mapa';render();}else drawGraph();
+    var g=$('.graph-card');if(g&&g.scrollIntoView)g.scrollIntoView({block:'start',behavior:'smooth'});
+  },
+  tab:function(b){ui.tab=b.getAttribute('data-tab');try{localStorage.setItem('sociograma.tab',ui.tab);}catch(e){}render();var t=$('.tab.on');if(t)t.focus();},
   relayout:function(){var c=cls();if(!c)return;computeLayout(c,analyze(c,ui.q),true);drawGraph();},
   png:downloadPNG,
   csv:downloadCSV
