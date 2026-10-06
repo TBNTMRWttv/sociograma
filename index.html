@@ -199,7 +199,8 @@ table.map select{min-height:40px;padding:5px 10px;min-width:210px}
 .qrows,.srows{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .qrows li,.srows li{display:grid;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}
 .qrows li:last-child,.srows li:last-child{border-bottom:0}
-.qrows li{grid-template-columns:minmax(0,1fr) 150px}
+.qrows li{grid-template-columns:minmax(0,1fr) 150px 120px}
+.qrows input,.qrows .btn{min-height:40px}
 .srows li{grid-template-columns:minmax(0,1.3fr) 104px minmax(0,1fr) auto 40px}
 .qrows select,.srows select,.srows input{min-height:40px;padding:6px 10px}
 .srows .st{font-size:14px;color:var(--muted)}
@@ -231,7 +232,8 @@ input.code{font-size:26px;letter-spacing:.3em;text-align:center}
   .who-list{flex-direction:row;flex-wrap:wrap}
   .mqs li{grid-template-columns:minmax(0,1fr) 40px}
   .mqs li input{grid-column:1/-1}
-  .qrows li{grid-template-columns:minmax(0,1fr)}
+  .qrows li{grid-template-columns:minmax(0,1fr) auto}
+  .qrows .qt{grid-column:1/-1}
   .srows li{grid-template-columns:minmax(0,1fr) auto 40px}
   .srows .nm{grid-column:1/-1}
   .srows .st{display:none}
@@ -1297,9 +1299,12 @@ function viewEdit(c){
   var h='<div class="headrow"><h2>Editar '+esc(c.name)+'</h2><button class="btn primary" data-action="view" data-view="results">Listo</button></div>'+
    '<p class="lead">Corrige lo que no se haya leído bien. Cada cambio se guarda solo.</p>';
   h+='<div class="section"><div class="field" style="max-width:420px"><label for="f-name">Nombre de la clase</label><input type="text" id="f-name" maxlength="60" data-change="className" value="'+esc(c.name)+'"></div></div>';
-  h+='<div class="section"><h3>Preguntas</h3><ul class="qrows">'+c.questions.map(function(q){
-    return '<li><span>'+esc(q.text)+'</span><select aria-label="Tipo de pregunta: '+esc(clip(q.text,60))+'" data-change="qKind" data-q="'+esc(q.id)+'">'+optionsHTML([['pos','Elección'],['neg','Rechazo'],['off','No usar']],q.kind)+'</select></li>';
-  }).join('')+'</ul></div>';
+  h+='<div class="section"><h3>Preguntas ('+c.questions.length+')</h3><ul class="qrows">'+c.questions.map(function(q,i){
+    var used=Object.keys(c.answers).some(function(k){return (c.answers[k][q.id]||[]).length>0;});
+    return '<li><input type="text" class="qt" maxlength="160" aria-label="Texto de la pregunta '+(i+1)+'" data-change="qText" data-q="'+esc(q.id)+'" value="'+esc(q.text)+'"><select aria-label="Tipo de la pregunta '+(i+1)+'" data-change="qKind" data-q="'+esc(q.id)+'">'+optionsHTML([['pos','Elección'],['neg','Rechazo'],['off','No usar']],q.kind)+'</select>'+
+      (c.questions.length>1?'<button class="btn small" data-action="arm" data-key="delQ:'+esc(q.id)+'" data-label="Quitar" data-confirm="'+(used?'¿Borrar respuestas?':'¿Seguro?')+'" aria-label="Quitar la pregunta '+(i+1)+'">Quitar</button>':'<span></span>')+'</li>';
+  }).join('')+'</ul>'+
+   '<div class="row" style="margin-top:12px"><input type="text" id="f-addq" maxlength="160" style="max-width:420px" aria-label="Pregunta nueva" placeholder="Escribe una pregunta nueva" value="'+esc(ui.addQ||'')+'"><select id="f-addq-kind" style="width:auto" aria-label="Tipo de la pregunta nueva">'+optionsHTML([['pos','Elección'],['neg','Rechazo']],ui.addQKind||'pos')+'</select><button class="btn" data-action="addQuestion">Agregar pregunta</button></div></div>';
   h+='<div class="section"><h3>Estudiantes ('+c.students.length+')</h3>';
   if(c.students.length){
     h+='<ul class="srows">'+c.students.map(function(s){
@@ -1566,7 +1571,7 @@ function downloadPNG(){
 function render(){
   var keep=$('#imp-class');if(keep)ui.impName=keep.value;
   keep=$('#imp-paste');if(keep)ui.impPaste=keep.value;
-  keep=$('#f-add');if(keep)ui.addName=keep.value;
+  keep=$('#f-add');if(keep)ui.addName=keep.value;keep=$('#f-addq');if(keep)ui.addQ=keep.value;keep=$('#f-addq-kind');if(keep)ui.addQKind=keep.value;
   syncManual();
   renderTop();
   var c=cls(),panel=$('#panel');
@@ -1629,6 +1634,15 @@ var actions={
     c.students.push({id:uid('s'),name:name});el.value='';ui.addName='';
     touch();render();var again=$('#f-add');if(again)again.focus();
   },
+  addQuestion:function(){
+    var c=cls(),el=$('#f-addq'),k=$('#f-addq-kind');if(!c||!el)return;
+    var text=el.value.trim().replace(/\s+/g,' ').slice(0,160);
+    if(!text){toast('Escribe la pregunta');el.focus();return;}
+    if(c.questions.length>=20){toast('El máximo es 20 preguntas por clase');return;}
+    var kind=k&&k.value==='neg'?'neg':'pos';
+    c.questions.push({id:uid('q'),text:text,kind:kind});el.value='';ui.addQ='';ui.addQKind=kind;
+    touch();render();toast('Pregunta agregada');var again=$('#f-addq');if(again)again.focus();
+  },
   removeStudent:function(b){var c=cls();if(!c)return;removeStudent(c,b.getAttribute('data-id'));touch();render();},
   editWho:function(b){ui.editSid=b.getAttribute('data-id');render();var s=$('#f-sid');if(s){s.scrollIntoView({block:'start',behavior:'smooth'});s.focus();}},
   pick:function(b){
@@ -1644,6 +1658,13 @@ var actions={
       clearTimeout(armT);armT=setTimeout(unarm,4000);return;
     }
     ui.armed=null;clearTimeout(armT);
+    if(key.indexOf('delQ:')===0){
+      var qid=key.slice(5);if(c.questions.length<=1)return;
+      c.questions=c.questions.filter(function(q){return q.id!==qid;});
+      Object.keys(c.answers).forEach(function(k){delete c.answers[k][qid];});
+      if(ui.q===qid)ui.q='all';
+      touch();render();toast('Pregunta quitada');var f=$('#f-addq');if(f)f.focus();return;
+    }
     state.classes=state.classes.filter(function(k){return k.id!==c.id;});delete layoutCache[c.id];
     state.activeId=state.classes.length?state.classes[0].id:null;ui.view='results';ui.q='all';
     touch();render();window.scrollTo(0,0);toast('Clase eliminada');
@@ -1662,6 +1683,10 @@ var changes={
     var c=cls();if(!c)return;var id=el.getAttribute('data-q');
     c.questions.forEach(function(q){if(q.id===id)q.kind=el.value;});
     touch();render();var again=document.querySelector('[data-change="qKind"][data-q="'+id+'"]');if(again)again.focus();
+  },
+  qText:function(el){
+    var c=cls();if(!c)return;var id=el.getAttribute('data-q'),q=c.questions.filter(function(x){return x.id===id;})[0];if(!q)return;
+    var v=el.value.trim().replace(/\s+/g,' ').slice(0,160);if(!v){el.value=q.text;return;}q.text=v;touch();
   },
   rename:function(el){
     var c=cls();if(!c)return;var id=el.getAttribute('data-id'),s=c.students.filter(function(x){return x.id===id;})[0];if(!s)return;
@@ -1696,6 +1721,7 @@ var changes={
 document.addEventListener('input',function(e){if(e.target&&e.target.id==='m-names')changes.mNames(e.target);});
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target&&e.target.id==='f-add'){e.preventDefault();actions.addStudent();}
+  if(e.key==='Enter'&&e.target&&e.target.id==='f-addq'){e.preventDefault();actions.addQuestion();}
 });
 document.addEventListener('click',function(e){
   var b=e.target.closest&&e.target.closest('[data-action]');if(!b||b.disabled)return;
