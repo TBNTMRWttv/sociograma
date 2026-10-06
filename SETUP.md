@@ -20,6 +20,8 @@ Do the steps in order. Keep a note open to paste values into.
 1. Left menu: **SQL Editor** > **New query**.
 2. Paste all of `setup.sql`. Click **Run**. It should say "Success".
 
+3. For sharing classes: open another **New query**, paste all of `setup-share.sql`, click **Run**. Until this is run, the app works normally but the **Compartir** screen says sharing is not turned on yet.
+
 ## 3. Login email
 
 1. Left menu: **Authentication** > **Emails** (Email Templates).
