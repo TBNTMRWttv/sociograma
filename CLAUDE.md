@@ -40,7 +40,8 @@ A student "answered" if `answers[studentId]` exists.
 ### Shared classes
 
 - Only the owner can share (a class shared with you has no Compartir button). The share window starts as **Privado**: only people added by email can open it. Each gets an email with a personal link. The owner can switch to "anyone with the link can view" or "can edit".
-- Viewing needs no account and no subscription. Editing always needs a login with an active subscription, even with a public link; without one, editors see the class read-only with "Entrar para editar".
+- Viewing needs no account and no subscription. Editing always needs a login with an active subscription, even with a public link; without one, editors see the class read-only, with the Anotar/Editar buttons shown locked and a note that they need to log in or subscribe.
+- Opening a share link in a browser where the owner is logged in shows the owner view (can edit). The app says so in a message, so test links in a private window.
 - In the app a shared class stays in `state.classes` with `share:{role, owner, token, editIfLogin}`, and `privateState()` keeps it out of `teacher_data`. Links look like `index.html#unirse=TOKEN`; tokens opened on a device are kept in localStorage (`sociograma.links`) so visitors without an account can come back.
 - The app checks for changes every 10 seconds. Saves send the `version`: if someone saved first, the app merges both edits (`merge3`) and saves again.
 
