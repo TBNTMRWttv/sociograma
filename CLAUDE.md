@@ -10,7 +10,8 @@ All UI text is in Spanish. Talk to Joseph in English, short and simple. No em da
   - Supabase URL and anon key are in the config block at the top.
   - Libraries load from CDNs: supabase-js, SheetJS (Excel), pdf.js (PDF import).
 - `setup.sql`: Supabase tables and row-level security. `teachers` (email, active) and `teacher_data` (one JSON document per teacher with all her classes).
-- `setup-share.sql`: sharing a class by link. Run after `setup.sql`. Tables `shared_classes` (one row per shared class: owner, data, version), `class_members` (who joined, role `view` or `edit`), `share_links` (secret tokens, owner only). `join_shared_class(token)` adds the person. People who join don't need a subscription, but the owner's must be active.
+- `setup-share.sql`: sharing a class. Run after `setup.sql`. Tables `shared_classes` (one row per shared class: owner, data, version, `link_token`, `link_access` private/view/edit) and `class_invites` (people added by email, role view/edit, personal token). The tables are closed to the app; it only calls the database functions in that file (`sync_shared`, `save_shared`, `share_*`), which check access.
+- `share-email.ts`: Supabase Edge Function that emails an invited person their personal link (Resend). Needs secrets `RESEND_API_KEY` and `APP_URL`. JWT verification on.
 - `ghl-webhook.ts`: Supabase Edge Function. GHL calls it when the tag `sociograma-activo` is added (`status=active`) or removed (`status=inactive`). Needs secret `GHL_WEBHOOK_KEY`, JWT verification off.
 - `email-template.html`: Supabase login email (Magic Link and Confirm signup templates). Shows the 6-digit code `{{ .Token }}`.
 - `logo-*.svg`: official logos taken from the brand manual.
@@ -38,7 +39,10 @@ A student "answered" if `answers[studentId]` exists.
 
 ### Shared classes
 
-A shared class moves out of `teacher_data` into `shared_classes`. In the app it stays in `state.classes` with `share:{role:'owner'|'edit'|'view', owner:email}`, and `privateState()` keeps it out of `teacher_data`. Links look like `index.html#unirse=TOKEN`. The app checks for changes every 10 seconds. Saves use the `version` column: if someone saved first, the app merges both edits (`merge3`) and saves again. People with only `view` can't change anything (blocked in the UI and by row-level security).
+- Only the owner can share (a class shared with you has no Compartir button). The share window starts as **Privado**: only people added by email can open it. Each gets an email with a personal link. The owner can switch to "anyone with the link can view" or "can edit".
+- Viewing needs no account and no subscription. Editing always needs a login with an active subscription, even with a public link; without one, editors see the class read-only with "Entrar para editar".
+- In the app a shared class stays in `state.classes` with `share:{role, owner, token, editIfLogin}`, and `privateState()` keeps it out of `teacher_data`. Links look like `index.html#unirse=TOKEN`; tokens opened on a device are kept in localStorage (`sociograma.links`) so visitors without an account can come back.
+- The app checks for changes every 10 seconds. Saves send the `version`: if someone saved first, the app merges both edits (`merge3`) and saves again.
 
 ## Pending changes (from Joseph)
 

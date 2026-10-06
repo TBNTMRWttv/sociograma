@@ -20,7 +20,7 @@ Do the steps in order. Keep a note open to paste values into.
 1. Left menu: **SQL Editor** > **New query**.
 2. Paste all of `setup.sql`. Click **Run**. It should say "Success".
 
-3. For sharing classes: open another **New query**, paste all of `setup-share.sql`, click **Run**. Until this is run, the app works normally but the **Compartir** screen says sharing is not turned on yet.
+3. For sharing classes: open another **New query**, paste all of `setup-share.sql`, click **Run**. Until this is run, the app works normally but the **Compartir** window says sharing is not turned on yet.
 
 ## 3. Login email
 
@@ -50,6 +50,18 @@ Until then, test with your own email (you are on the Supabase team, so it works)
 
 Your webhook URL is:
 `https://YOUR-PROJECT.supabase.co/functions/v1/ghl-webhook`
+
+### Sharing emails (function `share-email`)
+
+When a teacher adds someone to a class, this function emails them their link.
+1. **Edge Functions** > **Deploy a new function** > **Via Editor**. Name it exactly `share-email`. Paste all of `share-email.ts`. Deploy.
+2. Leave **Verify JWT** ON (the default). Only signed-in teachers can call it, and only for their own classes.
+3. Edge Functions > **Secrets**: add
+   - `RESEND_API_KEY`: your Resend API key (the same one used for the login emails)
+   - `APP_URL`: the app's address, for example `https://sociograma-epi.netlify.app/`
+   - `SHARE_FROM` (optional): the sender, default `Generación EPI <no-reply@generacionepi.com>`
+
+Until this is set up, sharing still works: the window says the email could not be sent, and the teacher can copy the person's link and send it herself.
 
 ## 5. Connect the app
 
