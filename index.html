@@ -10,7 +10,7 @@
 <!-- ===== CONFIGURACIÓN: pega aquí los 2 datos de tu proyecto de Supabase ===== -->
 <script>
 window.SOCIOGRAMA_CONFIG={
-  url:'https://zmbbnkrlaegjldvvaqjd.supabase.co/rest/v1/',
+  url:'https://zmbbnkrlaegjldvvaqjd.supabase.co',
   key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptYmJua3JsYWVnamxkdnZhcWpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTIyMjUsImV4cCI6MjEwNjgyODIyNX0.lezUXT3rmOWClM4_rXAZAgVl3JJTGLd9zG0gNvfQrL0'
 };
 </script>
@@ -265,13 +265,14 @@ function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');
 
 /* ---------- teacher accounts (Supabase + Go High Level) ---------- */
 var CFG=window.SOCIOGRAMA_CONFIG||{};
+if(CFG.url)CFG.url=String(CFG.url).trim().replace(/\/+$/,'').replace(/\/(rest|auth)\/v1$/i,'');
 var CLOUD=!!(CFG.url&&CFG.key&&/^https:\/\//.test(CFG.url)&&!/PEGA/i.test(CFG.url+CFG.key));
 var SB=null,cloud={status:'starting',user:null,email:'',step:'email',msg:'',busy:false,checkedAt:0};
 function cloudKey(){return cloud.user?'sociograma.cloud.'+cloud.user.id:null;}
-function cloudMsg(e,fallback){
+function cloudMsg(e,fallback,isCode){
   var m=String(e&&e.message||'').toLowerCase();
   if(/rate|seconds|too many|security purposes/.test(m))return 'Espera un minuto antes de pedir otro código.';
-  if(/expired|invalid|token/.test(m))return 'El código no es correcto o ya venció. Pide uno nuevo.';
+  if(isCode&&/expired|invalid|token/.test(m))return 'El código no es correcto o ya venció. Pide uno nuevo.';
   if(/fetch|network|failed to/.test(m))return 'No hay conexión. Revisa el internet e intenta de nuevo.';
   return fallback;
 }
@@ -397,7 +398,7 @@ var cloudActions={
     cloud.busy=true;cloud.msg='';render();
     SB.auth.verifyOtp({email:cloud.email,token:code,type:'email'}).then(function(r){
       cloud.busy=false;
-      if(r.error||!r.data||!r.data.user){cloud.msg=cloudMsg(r.error,'El código no es correcto o ya venció. Pide uno nuevo.');render();var f=$('#c-code');if(f)f.focus();return;}
+      if(r.error||!r.data||!r.data.user){cloud.msg=cloudMsg(r.error,'El código no es correcto o ya venció. Pide uno nuevo.',true);render();var f=$('#c-code');if(f)f.focus();return;}
       cloudSignedIn(r.data.user);
     },function(e){cloud.busy=false;cloud.msg=cloudMsg(e,'No se pudo entrar. Intenta de nuevo.');render();});
   },
