@@ -121,7 +121,7 @@ main{padding:28px 0 64px}
 .chip.neg.on{background:var(--neg);border-color:var(--neg);color:var(--on-status);font-weight:700}
 
 
-.graph-layout{margin-top:20px}
+.graph-layout{margin:20px auto 0;max-width:1180px}
 .graph-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .graph-tools{display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
 .graph-tools label{display:flex;gap:7px;align-items:center;cursor:pointer}
@@ -282,8 +282,7 @@ body.modal-open{overflow:hidden}
 .mixkey i{display:inline-block;width:11px;height:11px;border-radius:50%}
 .qdetails summary{cursor:pointer;color:var(--heading);font-weight:600;min-height:32px}
 .graph-wrap{position:relative}
-#graph svg{max-height:min(620px,calc(100vh - 280px))}
-.graph-card.tall #graph svg{max-height:max(340px,min(720px,calc(100vh - 430px)))}
+#graph svg{max-height:max(420px,calc(100vh - 140px))}
 .fs-btn{position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12)}
 .fs-btn:hover{border-color:var(--blue);color:var(--blue)}
 .graph-card:fullscreen,.graph-card.fs-on{display:flex;flex-direction:column;border-radius:0;border:0;width:100%;height:100%;background:var(--surface)}
@@ -403,6 +402,7 @@ function checkActive(fromSave){
     if(cloud.status!=='ready')loadCloudData();
   }).catch(function(e){
     if(fromSave){setSave('error');return;}
+    if(cloud.status==='ready')return;
     cloud.status='error';cloud.msg=cloudMsg(e,'No se pudo revisar tu suscripción. Intenta de nuevo en un momento.');render();
   });
 }
@@ -501,8 +501,10 @@ var cloudActions={
   cVisit:function(){cloud.joinMsg='';pendingToken=null;tryVisitor();}
 };
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'&&CLOUD&&cloud.status==='ready'&&Date.now()-cloud.checkedAt>15*60*1000)checkActive(false);
+  if(document.visibilityState==='visible'&&CLOUD&&cloud.status==='ready'&&Date.now()-cloud.checkedAt>60*1000)checkActive(false);
 });
+/* a subscription can end while the app is open: check again every 5 minutes */
+setInterval(function(){if(CLOUD&&cloud.user&&cloud.status==='ready'&&document.visibilityState==='visible'&&Date.now()-cloud.checkedAt>5*60*1000)checkActive(false);},30*1000);
 document.addEventListener('keydown',function(e){
   if(e.key!=='Enter'||!e.target)return;
   if(e.target.id==='c-email'){e.preventDefault();cloudActions.cSend();}
