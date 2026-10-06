@@ -402,6 +402,7 @@ function checkActive(fromSave){
     if(cloud.status!=='ready')loadCloudData();
   }).catch(function(e){
     if(fromSave){setSave('error');return;}
+    if(cloud.status==='ready')return;
     cloud.status='error';cloud.msg=cloudMsg(e,'No se pudo revisar tu suscripción. Intenta de nuevo en un momento.');render();
   });
 }
@@ -500,8 +501,10 @@ var cloudActions={
   cVisit:function(){cloud.joinMsg='';pendingToken=null;tryVisitor();}
 };
 document.addEventListener('visibilitychange',function(){
-  if(document.visibilityState==='visible'&&CLOUD&&cloud.status==='ready'&&Date.now()-cloud.checkedAt>15*60*1000)checkActive(false);
+  if(document.visibilityState==='visible'&&CLOUD&&cloud.status==='ready'&&Date.now()-cloud.checkedAt>60*1000)checkActive(false);
 });
+/* a subscription can end while the app is open: check again every 5 minutes */
+setInterval(function(){if(CLOUD&&cloud.user&&cloud.status==='ready'&&document.visibilityState==='visible'&&Date.now()-cloud.checkedAt>5*60*1000)checkActive(false);},30*1000);
 document.addEventListener('keydown',function(e){
   if(e.key!=='Enter'||!e.target)return;
   if(e.target.id==='c-email'){e.preventDefault();cloudActions.cSend();}
