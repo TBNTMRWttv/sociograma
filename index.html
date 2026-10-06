@@ -281,7 +281,17 @@ body.modal-open{overflow:hidden}
 .mixkey span{display:inline-flex;align-items:center;gap:6px}
 .mixkey i{display:inline-block;width:11px;height:11px;border-radius:50%}
 .qdetails summary{cursor:pointer;color:var(--heading);font-weight:600;min-height:32px}
-.graph-card.tall #graph svg{max-height:calc(100vh - 190px)}
+.graph-wrap{position:relative}
+#graph svg{max-height:min(620px,calc(100vh - 280px))}
+.graph-card.tall #graph svg{max-height:max(340px,min(720px,calc(100vh - 430px)))}
+.fs-btn{position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.fs-btn:hover{border-color:var(--blue);color:var(--blue)}
+.graph-card:fullscreen,.graph-card.fs-on{display:flex;flex-direction:column;border-radius:0;border:0;width:100%;height:100%;background:var(--surface)}
+.graph-card.fs-on{position:fixed;inset:0;z-index:85}
+.graph-card:fullscreen .graph-wrap,.graph-card.fs-on .graph-wrap{flex:1;min-height:0}
+.graph-card:fullscreen #graph,.graph-card.fs-on #graph{height:100%}
+.graph-card:fullscreen #graph svg,.graph-card.fs-on #graph svg{height:100%;max-height:none;min-width:0}
+.graph-card:fullscreen .mapkey,.graph-card.fs-on .mapkey{display:none}
 @media (max-width:1100px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stats .mixcard{grid-column:1/-1}}
 @media (max-width:600px){.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stat{padding:12px}.stat-n{font-size:24px}.stat-n small{font-size:14px}.stat-l{font-size:13px}.qpick{margin-left:0;width:100%}.qpick select{flex:1;min-width:0;width:100%;max-width:none}.tab{padding:10px 9px}}
 .title-row{display:flex;align-items:center;gap:8px;min-width:0}
@@ -673,6 +683,7 @@ function applyShared(rows){
 }
 function safeRender(){
   var a=document.activeElement,p=$('#panel');
+  if(mapFull()){renderTop();drawGraph();return;}
   if(a&&p&&p.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){SHARE.pendingRender=true;renderTop();return;}
   render();
 }
@@ -1787,7 +1798,7 @@ function viewResults(c){
       '<span class="spacer"></span>'+
       '<button class="btn small" data-action="relayout">Reordenar mapa</button>'+
       (caps.downloads?'<button class="btn small" data-action="png">Descargar imagen</button>':'')+
-      '</div><div id="detail" aria-live="polite"></div><div id="graph"></div>'+mapKey()+
+      '</div><div id="detail" aria-live="polite"></div><div class="graph-wrap"><div id="graph"></div><button class="fs-btn" data-action="fullscreen" aria-label="Ver el mapa en pantalla completa" title="Pantalla completa">'+FS_ICON+'</button></div>'+mapKey()+
       '</div></div></div>';
   }
   function li(id,txt){return '<li><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button><span>'+txt+'</span></li>';}
@@ -1837,6 +1848,13 @@ var HOWTO='<details class="howto"><summary>Cómo leer el mapa</summary><ul>'+
   '<li>Una flecha gruesa con punta en los dos lados quiere decir que los dos se eligieron (o se rechazaron) entre sí.</li>'+
   '<li>El color de cada círculo resume cómo está ese estudiante en el grupo. La lista de colores está debajo del mapa.</li>'+
   '<li>Toca un estudiante para ver solo sus flechas y sus datos. Arrastra los círculos para ordenar el mapa.</li></ul></details>';
+var FS_ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+var FS_OUT='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+/* full screen map: the browser's fullscreen when it has it, otherwise the card covers the window */
+function mapFull(){var c=$('.graph-card');return !!(c&&(document.fullscreenElement===c||c.classList.contains('fs-on')));}
+function syncFsButton(){var b=$('.fs-btn'),on=mapFull();if(!b)return;b.innerHTML=on?FS_OUT:FS_ICON;b.setAttribute('aria-label',on?'Salir de pantalla completa':'Ver el mapa en pantalla completa');b.title=on?'Salir de pantalla completa':'Pantalla completa';document.body.classList.toggle('modal-open',on&&!document.fullscreenElement);}
+document.addEventListener('fullscreenchange',function(){syncFsButton();drawGraph();});
+document.addEventListener('keydown',function(e){var c=$('.graph-card.fs-on');if(e.key==='Escape'&&c){c.classList.remove('fs-on');syncFsButton();}});
 var RTABS=[['resumen','Resumen'],['mapa','Mapa'],['estudiantes','Estudiantes'],['todo','Ver todo']];
 function viewEdit(c){
   var h='<div class="headrow"><h2>Editar '+esc(c.name)+'</h2><button class="btn primary" data-action="view" data-view="results">Listo</button></div>'+
@@ -2148,6 +2166,13 @@ var actions={
   lockedEdit:function(){
     if(!cloud.user){cloudActions.cLogin();return;}
     toast('Para editar necesitas una suscripción activa a Generación EPI. Si ya la tienes, entra con ese correo.',6000);
+  },
+  fullscreen:function(){
+    var c=$('.graph-card');if(!c)return;
+    if(document.fullscreenElement){document.exitFullscreen();return;}
+    if(c.classList.contains('fs-on')){c.classList.remove('fs-on');syncFsButton();return;}
+    if(c.requestFullscreen){c.requestFullscreen().then(null,function(){c.classList.add('fs-on');syncFsButton();});}
+    else{c.classList.add('fs-on');syncFsButton();}
   },
   renameOpen:function(){ui.renaming=true;render();var f=$('#rename-input');if(f){f.focus();f.select();}},
   renameCancel:function(){ui.renaming=false;render();var b=$('[data-action="renameOpen"]');if(b)b.focus();},
