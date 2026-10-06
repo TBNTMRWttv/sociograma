@@ -289,6 +289,14 @@ body.modal-open{overflow:hidden}
 .graph-card.tall #graph svg{max-height:calc(100vh - 190px)}
 @media (max-width:1100px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stats .mixcard{grid-column:1/-1}}
 @media (max-width:600px){.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stat{padding:12px}.stat-n{font-size:24px}.stat-n small{font-size:14px}.stat-l{font-size:13px}.qpick{margin-left:0;width:100%}.qpick select{flex:1;min-width:0;width:100%;max-width:none}.tab{padding:10px 9px}}
+.title-row{display:flex;align-items:center;gap:8px;min-width:0}
+.title-row h2{overflow-wrap:anywhere}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;flex:none;border:1px solid transparent;background:none;color:var(--muted);border-radius:10px;cursor:pointer}
+.icon-btn:hover{border-color:var(--line);color:var(--heading);background:var(--surface)}
+.rename{display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:1;min-width:260px;max-width:640px}
+.rename input{flex:1;min-width:180px;font-size:20px;font-weight:700}
+.btn.locked{opacity:.6;cursor:not-allowed;display:inline-flex;align-items:center;gap:7px}
+.btn.locked:hover{opacity:.8}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -311,7 +319,7 @@ function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function shortName(n){var w=String(n).trim().split(/\s+/);return w[0]+(w[1]?' '+w[1].charAt(0).toUpperCase()+'.':'');}
 function firstName(n){return String(n).trim().split(/\s+/)[0];}
 var toastT=null;
-function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);}
+function toast(msg,ms){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},ms||2600);}
 
 /* ---------- teacher accounts (Supabase + Go High Level) ---------- */
 var CFG=window.SOCIOGRAMA_CONFIG||{};
@@ -720,7 +728,8 @@ function startSharing(){
     var c=null;state.classes.forEach(function(k){if(k.share&&k.share.token===t)c=k;});
     if(c){
       state.activeId=c.id;ui.view='results';ui.importing=false;ui.manualOn=false;cloud.joinMsg='';
-      if(c.share.role!=='owner')toast(c.share.role==='edit'?'Puedes ver y editar esta clase':'Puedes ver esta clase');
+      if(c.share.role==='owner')toast('Esta clase es tuya. Abriste el enlace con tu propia cuenta ('+cloud.email+'), por eso puedes editar. Para verlo como la otra persona, ábrelo en otro navegador o en una ventana privada.',9000);
+      else toast(c.share.role==='edit'?'Puedes ver y editar esta clase':'Puedes ver esta clase');
       return 'ok';
     }
     var st=SHARE.status[t]||'invalid';
@@ -1713,14 +1722,16 @@ function viewResults(c){
   if(ui.q!=='all'&&!active.some(function(q){return q.id===ui.q;}))ui.q='all';
   var A=analyze(c,ui.q),all=ui.q==='all'?A:analyze(c,'all');
   var ro=!canEdit(c),sh=canShare(c)?'<button class="btn" data-action="shareOpen">Compartir</button>':'';
-  var h='<div class="headrow"><h2>Sociograma de '+esc(c.name)+'</h2><div class="row">'+(ro?'<span class="badge promedio">Solo ver</span>':'<button class="btn" data-action="view" data-view="entry">Anotar respuestas</button><button class="btn" data-action="view" data-view="edit">Editar</button>')+sh+'</div></div>';
+  var title=ui.renaming&&!ro?'<div class="rename"><label class="sr" for="rename-input">Nombre de la clase</label><input type="text" id="rename-input" maxlength="60" value="'+esc(c.name)+'"><button class="btn primary" data-action="renameSave">Guardar</button><button class="btn" data-action="renameCancel">Cancelar</button></div>'
+    :'<div class="title-row"><h2>Sociograma de '+esc(c.name)+'</h2>'+(ro?'':'<button class="icon-btn" data-action="renameOpen" aria-label="Cambiar el nombre de la clase" title="Cambiar nombre"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>')+'</div>';
+  var h='<div class="headrow">'+title+'<div class="row">'+(ro&&c.share&&c.share.editIfLogin?LOCK_BTNS:ro?'<span class="badge promedio">Solo ver</span>':'<button class="btn" data-action="view" data-view="entry">Anotar respuestas</button><button class="btn" data-action="view" data-view="edit">Editar</button>')+sh+'</div></div>';
   if(c.share&&c.share.role!=='owner'){
-    var si=c.share.role==='edit'?'Puedes editarla. Los cambios de todos se ven en unos segundos.':c.share.editIfLogin&&!cloud.user?'Puedes verla. Para editar, entra con tu cuenta.':c.share.editIfLogin?'Puedes verla. Para editar necesitas una suscripción activa.':'Puedes verla, pero no cambiarla.';
+    var si=c.share.role==='edit'?'Puedes editarla. Los cambios de todos se ven en unos segundos.':c.share.editIfLogin&&!cloud.user?'Te dieron permiso para editar. Para hacerlo, entra con tu cuenta con suscripción activa a Generación EPI.':c.share.editIfLogin?'Te dieron permiso para editar, pero necesitas una suscripción activa a Generación EPI. Mientras tanto puedes verla.':'Puedes verla, pero no cambiarla.';
     h+='<div class="row shared-by"><p class="save" style="margin:0">Compartida por '+esc(c.share.owner||'otra persona')+'. '+si+'</p>'+(c.share.editIfLogin&&!cloud.user?'<button class="btn small primary" data-action="cLogin">Entrar para editar</button>':'')+(ro?'<button class="btn small" data-action="arm" data-key="leave" data-label="Quitar de mi lista" data-confirm="¿Seguro?">Quitar de mi lista</button>':'')+'</div>';
   }
   if(c.students.length<3||A.answered<1||!active.length){
-    if(c.students.length>=3&&active.length&&A.answered<1)return h+'<p class="lead">Todavía no hay respuestas anotadas.</p><div class="row" style="margin-top:18px"><button class="btn primary" data-action="view" data-view="entry">Anotar respuestas</button></div>';
-    return h+'<p class="lead">'+(c.students.length<3?'Esta clase tiene menos de 3 estudiantes.':'Ninguna pregunta está en uso.')+' Toca Editar para corregirlo.</p>';
+    if(c.students.length>=3&&active.length&&A.answered<1)return h+'<p class="lead">Todavía no hay respuestas anotadas.</p>'+(ro?'':'<div class="row" style="margin-top:18px"><button class="btn primary" data-action="view" data-view="entry">Anotar respuestas</button></div>');
+    return h+'<p class="lead">'+(c.students.length<3?'Esta clase tiene menos de 3 estudiantes.':'Ninguna pregunta está en uso.')+(ro?'':' Toca Editar para corregirlo.')+'</p>';
   }
   var missing=c.students.length-A.answered;
   var tab=RTABS.some(function(t){return t[0]===ui.tab;})?ui.tab:'resumen';ui.tab=tab;
@@ -1798,6 +1809,8 @@ function viewResults(c){
   else h+=secStats()+secNotes()+secQuestions(true)+secMap(false)+secAttention()+secTable();
   return h;
 }
+var LOCK_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+var LOCK_BTNS='<button class="btn locked" data-action="lockedEdit" aria-disabled="true" title="Necesitas una suscripción para editar">'+LOCK_ICON+'Anotar respuestas</button><button class="btn locked" data-action="lockedEdit" aria-disabled="true" title="Necesitas una suscripción para editar">'+LOCK_ICON+'Editar</button>';
 var RTABS=[['resumen','Resumen'],['mapa','Mapa'],['estudiantes','Estudiantes'],['todo','Ver todo']];
 function viewEdit(c){
   var h='<div class="headrow"><h2>Editar '+esc(c.name)+'</h2><button class="btn primary" data-action="view" data-view="results">Listo</button></div>'+
@@ -2103,7 +2116,15 @@ function unarm(){ui.armed=null;var b=document.querySelector('.btn.armed');if(b){
 /* ---------- actions ---------- */
 var actions={
   theme:function(){setTheme(isDark()?'light':'dark');},
-  view:function(b){ui.view=b.getAttribute('data-view');ui.selected=null;clearTimeout(armT);ui.armed=null;render();window.scrollTo(0,0);},
+  lockedEdit:function(){
+    if(!cloud.user){cloudActions.cLogin();return;}
+    toast('Para editar necesitas una suscripción activa a Generación EPI. Si ya la tienes, entra con ese correo.',6000);
+  },
+  renameOpen:function(){ui.renaming=true;render();var f=$('#rename-input');if(f){f.focus();f.select();}},
+  renameCancel:function(){ui.renaming=false;render();var b=$('[data-action="renameOpen"]');if(b)b.focus();},
+  renameSave:function(){var c=cls(),f=$('#rename-input');if(!c||!f)return;var v=f.value.trim().replace(/\s+/g,' ').slice(0,60);if(!v){toast('Escribe un nombre');f.focus();return;}
+    ui.renaming=false;if(v!==c.name){c.name=v;touch();toast('Nombre cambiado');}render();var b=$('[data-action="renameOpen"]');if(b)b.focus();},
+  view:function(b){ui.renaming=false;ui.view=b.getAttribute('data-view');ui.selected=null;clearTimeout(armT);ui.armed=null;render();window.scrollTo(0,0);},
   impOpen:function(){imp=null;ui.importing=true;ui.manualOn=false;ui.impMsg='';render();window.scrollTo(0,0);},
   impCancel:function(){imp=null;ui.importing=false;ui.manualOn=false;ui.impMsg='';render();window.scrollTo(0,0);},
   mOpen:function(){var el=$('#imp-class');if(el)ui.impName=el.value;manualState();if(!ui.manual.name)ui.manual.name=ui.impName;ui.manualOn=true;render();window.scrollTo(0,0);var f=$('#m-names');if(f&&ui.manual.name)f.focus();else{f=$('#m-name');if(f)f.focus();}},
@@ -2195,7 +2216,7 @@ var actions={
   csv:downloadCSV
 };
 var changes={
-  switchClass:function(el){imp=null;ui.importing=false;ui.manualOn=false;state.activeId=el.value;ui.selected=null;ui.editSid=null;ui.q='all';ui.view='results';saveLocal();render();},
+  switchClass:function(el){ui.renaming=false;imp=null;ui.importing=false;ui.manualOn=false;state.activeId=el.value;ui.selected=null;ui.editSid=null;ui.q='all';ui.view='results';saveLocal();render();},
   className:function(el){var c=cls();if(!c)return;c.name=el.value.trim().slice(0,60)||'Clase sin nombre';touch();renderTop();},
   qKind:function(el){
     var c=cls();if(!c)return;var id=el.getAttribute('data-q');
@@ -2239,6 +2260,7 @@ var changes={
 };
 document.addEventListener('input',function(e){if(e.target&&e.target.id==='m-names')changes.mNames(e.target);});
 document.addEventListener('keydown',function(e){
+  if(e.target&&e.target.id==='rename-input'){if(e.key==='Enter'){e.preventDefault();actions.renameSave();}else if(e.key==='Escape'){e.preventDefault();actions.renameCancel();}return;}
   if(e.key==='Enter'&&e.target&&e.target.id==='f-add'){e.preventDefault();actions.addStudent();}
   if(e.key==='Enter'&&e.target&&e.target.id==='f-addq'){e.preventDefault();actions.addQuestion();}
 });
