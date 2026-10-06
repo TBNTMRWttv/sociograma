@@ -1,0 +1,1726 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%22115.68%20176.51%2054.68%2051.98%22%3E%3Cstyle%3E.lb%7Bfill%3A%230944A1%7D.lg%7Bfill%3A%23C59435%7D.lt%7Bfill%3A%2310CFC9%7D%3C/style%3E%3Cpath%20class%3D%22lb%22%20d%3D%22M%20157.01%20193.46%20L%20155.34%20198.43%20C%20155.34%20198.43%20144.86%20191.86%20137.11%20196.96%20C%20137.11%20196.96%20138.31%20200.46%20140.98%20201.75%20L%20138.67%20207.39%20C%20138.67%20207.39%20132.44%20202.38%20130.25%20193.95%20C%20130.25%20193.95%20141.33%20185.32%20157.01%20193.46%22/%3E%3Cpath%20class%3D%22lb%22%20d%3D%22M%20149.03%20184.46%20C%20147.89%20187.22%20144.74%20188.54%20141.98%20187.41%20C%20139.22%20186.27%20137.9%20183.12%20139.04%20180.36%20C%20140.17%20177.6%20143.33%20176.29%20146.09%20177.42%20C%20148.84%20178.55%20150.16%20181.71%20149.03%20184.46%22/%3E%3Cpath%20class%3D%22lt%22%20d%3D%22M%20148.19%20226.8%20L%20144.88%20222.75%20C%20144.88%20222.75%20156.04%20217.39%20155.86%20208.12%20C%20155.86%20208.12%20152.26%20207.25%20149.75%20208.83%20L%20146.21%20203.86%20C%20146.21%20203.86%20153.78%20201.27%20162.07%20203.93%20C%20162.07%20203.93%20163.45%20217.9%20148.19%20226.8%22/%3E%3Cpath%20class%3D%22lt%22%20d%3D%22M%20160.06%20224.86%20C%20158.33%20222.43%20158.9%20219.06%20161.34%20217.33%20C%20163.77%20215.61%20167.14%20216.18%20168.86%20218.61%20C%20170.59%20221.05%20170.02%20224.41%20167.59%20226.14%20C%20165.16%20227.87%20161.79%20227.3%20160.06%20224.86%22/%3E%3Cpath%20class%3D%22lg%22%20d%3D%22M%20124.63%20205.09%20L%20129.77%20204.04%20C%20129.77%20204.04%20129.34%20216.41%20137.64%20220.55%20C%20137.64%20220.55%20140.07%20217.76%20139.84%20214.8%20L%20145.89%20213.98%20C%20145.89%20213.98%20144.68%20221.88%20138.47%20228%20C%20138.47%20228%20125.45%20222.74%20124.63%20205.09%22/%3E%3Cpath%20class%3D%22lg%22%20d%3D%22M%20120.85%20216.51%20C%20123.81%20216.11%20126.53%20218.18%20126.93%20221.13%20C%20127.34%20224.09%20125.27%20226.81%20122.31%20227.21%20C%20119.36%20227.61%20116.63%20225.54%20116.23%20222.59%20C%20115.83%20219.63%20117.9%20216.91%20120.85%20216.51%22/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem('sociograma.theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sociograma | Generación EPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- ===== CONFIGURACIÓN: pega aquí los 2 datos de tu proyecto de Supabase ===== -->
+<script>
+window.SOCIOGRAMA_CONFIG={
+  url:'PEGA_AQUI_EL_PROJECT_URL',
+  key:'PEGA_AQUI_LA_ANON_PUBLIC_KEY'
+};
+</script>
+<!-- ===== fin de la configuración ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#F5F7FB; --surface:#FFFFFF; --ink:#13254D; --muted:#55658A; --line:#D6DEEC; --heading:#0944A1; --gold-bar:#C59435;
+  --blue:#0944A1; --blue-soft:#E3EBF8; --on-blue:#FFFFFF;
+  --pos:#0B9E99; --pos-fill:#10CFC9; --pos-text:#07716D; --pos-soft:#DAF6F5; --on-pos:#052A33;
+  --neg:#C93434; --neg-soft:#FBE2E2;
+  --amber:#C59435; --amber-text:#85601C; --amber-soft:#F6ECD6; --on-amber:#2A1D04;
+  --grey:#6F7B90; --grey-soft:#E6EAF1;
+  --on-status:#FFFFFF;
+  --logo-b:#0944A1; --logo-g:#C59435; --logo-t:#10CFC9;
+  --display:"Typo Grotesk","Urbanist","Century Gothic","Segoe UI",system-ui,sans-serif;
+  --body:"Typo Grotesk","Urbanist","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1630; --surface:#13224A; --ink:#E8EEF9; --muted:#A7B4D1; --line:#26385F; --heading:#E8EEF9; --gold-bar:#C59435;
+    --blue:#7FA6F2; --blue-soft:#1C3366; --on-blue:#0B1630;
+    --pos:#10CFC9; --pos-fill:#10CFC9; --pos-text:#5FE3DE; --pos-soft:#0F3B45; --on-pos:#052A33;
+    --neg:#F28282; --neg-soft:#4A2026;
+    --amber:#D9AA4E; --amber-text:#E8C47E; --amber-soft:#3D3218; --on-amber:#1A1305;
+    --grey:#93A0B8; --grey-soft:#263149;
+    --on-status:#0B1630;
+    --logo-b:#FFFFFF; --logo-g:#FFFFFF; --logo-t:#FFFFFF;
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#0B1630; --surface:#13224A; --ink:#E8EEF9; --muted:#A7B4D1; --line:#26385F; --heading:#E8EEF9; --gold-bar:#C59435;
+    --blue:#7FA6F2; --blue-soft:#1C3366; --on-blue:#0B1630;
+    --pos:#10CFC9; --pos-fill:#10CFC9; --pos-text:#5FE3DE; --pos-soft:#0F3B45; --on-pos:#052A33;
+    --neg:#F28282; --neg-soft:#4A2026;
+    --amber:#D9AA4E; --amber-text:#E8C47E; --amber-soft:#3D3218; --on-amber:#1A1305;
+    --grey:#93A0B8; --grey-soft:#263149;
+    --on-status:#0B1630;
+    --logo-b:#FFFFFF; --logo-g:#FFFFFF; --logo-t:#FFFFFF;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{min-height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+.lb{fill:var(--logo-b)} .lg{fill:var(--logo-g)} .lt{fill:var(--logo-t)}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;text-decoration:none}
+.brand .logo-mark{height:34px;width:auto;display:block}
+.brand .logo-word{height:19px;width:auto;display:block}
+.brand .app{font-family:var(--display);font-weight:600;font-size:15px;color:var(--muted);padding-left:10px;margin-left:2px;border-left:1px solid var(--line);white-space:nowrap}
+.logo-full{display:block;height:auto;width:min(260px,70vw);margin:0 0 26px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#graph svg{user-select:none;-webkit-user-select:none}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;letter-spacing:-.01em}
+h2{font-size:30px;font-weight:700;color:var(--heading)}
+h3{font-size:21px;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.top{background:var(--surface);border-bottom:3px solid var(--gold-bar)}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+
+.brand svg{flex:none}
+@media (max-width:520px){.brand .logo-word{height:15px}.brand .logo-mark{height:28px}.brand .app{display:none}}
+.save{font-size:14px;color:var(--muted)}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:700;min-height:44px}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.btn.danger{color:var(--neg)}
+.btn.danger.armed{background:var(--neg);border-color:var(--neg);color:var(--on-status)}
+.btn.small{min-height:36px;padding:5px 12px;font-size:15px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+select,input[type=text],input[type=email],textarea{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;min-height:44px;width:100%}
+textarea{min-height:130px;resize:vertical}
+
+
+main{padding:28px 0 64px}
+.lead{color:var(--muted);max-width:62ch;margin-top:8px}
+.section{margin-top:30px}
+.section > h3{margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+.field label{display:block;font-weight:700;margin-bottom:5px}
+.field .hint{font-size:14px;color:var(--muted);margin-top:4px}
+.field.full{grid-column:1/-1}
+.note{background:var(--amber-soft);border-left:4px solid var(--amber);padding:10px 14px;border-radius:0 8px 8px 0;margin-top:16px;max-width:70ch}
+
+
+.x{border:1px solid var(--line);background:var(--surface);border-radius:8px;width:40px;height:40px;cursor:pointer;flex:none;font-size:18px;color:var(--muted)}
+.x:hover{color:var(--neg);border-color:var(--neg)}
+
+
+.form{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.q{margin-top:22px}
+.q-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.q-head strong{font-size:18px}
+.q-head span{font-size:14px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;cursor:pointer;min-height:44px}
+.chip:disabled{opacity:.35;cursor:not-allowed}
+.chip.pos.on{background:var(--pos-fill);border-color:var(--pos-fill);color:var(--on-pos);font-weight:700}
+.chip.neg.on{background:var(--neg);border-color:var(--neg);color:var(--on-status);font-weight:700}
+
+
+.graph-layout{margin-top:20px}
+.graph-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.graph-tools{display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.graph-tools label{display:flex;gap:7px;align-items:center;cursor:pointer}
+.graph-tools input{width:18px;height:18px;accent-color:var(--blue)}
+.graph-tools .spacer{margin-left:auto}
+#graph{overflow-x:auto}
+#graph svg{display:block;width:100%;min-width:660px;height:auto}
+.node{cursor:grab;touch-action:none}
+.node:focus{outline:none}
+.node:focus-visible circle.body{stroke:var(--blue);stroke-width:5}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%}
+.legend i.l{width:26px;height:0;border-radius:0;border-top:3px solid var(--pos)}
+.legend i.l.n{border-top:3px dashed var(--neg)}
+.i-popular{background:var(--pos-fill)} .i-rechazo{background:var(--neg)} .i-controversial{background:var(--amber)} .i-invisible{background:var(--grey)} .i-promedio{background:var(--surface);border:2px solid var(--ink)}
+#detail{padding:12px 16px;border-bottom:1px solid var(--line)}
+#detail .who-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#detail .hint{color:var(--muted);font-size:15px}
+#detail h3{margin:0;font-size:19px}
+#detail dl{margin:10px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 18px}
+#detail dt{font-weight:700;font-size:14px}
+#detail dd{margin:2px 0 0;color:var(--muted);font-size:15px}
+.badge{display:inline-block;border-radius:999px;padding:2px 11px;font-size:14px;font-weight:700;white-space:nowrap}
+.badge.popular{background:var(--pos-soft);color:var(--pos-text)}
+.badge.rechazo{background:var(--neg-soft);color:var(--neg)}
+.badge.controversial{background:var(--amber-soft);color:var(--amber-text)}
+.badge.invisible{background:var(--grey-soft);color:var(--grey)}
+.badge.promedio{background:transparent;color:var(--muted);border:1px solid var(--line)}
+
+.attention{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.attention h4{margin:0 0 4px;font-size:17px}
+.attention p.why{font-size:14px;color:var(--muted);margin-bottom:8px}
+.attention ul{margin:0;padding:0;list-style:none}
+.attention li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.attention li span{color:var(--muted);font-size:14px;text-align:right}
+.attention .col{border-top:4px solid var(--neg);padding-top:12px}
+.attention .col.b{border-top-color:var(--grey)} .attention .col.c{border-top-color:var(--amber)}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table.results{border-collapse:collapse;width:100%;min-width:640px}
+.results th,.results td{padding:10px 14px;text-align:right;border-bottom:1px solid var(--line)}
+.results th:first-child,.results td:first-child{text-align:left}
+.results th{font-size:14px;color:var(--muted);font-weight:700}
+.results tr:last-child td{border-bottom:0}
+.linkish{border:0;background:none;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;text-align:left}
+.method{font-size:14px;color:var(--muted);max-width:75ch;margin-top:14px}
+
+.drop{border:2px dashed var(--line);border-radius:16px;background:var(--surface);padding:46px 20px;text-align:center;margin-top:22px}
+.drop.over{border-color:var(--blue);background:var(--blue-soft)}
+.drop-title{font-family:var(--display);font-weight:700;font-size:28px}
+label.btn{display:inline-flex;align-items:center}
+label.btn:focus-within{outline:3px solid var(--blue);outline-offset:2px}
+.sum{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--pos);border-radius:0 10px 10px 0;padding:12px 16px;margin-top:14px;max-width:70ch}
+table.map th,table.map td{text-align:left;vertical-align:top}
+table.map td:first-child{max-width:360px}
+table.map td.ex{color:var(--muted);font-size:15px;max-width:260px;overflow-wrap:anywhere}
+table.map select{min-height:40px;padding:5px 10px;min-width:210px}
+.vals{display:grid;gap:6px;margin-top:8px}
+.vals label{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px;align-items:center;font-size:15px}
+.vals select{min-width:0}
+
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-weight:700;z-index:60;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+
+.headrow{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.import{max-width:760px}
+.import h2{font-size:clamp(28px,5vw,40px)}
+.check{display:flex;gap:8px;align-items:center;margin-top:16px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--blue)}
+.qlist{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:7px;max-width:84ch}
+.qlist li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:baseline}
+.dups{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:0 12px 12px 0;padding:14px 18px;margin-top:18px;max-width:84ch}
+.dups ul{list-style:none;margin:10px 0 0;padding:0}
+.dups li{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.qrows,.srows{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.qrows li,.srows li{display:grid;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}
+.qrows li:last-child,.srows li:last-child{border-bottom:0}
+.qrows li{grid-template-columns:minmax(0,1fr) 150px}
+.srows li{grid-template-columns:minmax(0,1.3fr) 104px minmax(0,1fr) auto 40px}
+.qrows select,.srows select,.srows input{min-height:40px;padding:6px 10px}
+.srows .st{font-size:14px;color:var(--muted)}
+select.mini{width:auto;max-width:300px;min-height:38px;padding:4px 10px}
+.graph-tools label select{margin-left:2px}
+
+.entry{display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px;margin-top:12px;align-items:start}
+.who-list{display:flex;flex-direction:column;gap:3px;max-height:640px;overflow:auto;padding:2px;position:sticky;top:10px}
+.who{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid transparent;background:none;border-radius:9px;padding:7px 10px;cursor:pointer;min-height:40px}
+.who:hover{background:var(--surface)}
+.who.on{background:var(--surface);border-color:var(--blue);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--grey);flex:none}
+.dot.ok{background:var(--pos);border-color:var(--pos)}
+.mqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.mqs li{display:grid;grid-template-columns:minmax(0,1fr) 140px 40px;gap:8px;align-items:center}
+.manual-opt{margin-top:30px;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.manual-opt h3{margin-bottom:2px}
+.x:disabled{opacity:.35;cursor:not-allowed}
+.theme-btn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;cursor:pointer;flex:none}
+.theme-btn:hover{border-color:var(--blue);color:var(--blue)}
+.top .save{white-space:nowrap}
+@media (max-width:1240px){.top .acct{display:none}}
+@media (max-width:1000px){.brand .app{display:none}}
+.auth{padding-top:30px}
+input.code{font-size:26px;letter-spacing:.3em;text-align:center}
+.acct{font-size:14px;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:860px){
+  .entry{grid-template-columns:minmax(0,1fr)}
+  .who-list{flex-direction:row;flex-wrap:wrap;max-height:170px;position:static}
+  .mqs li{grid-template-columns:minmax(0,1fr) 40px}
+  .mqs li input{grid-column:1/-1}
+  .qrows li{grid-template-columns:minmax(0,1fr)}
+  .srows li{grid-template-columns:minmax(0,1fr) auto 40px}
+  .srows .nm{grid-column:1/-1}
+  .srows .st{display:none}
+  #detail dl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .who-list{flex-direction:row;flex-wrap:wrap;max-height:190px}
+  .fields{grid-template-columns:minmax(0,1fr)}
+  h2{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap" id="top"></div></header>
+<main><div class="wrap" id="panel"></div></main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- helpers ---------- */
+var LS_KEY='sociograma.v1';
+var $=function(s){return document.querySelector(s);};
+var ESC={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ESC[c];});}
+function uid(p){return p+Math.random().toString(36).slice(2,9);}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function shortName(n){var w=String(n).trim().split(/\s+/);return w[0]+(w[1]?' '+w[1].charAt(0).toUpperCase()+'.':'');}
+function firstName(n){return String(n).trim().split(/\s+/)[0];}
+var toastT=null;
+function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);}
+
+/* ---------- teacher accounts (Supabase + Go High Level) ---------- */
+var CFG=window.SOCIOGRAMA_CONFIG||{};
+var CLOUD=!!(CFG.url&&CFG.key&&/^https:\/\//.test(CFG.url)&&!/PEGA/i.test(CFG.url+CFG.key));
+var SB=null,cloud={status:'starting',user:null,email:'',step:'email',msg:'',busy:false,checkedAt:0};
+function cloudKey(){return cloud.user?'sociograma.cloud.'+cloud.user.id:null;}
+function cloudMsg(e,fallback){
+  var m=String(e&&e.message||'').toLowerCase();
+  if(/rate|seconds|too many|security purposes/.test(m))return 'Espera un minuto antes de pedir otro código.';
+  if(/expired|invalid|token/.test(m))return 'El código no es correcto o ya venció. Pide uno nuevo.';
+  if(/fetch|network|failed to/.test(m))return 'No hay conexión. Revisa el internet e intenta de nuevo.';
+  return fallback;
+}
+function cloudDoc(){
+  return {set:function(data){
+    return SB.from('teacher_data').upsert({owner:cloud.user.id,data:data,updated_at:new Date().toISOString()}).then(function(r){
+      if(!r.error)return;
+      var m=String(r.error.message||'').toLowerCase();
+      throw {code:(r.error.code==='42501'||/row-level|policy|permission/.test(m))?'revoked':'unavailable'};
+    },function(){throw {code:'unavailable'};});
+  }};
+}
+function cloudSaveFailed(e){
+  if(e&&e.code==='revoked'){checkActive(true);return;}
+  setSave('error');
+  setTimeout(function(){if(cloud.status==='ready'&&caps.doc)pushRemote();},8000);
+}
+function bootCloud(){
+  if(!window.supabase||!window.supabase.createClient){cloud.status='error';cloud.msg='No se pudo cargar el sistema de cuentas. Revisa la conexión y recarga la página.';render();return;}
+  SB=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'sociograma-auth'}});
+  SB.auth.onAuthStateChange(function(ev,session){
+    if(ev==='SIGNED_OUT'){cloudSignedOut();}
+    else if(session&&session.user&&(!cloud.user||cloud.user.id!==session.user.id)&&cloud.status!=='checking'){cloudSignedIn(session.user);}
+  });
+  SB.auth.getSession().then(function(r){
+    var s=r&&r.data&&r.data.session;
+    if(s&&s.user)cloudSignedIn(s.user);
+    else{cloud.status='login';render();}
+  },function(){cloud.status='login';render();});
+}
+function cloudSignedIn(user){
+  cloud.user=user;cloud.email=user.email||cloud.email;cloud.status='checking';cloud.msg='';render();
+  checkActive(false);
+}
+function checkActive(fromSave){
+  if(!SB||!cloud.user)return;
+  SB.from('teachers').select('active').maybeSingle().then(function(r){
+    if(r.error){throw r.error;}
+    cloud.checkedAt=Date.now();
+    if(!r.data||!r.data.active){lockOut();return;}
+    if(fromSave&&cloud.status==='ready'){pushRemote();return;}
+    if(cloud.status!=='ready')loadCloudData();
+  }).catch(function(e){
+    if(fromSave){setSave('error');return;}
+    cloud.status='error';cloud.msg=cloudMsg(e,'No se pudo revisar tu suscripción. Intenta de nuevo en un momento.');render();
+  });
+}
+function lockOut(){
+  caps.doc=null;clearTimeout(saveTimer);
+  state={v:2,updatedAt:0,activeId:null,classes:[]};imp=null;
+  cloud.status='inactive';render();
+}
+function loadCloudData(){
+  SB.from('teacher_data').select('data').maybeSingle().then(function(r){
+    if(r.error)throw r.error;
+    var remote=r.data?migrate(JSON.parse(JSON.stringify(r.data.data||{}))):null,cached=null,legacy=null;
+    try{var raw=localStorage.getItem(cloudKey());cached=raw?migrate(JSON.parse(raw)):null;}catch(e){}
+    try{var lr=localStorage.getItem(LS_KEY);legacy=lr?migrate(JSON.parse(lr)):null;}catch(e){}
+    var push=false;
+    if(remote){state=remote;if(cached&&(cached.updatedAt||0)>(remote.updatedAt||0)){state=cached;push=true;}}
+    else if(cached&&cached.classes.length){state=cached;push=true;}
+    else{state={v:2,updatedAt:0,activeId:null,classes:[]};}
+    if(legacy&&legacy.classes.length){
+      var have={};state.classes.forEach(function(c){have[c.id]=1;});
+      legacy.classes.forEach(function(c){if(!have[c.id])state.classes.push(c);});
+      if(!state.activeId&&state.classes.length)state.activeId=state.classes[0].id;
+      push=true;
+    }
+    caps.doc=cloudDoc();cloud.status='ready';
+    ui.importing=false;ui.view='results';ui.manualOn=false;
+    saveLocal();render();setSave('account');
+    if(push){state.updatedAt=Date.now();saveLocal();caps.doc.set(JSON.parse(JSON.stringify(state))).then(function(){
+      try{localStorage.removeItem(LS_KEY);}catch(e){}setSave('account');
+    },cloudSaveFailed);}
+  }).catch(function(e){cloud.status='error';cloud.msg=cloudMsg(e,'No se pudieron cargar tus clases. Intenta de nuevo en un momento.');render();});
+}
+function cloudSignedOut(){
+  try{var k=cloudKey();if(k)localStorage.removeItem(k);}catch(e){}
+  caps.doc=null;clearTimeout(saveTimer);cloud.user=null;cloud.step='email';cloud.status='login';cloud.msg='';
+  state={v:2,updatedAt:0,activeId:null,classes:[]};imp=null;ui.importing=false;ui.manualOn=false;ui.view='results';
+  render();
+}
+function viewCloud(){
+  var h='<div class="import auth">';
+  if(cloud.status==='starting'||cloud.status==='checking'){
+    return h+'<h2>Cargando…</h2><p class="lead">'+(cloud.status==='checking'?'Revisando tu suscripción.':'Un momento.')+'</p></div>';
+  }
+  if(cloud.status==='inactive'){
+    return h+'<h2>Tu suscripción no está activa</h2><p class="lead">Entraste como '+esc(cloud.email)+'. Si acabas de pagar, espera unos minutos y vuelve a revisar. Si crees que es un error, escribe a Generación EPI.</p>'+
+      '<div class="row" style="margin-top:22px"><button class="btn primary" data-action="cRecheck">Volver a revisar</button><button class="btn" data-action="cOut">Entrar con otro correo</button></div></div>';
+  }
+  if(cloud.status==='error'){
+    return h+'<h2>Algo no funcionó</h2><p class="note" role="alert">'+esc(cloud.msg)+'</p><div class="row" style="margin-top:18px"><button class="btn primary" data-action="cRetry">Intentar de nuevo</button>'+(cloud.user?'<button class="btn" data-action="cOut">Salir</button>':'')+'</div></div>';
+  }
+  h+='<svg class="logo-full" viewBox="44.98 362.53 192.90 108.33" role="img" aria-label="Generación EPI: Empoderadora, Positiva, Innovadora"><path class="lb" d="M 58.95 461.88 L 62.97 461.88 L 62.97 462.61 L 59.69 462.61 L 59.69 464.86 L 62.97 464.86 L 62.97 465.6 L 59.69 465.6 L 59.69 467.89 L 62.97 467.89 L 62.97 468.62 L 58.95 468.62 Z M 58.95 461.88"/><path class="lb" d="M 69.6 463.56 C 70.21 463.56 70.73 463.81 71.16 464.3 C 71.58 464.79 71.8 465.38 71.8 466.07 L 71.8 468.62 L 71.06 468.62 L 71.06 466.07 C 71.06 465.59 70.91 465.17 70.63 464.82 C 70.35 464.48 70 464.3 69.6 464.3 C 69.2 464.3 68.86 464.48 68.57 464.82 C 68.29 465.17 68.15 465.59 68.15 466.07 L 68.15 468.62 L 67.41 468.62 L 67.41 466.07 C 67.41 465.59 67.27 465.17 66.98 464.82 C 66.7 464.48 66.35 464.3 65.95 464.3 C 65.55 464.3 65.21 464.48 64.92 464.82 C 64.64 465.16 64.5 465.58 64.5 466.07 L 64.5 468.62 L 63.75 468.62 L 63.75 463.61 L 64.5 463.61 L 64.5 464.2 C 64.91 463.77 65.4 463.56 65.95 463.56 C 66.32 463.56 66.68 463.66 67 463.87 C 67.32 464.07 67.57 464.34 67.78 464.68 C 67.98 464.34 68.23 464.07 68.55 463.87 C 68.88 463.66 69.23 463.56 69.6 463.56"/><path class="lb" d="M 75.29 467.91 C 75.77 467.91 76.19 467.73 76.53 467.38 C 76.88 467.03 77.05 466.6 77.05 466.11 C 77.05 465.61 76.88 465.18 76.53 464.83 C 76.19 464.48 75.77 464.3 75.29 464.3 C 74.8 464.3 74.39 464.48 74.04 464.83 C 73.7 465.18 73.52 465.61 73.52 466.1 L 73.52 466.11 C 73.52 466.6 73.7 467.03 74.04 467.38 C 74.39 467.73 74.8 467.91 75.29 467.91 M 75.29 463.54 C 75.98 463.54 76.57 463.8 77.07 464.3 C 77.55 464.8 77.8 465.4 77.8 466.11 C 77.8 466.81 77.55 467.41 77.07 467.91 C 76.57 468.41 75.98 468.66 75.29 468.66 C 74.6 468.66 74.01 468.42 73.52 467.93 L 73.52 470.36 L 72.77 470.36 L 72.77 463.61 L 73.52 463.61 L 73.52 464.29 C 74.01 463.79 74.6 463.54 75.29 463.54"/><path class="lb" d="M 80.88 467.92 C 81.36 467.92 81.77 467.75 82.12 467.39 C 82.46 467.04 82.63 466.62 82.63 466.12 C 82.63 465.62 82.46 465.2 82.12 464.84 C 81.77 464.49 81.36 464.31 80.88 464.31 C 80.39 464.31 79.97 464.49 79.62 464.84 C 79.28 465.2 79.11 465.62 79.11 466.12 C 79.11 466.62 79.28 467.04 79.62 467.39 C 79.97 467.75 80.39 467.92 80.88 467.92 M 80.88 463.56 C 81.57 463.56 82.16 463.81 82.65 464.3 C 83.14 464.81 83.39 465.41 83.39 466.12 C 83.39 466.82 83.14 467.43 82.65 467.93 C 82.16 468.43 81.57 468.68 80.88 468.68 C 80.18 468.68 79.58 468.43 79.09 467.93 C 78.6 467.43 78.36 466.82 78.36 466.12 C 78.36 465.41 78.6 464.81 79.09 464.3 C 79.58 463.81 80.18 463.56 80.88 463.56"/><path class="lb" d="M 87.7 467.39 C 88.05 467.04 88.22 466.62 88.22 466.12 C 88.22 465.62 88.05 465.2 87.7 464.84 C 87.36 464.49 86.95 464.31 86.46 464.31 C 85.97 464.31 85.56 464.49 85.21 464.84 C 84.87 465.2 84.7 465.62 84.7 466.12 C 84.7 466.62 84.87 467.04 85.21 467.39 C 85.56 467.74 85.97 467.92 86.46 467.92 C 86.95 467.92 87.36 467.74 87.7 467.39 M 88.22 464.29 L 88.22 461.88 L 88.97 461.88 L 88.97 468.62 L 88.22 468.62 L 88.22 467.94 C 87.73 468.43 87.14 468.68 86.46 468.68 C 85.76 468.68 85.17 468.43 84.68 467.92 C 84.19 467.43 83.94 466.82 83.94 466.12 C 83.94 465.41 84.19 464.81 84.68 464.3 C 85.17 463.81 85.76 463.56 86.46 463.56 C 87.14 463.56 87.73 463.8 88.22 464.29"/><path class="lb" d="M 94.07 465.74 C 93.98 465.33 93.78 464.99 93.46 464.72 C 93.14 464.45 92.77 464.31 92.35 464.31 C 91.93 464.31 91.55 464.45 91.23 464.72 C 90.91 464.99 90.71 465.33 90.62 465.74 Z M 92.35 463.56 C 93.04 463.56 93.63 463.81 94.12 464.3 C 94.61 464.81 94.86 465.41 94.86 466.12 L 94.86 466.5 L 90.62 466.5 C 90.71 466.91 90.91 467.25 91.23 467.52 C 91.55 467.79 91.93 467.92 92.35 467.92 C 92.68 467.92 92.98 467.84 93.26 467.66 C 93.54 467.49 93.75 467.25 93.91 466.95 L 94.58 467.29 C 94.36 467.72 94.05 468.06 93.65 468.31 C 93.25 468.55 92.82 468.68 92.35 468.68 C 91.65 468.68 91.05 468.43 90.56 467.93 C 90.07 467.43 89.83 466.82 89.83 466.12 C 89.83 465.41 90.07 464.81 90.56 464.3 C 91.05 463.81 91.65 463.56 92.35 463.56"/><path class="lb" d="M 96.41 464.37 C 96.85 463.86 97.37 463.61 97.97 463.61 L 98.02 463.61 L 98.02 464.35 L 97.97 464.35 C 97.54 464.35 97.17 464.52 96.87 464.87 C 96.56 465.27 96.41 465.72 96.41 466.21 L 96.41 468.62 L 95.67 468.62 L 95.67 463.61 L 96.41 463.61 Z M 96.41 464.37"/><path class="lb" d="M 100.93 467.92 C 101.41 467.92 101.83 467.75 102.17 467.39 C 102.52 467.04 102.69 466.62 102.69 466.12 L 102.69 466.11 C 102.69 465.62 102.52 465.2 102.17 464.84 C 101.83 464.49 101.41 464.31 100.93 464.31 C 100.45 464.31 100.03 464.49 99.68 464.84 C 99.34 465.2 99.16 465.62 99.16 466.12 C 99.16 466.62 99.34 467.04 99.68 467.39 C 100.03 467.75 100.45 467.92 100.93 467.92 M 103.45 468.63 L 102.69 468.63 L 102.69 467.95 C 102.2 468.43 101.61 468.68 100.93 468.68 C 100.23 468.68 99.64 468.43 99.15 467.93 C 98.66 467.43 98.41 466.82 98.41 466.12 C 98.41 465.41 98.66 464.81 99.15 464.3 C 99.64 463.81 100.23 463.56 100.93 463.56 C 101.61 463.56 102.2 463.8 102.69 464.29 L 102.69 463.61 L 103.45 463.61 Z M 103.45 468.63"/><path class="lb" d="M 108.01 467.39 C 108.36 467.04 108.53 466.62 108.53 466.12 C 108.53 465.62 108.36 465.2 108.01 464.84 C 107.67 464.49 107.25 464.31 106.77 464.31 C 106.29 464.31 105.87 464.49 105.52 464.84 C 105.18 465.2 105 465.62 105 466.12 C 105 466.62 105.18 467.04 105.52 467.39 C 105.87 467.74 106.29 467.92 106.77 467.92 C 107.25 467.92 107.67 467.74 108.01 467.39 M 108.53 464.29 L 108.53 461.88 L 109.28 461.88 L 109.28 468.62 L 108.53 468.62 L 108.53 467.94 C 108.04 468.43 107.45 468.68 106.77 468.68 C 106.07 468.68 105.48 468.43 104.99 467.92 C 104.5 467.43 104.25 466.82 104.25 466.12 C 104.25 465.41 104.5 464.81 104.99 464.3 C 105.48 463.81 106.07 463.56 106.77 463.56 C 107.45 463.56 108.04 463.8 108.53 464.29"/><path class="lb" d="M 112.57 467.92 C 113.05 467.92 113.46 467.75 113.81 467.39 C 114.15 467.04 114.32 466.62 114.32 466.12 C 114.32 465.62 114.15 465.2 113.81 464.84 C 113.46 464.49 113.05 464.31 112.57 464.31 C 112.08 464.31 111.66 464.49 111.32 464.84 C 110.97 465.2 110.8 465.62 110.8 466.12 C 110.8 466.62 110.97 467.04 111.32 467.39 C 111.66 467.75 112.08 467.92 112.57 467.92 M 112.57 463.56 C 113.26 463.56 113.85 463.81 114.34 464.3 C 114.83 464.81 115.08 465.41 115.08 466.12 C 115.08 466.82 114.83 467.43 114.34 467.93 C 113.85 468.43 113.26 468.68 112.57 468.68 C 111.87 468.68 111.27 468.43 110.78 467.93 C 110.29 467.43 110.05 466.82 110.05 466.12 C 110.05 465.41 110.29 464.81 110.78 464.3 C 111.27 463.81 111.87 463.56 112.57 463.56"/><path class="lb" d="M 116.58 464.37 C 117.02 463.86 117.54 463.61 118.14 463.61 L 118.19 463.61 L 118.19 464.35 L 118.14 464.35 C 117.71 464.35 117.34 464.52 117.04 464.87 C 116.73 465.27 116.58 465.72 116.58 466.21 L 116.58 468.62 L 115.84 468.62 L 115.84 463.61 L 116.58 463.61 Z M 116.58 464.37"/><path class="lb" d="M 121.11 467.92 C 121.59 467.92 122 467.75 122.34 467.39 C 122.69 467.04 122.86 466.62 122.86 466.12 L 122.86 466.11 C 122.86 465.62 122.69 465.2 122.34 464.84 C 122 464.49 121.59 464.31 121.11 464.31 C 120.62 464.31 120.2 464.49 119.86 464.84 C 119.51 465.2 119.34 465.62 119.34 466.12 C 119.34 466.62 119.51 467.04 119.86 467.39 C 120.2 467.75 120.62 467.92 121.11 467.92 M 123.61 468.63 L 122.86 468.63 L 122.86 467.95 C 122.37 468.43 121.79 468.68 121.11 468.68 C 120.41 468.68 119.81 468.43 119.32 467.93 C 118.83 467.43 118.59 466.82 118.59 466.12 C 118.59 465.41 118.83 464.81 119.32 464.3 C 119.81 463.81 120.41 463.56 121.11 463.56 C 121.79 463.56 122.37 463.8 122.86 464.29 L 122.86 463.61 L 123.61 463.61 Z M 123.61 468.63"/><path class="lb" d="M 136.62 464.87 C 136.89 464.87 137.12 464.77 137.32 464.57 C 137.51 464.35 137.61 464.07 137.61 463.74 C 137.61 463.41 137.51 463.12 137.32 462.9 C 137.12 462.71 136.89 462.61 136.62 462.61 L 135.19 462.61 L 135.19 464.87 Z M 136.62 461.88 C 137.1 461.88 137.5 462.04 137.84 462.38 C 138.18 462.75 138.35 463.2 138.35 463.74 C 138.35 464.28 138.18 464.73 137.84 465.1 C 137.5 465.44 137.1 465.61 136.62 465.61 L 135.19 465.61 L 135.19 468.62 L 134.45 468.62 L 134.45 461.88 Z M 136.62 461.88"/><path class="lb" d="M 141.38 467.92 C 141.86 467.92 142.28 467.75 142.62 467.39 C 142.97 467.04 143.14 466.62 143.14 466.12 C 143.14 465.62 142.97 465.2 142.62 464.84 C 142.28 464.49 141.86 464.31 141.38 464.31 C 140.89 464.31 140.48 464.49 140.13 464.84 C 139.79 465.2 139.61 465.62 139.61 466.12 C 139.61 466.62 139.79 467.04 140.13 467.39 C 140.48 467.75 140.89 467.92 141.38 467.92 M 141.38 463.56 C 142.07 463.56 142.66 463.81 143.16 464.3 C 143.65 464.81 143.89 465.41 143.89 466.12 C 143.89 466.82 143.65 467.43 143.16 467.93 C 142.66 468.43 142.07 468.68 141.38 468.68 C 140.68 468.68 140.09 468.43 139.6 467.93 C 139.11 467.43 138.86 466.82 138.86 466.12 C 138.86 465.41 139.11 464.81 139.6 464.3 C 140.09 463.81 140.68 463.56 141.38 463.56"/><path class="lb" d="M 146.01 464.31 C 145.79 464.31 145.6 464.38 145.44 464.52 C 145.28 464.66 145.2 464.83 145.2 465.03 C 145.2 465.23 145.27 465.38 145.41 465.48 C 145.52 465.56 145.75 465.65 146.11 465.75 C 146.56 465.87 146.88 466.01 147.07 466.15 C 147.41 466.39 147.57 466.75 147.57 467.21 C 147.57 467.62 147.42 467.96 147.11 468.25 C 146.81 468.54 146.44 468.68 146.01 468.68 C 145.58 468.68 145.21 468.54 144.91 468.25 C 144.6 467.96 144.45 467.62 144.45 467.21 L 145.2 467.21 C 145.2 467.41 145.28 467.58 145.44 467.71 C 145.6 467.86 145.79 467.92 146.01 467.92 C 146.23 467.92 146.42 467.86 146.58 467.71 C 146.74 467.58 146.82 467.41 146.82 467.21 C 146.82 467 146.75 466.85 146.61 466.75 C 146.5 466.66 146.26 466.57 145.91 466.48 C 145.46 466.35 145.14 466.22 144.95 466.08 C 144.61 465.84 144.45 465.48 144.45 465.03 C 144.45 464.62 144.6 464.28 144.91 463.99 C 145.21 463.7 145.58 463.56 146.01 463.56 C 146.44 463.56 146.81 463.7 147.11 463.99 C 147.42 464.28 147.57 464.62 147.57 465.03 L 146.82 465.03 C 146.82 464.83 146.74 464.66 146.58 464.52 C 146.42 464.38 146.23 464.31 146.01 464.31"/><path class="lb" d="M 148.43 468.62 L 149.17 468.62 L 149.17 463.61 L 148.43 463.61 Z M 149.11 462.01 C 149.2 462.1 149.24 462.2 149.24 462.33 C 149.24 462.45 149.2 462.56 149.11 462.64 C 149.03 462.73 148.92 462.78 148.79 462.78 C 148.67 462.78 148.57 462.73 148.48 462.64 C 148.39 462.56 148.35 462.45 148.35 462.33 C 148.35 462.2 148.39 462.1 148.48 462.01 C 148.57 461.92 148.67 461.88 148.79 461.88 C 148.92 461.88 149.03 461.92 149.11 462.01"/><path class="lb" d="M 151.42 463.61 L 152.15 463.61 L 152.15 464.35 L 151.42 464.35 L 151.42 468.62 L 150.68 468.62 L 150.68 464.35 L 149.95 464.35 L 149.95 463.61 L 150.68 463.61 L 150.68 461.88 L 151.42 461.88 Z M 151.42 463.61"/><path class="lb" d="M 152.93 468.62 L 153.67 468.62 L 153.67 463.61 L 152.93 463.61 Z M 153.62 462.01 C 153.7 462.1 153.75 462.2 153.75 462.33 C 153.75 462.45 153.7 462.56 153.62 462.64 C 153.53 462.73 153.43 462.78 153.3 462.78 C 153.18 462.78 153.07 462.73 152.98 462.64 C 152.89 462.56 152.85 462.45 152.85 462.33 C 152.85 462.2 152.89 462.1 152.98 462.01 C 153.07 461.92 153.18 461.88 153.3 461.88 C 153.43 461.88 153.53 461.92 153.62 462.01"/><path class="lb" d="M 159.2 463.61 L 157.05 468.62 L 156.38 468.62 L 154.23 463.61 L 155.04 463.61 L 156.72 467.54 L 158.39 463.61 Z M 159.2 463.61"/><path class="lb" d="M 162.02 467.92 C 162.51 467.92 162.92 467.75 163.27 467.39 C 163.61 467.04 163.78 466.62 163.78 466.12 L 163.78 466.11 C 163.78 465.62 163.61 465.2 163.27 464.84 C 162.92 464.49 162.51 464.31 162.02 464.31 C 161.54 464.31 161.12 464.49 160.78 464.84 C 160.43 465.2 160.26 465.62 160.26 466.12 C 160.26 466.62 160.43 467.04 160.78 467.39 C 161.12 467.75 161.54 467.92 162.02 467.92 M 164.54 468.63 L 163.78 468.63 L 163.78 467.95 C 163.29 468.43 162.71 468.68 162.02 468.68 C 161.33 468.68 160.73 468.43 160.24 467.93 C 159.75 467.43 159.5 466.82 159.5 466.12 C 159.5 465.41 159.75 464.81 160.24 464.3 C 160.73 463.81 161.33 463.56 162.02 463.56 C 162.71 463.56 163.29 463.8 163.78 464.29 L 163.78 463.61 L 164.54 463.61 Z M 164.54 468.63"/><path class="lb" d="M 175.73 461.91 L 176.47 461.91 L 176.47 468.66 L 175.73 468.66 Z M 175.73 461.91"/><path class="lb" d="M 179.88 463.59 C 180.52 463.59 181.06 463.84 181.51 464.32 C 181.96 464.81 182.18 465.41 182.18 466.1 L 182.18 468.66 L 181.44 468.66 L 181.44 466.1 C 181.44 465.61 181.29 465.2 180.98 464.85 C 180.68 464.5 180.31 464.33 179.88 464.33 C 179.45 464.33 179.08 464.5 178.78 464.85 C 178.47 465.19 178.32 465.61 178.32 466.09 L 178.32 468.66 L 177.58 468.66 L 177.58 463.64 L 178.32 463.64 L 178.32 464.26 C 178.76 463.81 179.28 463.59 179.88 463.59"/><path class="lb" d="M 185.46 463.59 C 186.09 463.59 186.64 463.84 187.09 464.32 C 187.53 464.81 187.75 465.41 187.75 466.1 L 187.75 468.66 L 187.02 468.66 L 187.02 466.1 C 187.02 465.61 186.86 465.2 186.56 464.85 C 186.25 464.5 185.89 464.33 185.46 464.33 C 185.02 464.33 184.66 464.5 184.35 464.85 C 184.05 465.19 183.89 465.61 183.89 466.09 L 183.89 468.66 L 183.15 468.66 L 183.15 463.64 L 183.89 463.64 L 183.89 464.26 C 184.34 463.81 184.86 463.59 185.46 463.59"/><path class="lb" d="M 190.99 467.95 C 191.48 467.95 191.89 467.78 192.23 467.42 C 192.58 467.07 192.75 466.65 192.75 466.15 C 192.75 465.65 192.58 465.23 192.23 464.88 C 191.89 464.52 191.48 464.34 190.99 464.34 C 190.5 464.34 190.09 464.52 189.74 464.88 C 189.4 465.23 189.23 465.65 189.23 466.15 C 189.23 466.65 189.4 467.07 189.74 467.42 C 190.09 467.78 190.5 467.95 190.99 467.95 M 190.99 463.59 C 191.68 463.59 192.27 463.84 192.77 464.34 C 193.26 464.84 193.5 465.45 193.5 466.15 C 193.5 466.85 193.26 467.46 192.77 467.96 C 192.27 468.46 191.68 468.71 190.99 468.71 C 190.3 468.71 189.7 468.46 189.21 467.96 C 188.71 467.46 188.47 466.85 188.47 466.15 C 188.47 465.45 188.71 464.84 189.21 464.34 C 189.7 463.84 190.3 463.59 190.99 463.59"/><path class="lb" d="M 198.73 463.64 L 196.58 468.66 L 195.9 468.66 L 193.76 463.64 L 194.57 463.64 L 196.25 467.57 L 197.93 463.64 Z M 198.73 463.64"/><path class="lb" d="M 201.55 467.95 C 202.04 467.95 202.45 467.78 202.79 467.42 C 203.14 467.07 203.31 466.65 203.31 466.15 L 203.31 466.14 C 203.31 465.65 203.14 465.23 202.79 464.88 C 202.45 464.52 202.04 464.34 201.55 464.34 C 201.07 464.34 200.65 464.52 200.3 464.88 C 199.96 465.23 199.79 465.65 199.79 466.15 C 199.79 466.65 199.96 467.07 200.3 467.42 C 200.65 467.78 201.07 467.95 201.55 467.95 M 204.07 468.66 L 203.31 468.66 L 203.31 467.98 C 202.82 468.46 202.23 468.71 201.55 468.71 C 200.86 468.71 200.26 468.46 199.77 467.96 C 199.28 467.46 199.04 466.85 199.04 466.15 C 199.04 465.45 199.28 464.84 199.77 464.34 C 200.26 463.84 200.86 463.59 201.55 463.59 C 202.23 463.59 202.82 463.83 203.31 464.32 L 203.31 463.64 L 204.07 463.64 Z M 204.07 468.66"/><path class="lb" d="M 208.63 467.42 C 208.98 467.07 209.15 466.65 209.15 466.15 C 209.15 465.65 208.98 465.23 208.63 464.87 C 208.29 464.52 207.88 464.34 207.39 464.34 C 206.91 464.34 206.49 464.52 206.14 464.87 C 205.8 465.23 205.63 465.65 205.63 466.15 C 205.63 466.65 205.8 467.07 206.14 467.42 C 206.49 467.77 206.91 467.95 207.39 467.95 C 207.88 467.95 208.29 467.77 208.63 467.42 M 209.15 464.32 L 209.15 461.91 L 209.91 461.91 L 209.91 468.66 L 209.15 468.66 L 209.15 467.97 C 208.66 468.46 208.07 468.71 207.39 468.71 C 206.7 468.71 206.1 468.46 205.61 467.95 C 205.12 467.45 204.88 466.86 204.88 466.15 C 204.88 465.44 205.12 464.84 205.61 464.34 C 206.1 463.84 206.7 463.59 207.39 463.59 C 208.07 463.59 208.66 463.83 209.15 464.32"/><path class="lb" d="M 213.19 467.95 C 213.67 467.95 214.09 467.78 214.43 467.42 C 214.78 467.07 214.95 466.65 214.95 466.15 C 214.95 465.65 214.78 465.23 214.43 464.88 C 214.09 464.52 213.67 464.34 213.19 464.34 C 212.7 464.34 212.29 464.52 211.94 464.88 C 211.6 465.23 211.42 465.65 211.42 466.15 C 211.42 466.65 211.6 467.07 211.94 467.42 C 212.29 467.78 212.7 467.95 213.19 467.95 M 213.19 463.59 C 213.88 463.59 214.47 463.84 214.96 464.34 C 215.46 464.84 215.7 465.45 215.7 466.15 C 215.7 466.85 215.46 467.46 214.96 467.96 C 214.47 468.46 213.88 468.71 213.19 468.71 C 212.49 468.71 211.9 468.46 211.41 467.96 C 210.91 467.46 210.67 466.85 210.67 466.15 C 210.67 465.45 210.91 464.84 211.41 464.34 C 211.9 463.84 212.49 463.59 213.19 463.59"/><path class="lb" d="M 217.2 464.4 C 217.64 463.89 218.16 463.64 218.77 463.64 L 218.81 463.64 L 218.81 464.38 L 218.77 464.38 C 218.34 464.38 217.97 464.55 217.66 464.9 C 217.36 465.3 217.2 465.75 217.2 466.24 L 217.2 468.66 L 216.46 468.66 L 216.46 463.64 L 217.2 463.64 Z M 217.2 464.4"/><path class="lb" d="M 221.73 467.95 C 222.21 467.95 222.62 467.78 222.96 467.42 C 223.31 467.07 223.48 466.65 223.48 466.15 L 223.48 466.14 C 223.48 465.65 223.31 465.23 222.96 464.88 C 222.62 464.52 222.21 464.34 221.73 464.34 C 221.24 464.34 220.82 464.52 220.48 464.88 C 220.13 465.23 219.96 465.65 219.96 466.15 C 219.96 466.65 220.13 467.07 220.48 467.42 C 220.82 467.78 221.24 467.95 221.73 467.95 M 224.24 468.66 L 223.48 468.66 L 223.48 467.98 C 222.99 468.46 222.41 468.71 221.73 468.71 C 221.03 468.71 220.43 468.46 219.94 467.96 C 219.45 467.46 219.21 466.85 219.21 466.15 C 219.21 465.45 219.45 464.84 219.94 464.34 C 220.43 463.84 221.03 463.59 221.73 463.59 C 222.41 463.59 222.99 463.83 223.48 464.32 L 223.48 463.64 L 224.24 463.64 Z M 224.24 468.66"/><path class="lg" d="M 130.29 465.92 C 130.29 466.52 129.81 467 129.21 467 C 128.62 467 128.14 466.52 128.14 465.92 C 128.14 465.33 128.62 464.84 129.21 464.84 C 129.81 464.84 130.29 465.33 130.29 465.92"/><path class="lg" d="M 170.98 465.92 C 170.98 466.52 170.49 467 169.9 467 C 169.3 467 168.82 466.52 168.82 465.92 C 168.82 465.33 169.3 464.84 169.9 464.84 C 170.49 464.84 170.98 465.33 170.98 465.92"/><path class="lb" d="M 155.9 379.48 L 154.24 384.45 C 154.24 384.45 143.75 377.88 136.01 382.98 C 136.01 382.98 137.2 386.48 139.88 387.77 L 137.56 393.41 C 137.56 393.41 131.33 388.4 129.14 379.97 C 129.14 379.97 140.23 371.34 155.9 379.48"/><path class="lb" d="M 147.92 370.48 C 146.79 373.24 143.63 374.56 140.88 373.43 C 138.12 372.29 136.8 369.14 137.93 366.38 C 139.07 363.62 142.22 362.3 144.98 363.44 C 147.74 364.57 149.06 367.73 147.92 370.48"/><path class="lt" d="M 147.09 412.82 L 143.78 408.77 C 143.78 408.77 154.93 403.41 154.76 394.14 C 154.76 394.14 151.15 393.27 148.64 394.85 L 145.11 389.88 C 145.11 389.88 152.67 387.29 160.96 389.94 C 160.96 389.94 162.34 403.92 147.09 412.82"/><path class="lt" d="M 158.95 410.88 C 157.23 408.45 157.8 405.08 160.23 403.35 C 162.66 401.63 166.04 402.2 167.76 404.63 C 169.48 407.07 168.91 410.43 166.48 412.16 C 164.05 413.89 160.68 413.32 158.95 410.88"/><path class="lg" d="M 123.53 391.11 L 128.66 390.06 C 128.66 390.06 128.23 402.43 136.53 406.57 C 136.53 406.57 138.96 403.78 138.74 400.82 L 144.78 400 C 144.78 400 143.57 407.9 137.37 414.02 C 137.37 414.02 124.35 408.76 123.53 391.11"/><path class="lg" d="M 119.75 402.53 C 122.7 402.12 125.43 404.2 125.83 407.15 C 126.23 410.11 124.16 412.83 121.21 413.23 C 118.25 413.63 115.53 411.56 115.12 408.61 C 114.72 405.65 116.79 402.93 119.75 402.53"/><path class="lb" d="M 55.99 440.51 L 66.48 440.51 L 66.48 442.17 C 66.48 445.11 65.46 447.62 63.4 449.72 C 61.36 451.8 58.88 452.85 55.99 452.85 C 53.09 452.85 50.61 451.8 48.57 449.72 C 46.51 447.62 45.48 445.11 45.48 442.17 C 45.48 439.23 46.51 436.72 48.57 434.63 C 50.61 432.55 53.09 431.5 55.99 431.5 C 57.96 431.5 59.79 432.02 61.47 433.07 C 63.14 434.11 64.43 435.53 65.35 437.32 L 62.36 438.82 C 61.75 437.59 60.87 436.61 59.72 435.9 C 58.59 435.19 57.34 434.83 55.99 434.83 C 54.01 434.83 52.32 435.55 50.92 436.98 C 49.51 438.42 48.8 440.15 48.8 442.17 C 48.8 444.2 49.51 445.93 50.92 447.37 C 52.32 448.8 54.01 449.52 55.99 449.52 C 57.67 449.52 59.17 448.98 60.47 447.9 C 61.77 446.83 62.6 445.48 62.96 443.84 L 55.99 443.84 Z M 55.99 440.51"/><path class="lb" d="M 79.56 443.04 C 79.23 442.15 78.69 441.43 77.93 440.87 C 77.15 440.31 76.28 440.03 75.32 440.03 C 74.36 440.03 73.5 440.31 72.71 440.87 C 71.95 441.43 71.41 442.15 71.08 443.04 Z M 81.79 449.09 C 81.14 450.08 80.29 450.89 79.25 451.5 C 78.04 452.23 76.73 452.59 75.32 452.59 C 73.17 452.59 71.34 451.82 69.81 450.27 C 68.29 448.73 67.53 446.87 67.53 444.68 C 67.53 442.49 68.29 440.62 69.81 439.08 C 71.34 437.54 73.17 436.76 75.32 436.76 C 77.46 436.76 79.3 437.54 80.83 439.08 C 82.35 440.62 83.11 442.49 83.11 444.68 L 83.11 446.02 L 71.08 446.02 C 71.34 447.04 71.89 447.86 72.71 448.48 C 73.5 449.04 74.36 449.33 75.32 449.33 C 76.89 449.33 78.1 448.7 78.96 447.45 Z M 81.79 449.09"/><path class="lb" d="M 91.72 436.61 C 93.7 436.61 95.38 437.36 96.78 438.89 C 98.18 440.4 98.88 442.22 98.88 444.37 L 98.88 452.44 L 95.7 452.44 L 95.7 444.37 C 95.7 443.11 95.3 442.03 94.53 441.14 C 93.75 440.25 92.81 439.8 91.72 439.8 C 90.63 439.8 89.7 440.25 88.92 441.14 C 88.15 442.03 87.76 443.11 87.76 444.37 L 87.76 452.44 L 84.57 452.44 L 84.57 436.91 L 87.76 436.91 L 87.76 437.9 C 88.95 437.04 90.27 436.61 91.72 436.61"/><path class="lb" d="M 112.36 443.04 C 112.03 442.15 111.49 441.43 110.73 440.87 C 109.95 440.31 109.08 440.03 108.12 440.03 C 107.16 440.03 106.29 440.31 105.52 440.87 C 104.75 441.43 104.21 442.15 103.88 443.04 Z M 114.59 449.09 C 113.94 450.08 113.09 450.89 112.05 451.5 C 110.84 452.23 109.53 452.59 108.12 452.59 C 105.97 452.59 104.14 451.82 102.61 450.27 C 101.09 448.73 100.33 446.87 100.33 444.68 C 100.33 442.49 101.09 440.62 102.61 439.08 C 104.14 437.54 105.97 436.76 108.12 436.76 C 110.26 436.76 112.1 437.54 113.63 439.08 C 115.15 440.62 115.91 442.49 115.91 444.68 L 115.91 446.02 L 103.88 446.02 C 104.14 447.04 104.69 447.86 105.52 448.48 C 106.29 449.04 107.16 449.33 108.12 449.33 C 109.69 449.33 110.9 448.7 111.76 447.45 Z M 114.59 449.09"/><path class="lb" d="M 120.56 438.21 C 121.75 437.35 123.07 436.91 124.52 436.91 L 126.13 436.91 L 126.13 440.11 L 124.52 440.11 C 123.43 440.11 122.5 440.56 121.72 441.45 C 120.95 442.34 120.56 443.41 120.56 444.66 L 120.56 452.44 L 117.36 452.44 L 117.36 436.91 L 120.56 436.91 Z M 120.56 438.21"/><path class="lb" d="M 133.8 449.32 C 135.05 449.32 136.11 448.88 137 447.97 C 137.89 447.06 138.33 445.96 138.33 444.68 C 138.33 443.39 137.89 442.29 137 441.38 C 136.11 440.48 135.05 440.03 133.8 440.03 C 132.56 440.03 131.48 440.48 130.59 441.38 C 129.72 442.29 129.29 443.39 129.29 444.68 C 129.29 445.96 129.72 447.06 130.59 447.97 C 131.48 448.88 132.56 449.32 133.8 449.32 M 141.6 452.44 L 138.33 452.44 L 138.33 451.1 C 136.98 452.1 135.47 452.59 133.8 452.59 C 131.66 452.59 129.82 451.82 128.3 450.27 C 126.78 448.73 126.02 446.87 126.02 444.68 C 126.02 442.49 126.78 440.62 128.3 439.08 C 129.82 437.54 131.66 436.76 133.8 436.76 C 135.47 436.76 136.98 437.25 138.33 438.24 L 138.33 436.91 L 141.6 436.91 Z M 141.6 452.44"/><path class="lb" d="M 150.7 440.03 C 149.45 440.03 148.39 440.48 147.5 441.38 C 146.62 442.29 146.18 443.39 146.18 444.68 C 146.18 445.96 146.62 447.06 147.5 447.97 C 148.39 448.88 149.45 449.32 150.7 449.32 C 152.23 449.32 153.45 448.69 154.36 447.43 L 157.02 449.31 C 155.46 451.5 153.35 452.59 150.7 452.59 C 148.55 452.59 146.71 451.82 145.19 450.27 C 143.67 448.73 142.91 446.87 142.91 444.68 C 142.91 442.49 143.67 440.62 145.19 439.08 C 146.71 437.54 148.55 436.76 150.7 436.76 C 153.35 436.76 155.46 437.85 157.02 440.04 L 154.36 441.93 C 153.45 440.66 152.23 440.03 150.7 440.03"/><path class="lb" d="M 158.28 452.44 L 161.48 452.44 L 161.48 436.91 L 158.28 436.91 Z M 161.14 432.24 C 161.48 432.59 161.65 433 161.65 433.49 C 161.65 433.98 161.48 434.39 161.14 434.74 C 160.8 435.08 160.38 435.25 159.89 435.25 C 159.4 435.25 158.98 435.08 158.64 434.74 C 158.3 434.39 158.12 433.98 158.12 433.49 C 158.12 433 158.3 432.59 158.64 432.24 C 158.98 431.9 159.4 431.73 159.89 431.73 C 160.38 431.73 160.8 431.9 161.14 432.24"/><path class="lb" d="M 168.78 435.7 L 171.48 431.86 L 175.1 431.86 L 172.4 435.7 Z M 170.89 449.32 C 172.13 449.32 173.2 448.88 174.09 447.97 C 174.97 447.06 175.41 445.96 175.41 444.68 C 175.41 443.39 174.97 442.29 174.09 441.38 C 173.2 440.48 172.13 440.03 170.89 440.03 C 169.64 440.03 168.57 440.48 167.68 441.38 C 166.8 442.29 166.37 443.39 166.37 444.68 C 166.37 445.96 166.8 447.06 167.68 447.97 C 168.57 448.88 169.64 449.32 170.89 449.32 M 170.89 436.76 C 173.03 436.76 174.87 437.53 176.4 439.08 C 177.92 440.62 178.68 442.49 178.68 444.68 C 178.68 446.87 177.92 448.73 176.4 450.27 C 174.87 451.82 173.03 452.59 170.89 452.59 C 168.74 452.59 166.9 451.82 165.38 450.27 C 163.86 448.73 163.1 446.87 163.1 444.68 C 163.1 442.49 163.86 440.62 165.38 439.08 C 166.9 437.53 168.74 436.76 170.89 436.76"/><path class="lb" d="M 187.29 436.61 C 189.26 436.61 190.95 437.36 192.35 438.89 C 193.75 440.4 194.45 442.22 194.45 444.37 L 194.45 452.44 L 191.26 452.44 L 191.26 444.37 C 191.26 443.11 190.87 442.03 190.09 441.14 C 189.31 440.25 188.38 439.8 187.29 439.8 C 186.2 439.8 185.27 440.25 184.48 441.14 C 183.71 442.03 183.33 443.11 183.33 444.37 L 183.33 452.44 L 180.13 452.44 L 180.13 436.91 L 183.33 436.91 L 183.33 437.9 C 184.52 437.04 185.84 436.61 187.29 436.61"/><path class="lg" d="M 201.18 431.69 L 214.47 431.69 L 214.47 436.1 L 205.59 436.1 L 205.59 439.83 L 214.47 439.83 L 214.47 444.24 L 205.59 444.24 L 205.59 448.03 L 214.47 448.03 L 214.47 452.44 L 201.18 452.44 Z M 201.18 431.69"/><path class="lg" d="M 223.96 440.41 C 224.34 440.41 224.67 440.21 224.96 439.82 C 225.29 439.38 225.45 438.86 225.45 438.25 C 225.45 437.65 225.29 437.14 224.96 436.7 C 224.67 436.31 224.34 436.11 223.96 436.11 L 221.29 436.11 L 221.29 440.41 Z M 223.96 431.69 C 225.59 431.69 226.98 432.33 228.13 433.62 C 229.29 434.9 229.87 436.45 229.87 438.25 C 229.87 440.07 229.29 441.61 228.13 442.9 C 226.98 444.19 225.59 444.83 223.96 444.83 L 221.29 444.83 L 221.29 452.44 L 216.86 452.44 L 216.86 431.69 Z M 223.96 431.69"/><path class="lg" d="M 232.75 431.69 L 237.16 431.69 L 237.16 452.44 L 232.75 452.44 Z M 232.75 431.69"/><path class="lg" d="M 237.38 457.53 L 45.59 457.53 L 45.59 456.67 L 237.38 456.67 Z M 237.38 457.53"/></svg><h2>Mira quién queda fuera del grupo.</h2>';
+  if(cloud.step==='email'){
+    h+='<p class="lead">Entra con el correo con el que te suscribiste a Generación EPI. Te enviaremos un código.</p>'+(cloud.msg?'<p class="note" role="alert">'+esc(cloud.msg)+'</p>':'')+
+      '<div class="field" style="max-width:420px;margin-top:22px"><label for="c-email">Correo</label><input type="email" id="c-email" autocomplete="email" inputmode="email" value="'+esc(cloud.email)+'" placeholder="nombre@colegio.edu"></div>'+
+      '<div class="row" style="margin-top:14px"><button class="btn primary" data-action="cSend"'+(cloud.busy?' disabled':'')+'>'+(cloud.busy?'Enviando…':'Enviar código')+'</button></div>';
+  }else{
+    h+='<p class="lead">Te enviamos un código a '+esc(cloud.email)+'. Revisa también la carpeta de spam.</p>'+(cloud.msg?'<p class="note" role="alert">'+esc(cloud.msg)+'</p>':'')+
+      '<div class="field" style="max-width:260px;margin-top:22px"><label for="c-code">Código</label><input type="text" id="c-code" autocomplete="one-time-code" inputmode="numeric" maxlength="10" class="code" placeholder="123456"></div>'+
+      '<div class="row" style="margin-top:14px"><button class="btn primary" data-action="cVerify"'+(cloud.busy?' disabled':'')+'>'+(cloud.busy?'Entrando…':'Entrar')+'</button><button class="btn" data-action="cResend"'+(cloud.busy?' disabled':'')+'>Reenviar código</button><button class="btn" data-action="cOther">Usar otro correo</button></div>';
+  }
+  return h+'<p class="method">Tus clases se guardan en tu cuenta. Solo tú puedes verlas.</p></div>';
+}
+var cloudActions={
+  cSend:function(){
+    var el=$('#c-email'),email=(el?el.value:'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){cloud.msg='Escribe un correo válido.';render();var f=$('#c-email');if(f)f.focus();return;}
+    cloud.email=email;cloud.busy=true;cloud.msg='';render();
+    SB.auth.signInWithOtp({email:email,options:{shouldCreateUser:true}}).then(function(r){
+      cloud.busy=false;
+      if(r.error){cloud.msg=cloudMsg(r.error,'No se pudo enviar el código. Intenta de nuevo.');render();return;}
+      cloud.step='code';render();var f=$('#c-code');if(f)f.focus();
+    },function(e){cloud.busy=false;cloud.msg=cloudMsg(e,'No se pudo enviar el código. Intenta de nuevo.');render();});
+  },
+  cResend:function(){cloud.step='email';cloudActions.cSend();},
+  cOther:function(){cloud.step='email';cloud.msg='';render();var f=$('#c-email');if(f){f.focus();f.select();}},
+  cVerify:function(){
+    var el=$('#c-code'),code=(el?el.value:'').replace(/\D/g,'');
+    if(code.length<6){cloud.msg='Escribe el código completo que llegó a tu correo.';render();var f=$('#c-code');if(f)f.focus();return;}
+    cloud.busy=true;cloud.msg='';render();
+    SB.auth.verifyOtp({email:cloud.email,token:code,type:'email'}).then(function(r){
+      cloud.busy=false;
+      if(r.error||!r.data||!r.data.user){cloud.msg=cloudMsg(r.error,'El código no es correcto o ya venció. Pide uno nuevo.');render();var f=$('#c-code');if(f)f.focus();return;}
+      cloudSignedIn(r.data.user);
+    },function(e){cloud.busy=false;cloud.msg=cloudMsg(e,'No se pudo entrar. Intenta de nuevo.');render();});
+  },
+  cRecheck:function(){cloud.status='checking';render();checkActive(false);},
+  cRetry:function(){if(cloud.user){cloud.status='checking';render();checkActive(false);}else{cloud.status='starting';render();bootCloud();}},
+  cOut:function(){if(SB)SB.auth.signOut().then(cloudSignedOut,cloudSignedOut);else cloudSignedOut();}
+};
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'&&CLOUD&&cloud.status==='ready'&&Date.now()-cloud.checkedAt>15*60*1000)checkActive(false);
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||!e.target)return;
+  if(e.target.id==='c-email'){e.preventDefault();cloudActions.cSend();}
+  else if(e.target.id==='c-code'){e.preventDefault();cloudActions.cVerify();}
+});
+
+/* ---------- state ---------- */
+var lsOK=true;
+function migrate(s){
+  if(!s||!Array.isArray(s.classes))return null;
+  s.classes.forEach(function(c){
+    c.students=c.students||[];c.answers=c.answers||{};
+    if(!Array.isArray(c.questions)){
+      var old=c.answers,na={};
+      Object.keys(old).forEach(function(k){na[k]={qp:(old[k].pos||[]).slice(),qn:(old[k].neg||[]).slice()};});
+      c.questions=[{id:'qp',text:c.qPos||'Elección',kind:'pos'},{id:'qn',text:c.qNeg||'Rechazo',kind:'neg'}];
+      c.answers=na;delete c.qPos;delete c.qNeg;delete c.maxPicks;
+    }
+    c.notDup=c.notDup||[];
+  });
+  s.v=2;return s;
+}
+function loadLocal(){try{var raw=localStorage.getItem(LS_KEY);return raw?migrate(JSON.parse(raw)):null;}catch(e){lsOK=false;return null;}}
+function saveLocal(){if(CLOUD&&!cloud.user)return;try{localStorage.setItem(CLOUD?cloudKey():LS_KEY,JSON.stringify(state));lsOK=true;}catch(e){lsOK=false;}}
+var state=(CLOUD?null:loadLocal())||{v:2,updatedAt:0,activeId:null,classes:[]};
+var ui={view:'results',q:'all',selected:null,show:{pos:true,neg:true,mutual:false},armed:null,importing:false,impMsg:'',impName:'',impPaste:'',impCheck:false,editSid:null,addName:'',manual:null,manualOn:false};
+var caps={doc:null,downloads:null,save:'local'};
+var layoutCache={};
+var imp=null,armT=null;
+
+function cls(){for(var i=0;i<state.classes.length;i++){if(state.classes[i].id===state.activeId)return state.classes[i];}return null;}
+function touch(){state.updatedAt=Date.now();saveLocal();queueRemote();}
+
+/* ---------- remote save (private to each account) ---------- */
+var writing=false,dirty=false,saveTimer=null,retried=false;
+function setSave(mode){caps.save=mode;var el=$('#save');if(el)el.textContent=saveText();}
+function saveText(){
+  if(caps.save==='saving')return 'Guardando…';
+  if(caps.save==='account')return 'Guardado en tu cuenta';
+  if(caps.save==='error')return 'Sin conexión: se guardará al volver';
+  return lsOK?'Guardado en este dispositivo':'Sin guardar: los datos se pierden al cerrar';
+}
+function queueRemote(){if(!caps.doc){if(!CLOUD)setSave('local');return;}clearTimeout(saveTimer);setSave('saving');saveTimer=setTimeout(pushRemote,700);}
+function pushRemote(){
+  if(!caps.doc)return;
+  if(writing){dirty=true;return;}
+  writing=true;dirty=false;
+  caps.doc.set(JSON.parse(JSON.stringify(state))).then(function(){
+    retried=false;writing=false;setSave('account');if(dirty)pushRemote();
+  },function(e){
+    writing=false;
+    if(e&&e.code==='unavailable'&&!retried){retried=true;setTimeout(pushRemote,1200+Math.random()*900);return;}
+    if(CLOUD){cloudSaveFailed(e);return;}
+    caps.doc=null;setSave('local');
+  });
+}
+/* outside claude.ai: normal browser downloads */
+var plainDownloads={save:function(o){
+  return new Promise(function(res,rej){
+    try{
+      var blob=o.data instanceof Blob?o.data:new Blob([o.data],{type:/\.csv$/i.test(o.filename)?'text/csv;charset=utf-8':'application/octet-stream'});
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=o.filename;document.body.appendChild(a);a.click();
+      setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1500);
+      res({status:'saved'});
+    }catch(e){rej({code:'unavailable'});}
+  });
+}};
+function boot(){
+  if(CLOUD){caps.downloads=plainDownloads;render();bootCloud();return;}
+  render();
+  if(!(window.claude&&typeof window.claude.use==='function')){caps.downloads=plainDownloads;setSave('local');render();return;}
+  window.claude.use('downloads').then(function(d){caps.downloads=d||null;if(d&&cls()&&!ui.importing&&ui.view==='results')render();},function(){});
+  Promise.all([window.claude.use('db'),window.claude.use('user')]).then(function(r){
+    var db=r[0],user=r[1];
+    if(!db||!user)return null;
+    return user.id().then(function(id){
+      if(!id)return null;
+      var doc=db.doc('data/users/'+id+'/sociograma');
+      return doc.get().then(function(snap){
+        caps.doc=doc;
+        if(snap.exists){
+          var remote=migrate(JSON.parse(JSON.stringify(snap.data()||{})));
+          if(remote&&(remote.updatedAt||0)>=(state.updatedAt||0)){
+            state=remote;saveLocal();if(!imp)render();
+          }else{pushRemote();}
+        }else if(state.classes.length){pushRemote();}
+        setSave('account');
+        return true;
+      });
+    });
+  }).then(function(ok){if(!ok)setSave('local');},function(){caps.doc=null;setSave('local');});
+}
+
+/* ---------- analysis ---------- */
+var STATUS={
+  popular:'Popular',rechazo:'Rechazo alto',controversial:'Controversial',invisible:'Poco visible',promedio:'Promedio'
+};
+function zs(arr){
+  var n=arr.length||1,mean=0,i;for(i=0;i<arr.length;i++)mean+=arr[i];mean/=n;
+  var v=0;for(i=0;i<arr.length;i++)v+=(arr[i]-mean)*(arr[i]-mean);
+  var sd=Math.sqrt(v/n);
+  return arr.map(function(x){return sd>1e-9?(x-mean)/sd:0;});
+}
+function analyze(c,qf){
+  var ids=c.students.map(function(s){return s.id;}),has={},m={},names={};
+  c.students.forEach(function(s){has[s.id]=true;names[s.id]=s.name;});
+  ids.forEach(function(id){m[id]={id:id,er:0,rr:0,pos:[],neg:[],posBy:[],negBy:[],mutPos:0,mutNeg:0,answered:!!c.answers[id],status:'promedio'};});
+  var qs=c.questions.filter(function(q){return q.kind!=='off'&&(!qf||qf==='all'||q.id===qf);});
+  ids.forEach(function(id){
+    var a=c.answers[id];if(!a)return;
+    qs.forEach(function(q){
+      var pos=q.kind==='pos';
+      (a[q.id]||[]).forEach(function(t){
+        if(!has[t]||t===id)return;
+        var mine=pos?m[id].pos:m[id].neg;
+        if(mine.indexOf(t)>=0)return;
+        mine.push(t);
+        if(pos){m[t].posBy.push(id);m[t].er++;}else{m[t].negBy.push(id);m[t].rr++;}
+      });
+    });
+  });
+  var mutual=0,answered=0;
+  ids.forEach(function(id){
+    m[id].mutPos=m[id].pos.filter(function(t){return m[t].pos.indexOf(id)>=0;}).length;
+    m[id].mutNeg=m[id].neg.filter(function(t){return m[t].neg.indexOf(id)>=0;}).length;
+    mutual+=m[id].mutPos;if(m[id].answered)answered++;
+  });
+  var zE=zs(ids.map(function(id){return m[id].er;})),zR=zs(ids.map(function(id){return m[id].rr;}));
+  var zSP=zs(zE.map(function(v,i){return v-zR[i];})),zSI=zs(zE.map(function(v,i){return v+zR[i];}));
+  if(answered>=3){
+    ids.forEach(function(id,i){
+      var s='promedio';
+      if(zSP[i]>1&&zE[i]>0&&zR[i]<0)s='popular';
+      else if(zSP[i]<-1&&zE[i]<0&&zR[i]>0)s='rechazo';
+      else if(zSI[i]>1&&zE[i]>0&&zR[i]>0)s='controversial';
+      else if(zSI[i]<-1&&zE[i]<0&&zR[i]<0)s='invisible';
+      m[id].status=s;
+    });
+  }
+  return {ids:ids,m:m,names:names,answered:answered,mutualPairs:mutual/2};
+}
+
+/* ---------- edits ---------- */
+function togglePick(c,sid,qid,tid){
+  var a=c.answers[sid]||(c.answers[sid]={}),l=a[qid]||(a[qid]=[]),i=l.indexOf(tid);
+  if(i>=0)l.splice(i,1);else l.push(tid);
+}
+function removeStudent(c,id){
+  c.students=c.students.filter(function(s){return s.id!==id;});
+  delete c.answers[id];
+  Object.keys(c.answers).forEach(function(k){var a=c.answers[k];Object.keys(a).forEach(function(q){a[q]=a[q].filter(function(x){return x!==id;});});});
+  c.notDup=c.notDup.filter(function(k){return k.split('|').indexOf(id)<0;});
+}
+function mergeStudents(c,from,into){
+  if(from===into)return;
+  if(c.answers[from]&&!c.answers[into])c.answers[into]=c.answers[from];
+  delete c.answers[from];
+  Object.keys(c.answers).forEach(function(k){
+    var a=c.answers[k];
+    Object.keys(a).forEach(function(q){
+      var out=[];
+      a[q].forEach(function(t){if(t===from)t=into;if(t!==k&&out.indexOf(t)<0)out.push(t);});
+      a[q]=out;
+    });
+  });
+  c.students=c.students.filter(function(s){return s.id!==from;});
+  c.notDup=c.notDup.filter(function(k){return k.split('|').indexOf(from)<0;});
+}
+function dupSuggestions(c,A){
+  var out=[],S=c.students,keys=S.map(function(s){return norm(s.name);}),i,j,a,b,key,close,wi,wj,swap;
+  for(i=0;i<S.length;i++)for(j=i+1;j<S.length;j++){
+    if(c.answers[S[i].id]&&c.answers[S[j].id])continue;
+    a=keys[i];b=keys[j];if(!a||!b)continue;
+    close=a===b||tokSub(a,b,false)||tokSub(b,a,false)||(Math.abs(a.length-b.length)<=2&&lev(a,b)<=2);
+    if(!close)continue;
+    key=[S[i].id,S[j].id].sort().join('|');
+    if(c.notDup.indexOf(key)>=0)continue;
+    wi=A.m[S[i].id].er+A.m[S[i].id].rr;wj=A.m[S[j].id].er+A.m[S[j].id].rr;
+    swap=wi>wj||(wi===wj&&a.length>b.length);
+    out.push({from:swap?S[j]:S[i],into:swap?S[i]:S[j],key:key});
+    if(out.length>=12)return out;
+  }
+  return out;
+}
+
+/* ---------- example responses ---------- */
+var DEMO={
+  names:['Valentina Rojas','Mateo García','Sofía Pérez','Santiago López','Isabella Méndez','Sebastián Castro','Camila Torres','Daniel Herrera','Lucía Fuentes','Emilio Vargas','Mariana Díaz','Diego Salas','Gabriela Núñez','Tomás Bravo'],
+  pos:[[2,4,6],[3,5,7],[0,4,8],[1,5,7],[0,2,6],[1,3,9],[0,4,10],[1,3,11],[0,2,10],[1,5,7],[0,6,8],[7,1,9],[0,8,10],[1,7,11]],
+  neg:[[13,7],[13],[13,7],[13],[7,13],[13,11],[7],[13,9],[13,7],[13],[7,13],[5],[],[9,5]]
+};
+function sampleTSV(){
+  var rows=[['Marca temporal','Nombre y apellido','¿Con qué compañero te gustaría compartir mesa en clase?','¿A quién elegirías para un trabajo en equipo?','¿Con qué compañero te costaría más trabajar en grupo?','¿Al lado de quién no te gustaría sentarte en clase?']];
+  var nm=function(list){return list.map(function(j){return DEMO.names[j];}).join(', ');};
+  DEMO.names.forEach(function(n,i){
+    rows.push(['5/10/2026 9:'+(10+i)+':00',n,nm(DEMO.pos[i].slice(0,2)),nm(DEMO.pos[i].slice(1)),nm(DEMO.neg[i]),nm(DEMO.neg[i].slice(0,1))]);
+  });
+  return rows.map(function(r){return r.join('\t');}).join('\n');
+}
+
+/* ---------- import: read a responses file and build the class ---------- */
+function norm(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();}
+function clip(s,n){s=String(s);return s.length>n?s.slice(0,n-1)+'…':s;}
+var NOBODY={'':1,'nadie':1,'ninguno':1,'ninguna':1,'ningun':1,'nada':1,'no':1,'si':1,'na':1,'n a':1,'no se':1,'todos':1,'todas':1,'no aplica':1,'nadie en particular':1,'no tengo':1,'x':1,'ninguno a':1,'con nadie':1,'a nadie':1};
+var FILLER={los:1,las:1,que:1,quien:1,quienes:1,todos:1,todas:1,nadie:1,porque:1,cuando:1,me:1,mis:1,sin:1,una:1,unos:1,unas:1,algunos:1,algunas:1,nunca:1,siempre:1,no:1,ni:1,ellos:1,ellas:1,ninos:1,ninas:1,companeros:1,companeras:1,nose:1};
+function nameLike(s){
+  var t=String(s).trim();if(t.length<2||t.length>60)return false;
+  if(/[0-9@:?¿!¡]/.test(t))return false;
+  if(t.split(/\s+/).length>6)return false;
+  var k=norm(t);if(NOBODY[k])return false;
+  return !k.split(' ').some(function(w){return FILLER[w];});
+}
+function tidyName(s){
+  var t=String(s==null?'':s).replace(/^\s*\d+\s*[\.\)\-:]\s*/,'').replace(/\s+/g,' ').replace(/^[\s\.\-,:;]+|[\s\-,:;]+$/g,'').trim().slice(0,60);
+  if(t&&(t===t.toLowerCase()||t===t.toUpperCase()))t=t.toLowerCase().replace(/(^|[\s\-'])(\S)/g,function(m,a,b){return a+b.toUpperCase();});
+  return t;
+}
+function parseDelimited(text){
+  text=String(text).replace(/^\ufeff/,'');
+  var first=text.split(/\r?\n/,1)[0]||'',cnt=function(ch){return first.split(ch).length-1;};
+  var d=cnt('\t')>0?'\t':(cnt(';')>cnt(',')?';':',');
+  var rows=[],row=[],cur='',q=false,i,ch;
+  for(i=0;i<text.length;i++){
+    ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=ch;}
+    else if(ch==='"'&&cur===''){q=true;}
+    else if(ch===d){row.push(cur);cur='';}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cur);cur='';rows.push(row);row=[];}
+    else cur+=ch;
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+function userError(msg){var e=new Error(msg);e.user=true;return e;}
+function decodeText(u8){
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(u8);}
+  catch(e){try{return new TextDecoder('windows-1252').decode(u8);}catch(e2){return new TextDecoder().decode(u8);}}
+}
+function needXLSX(){if(!window.XLSX)throw userError('El lector de Excel todavía se está cargando. Espera unos segundos y vuelve a intentarlo, o sube el archivo como CSV.');return window.XLSX;}
+function rowsFromWorkbook(u8){
+  var X=needXLSX(),wb=X.read(u8,{type:'array'}),best=null;
+  wb.SheetNames.forEach(function(n){
+    var rows=X.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,defval:'',blankrows:false});
+    if(!best||rows.length>best.length)best=rows;
+  });
+  return best||[];
+}
+function rowsFromZip(u8){
+  var X=needXLSX(),cfb=X.CFB.read(u8,{type:'array'}),i;
+  for(i=0;i<cfb.FullPaths.length;i++){
+    if(/\.(csv|tsv|txt)$/i.test(cfb.FullPaths[i])&&cfb.FileIndex[i].content)return parseDelimited(decodeText(Uint8Array.from(cfb.FileIndex[i].content)));
+  }
+  for(i=0;i<cfb.FullPaths.length;i++){
+    if(/\.(xlsx|xls|ods)$/i.test(cfb.FullPaths[i])&&cfb.FileIndex[i].content)return rowsFromWorkbook(Uint8Array.from(cfb.FileIndex[i].content));
+  }
+  for(i=0;i<cfb.FullPaths.length;i++){
+    if(/\.html?$/i.test(cfb.FullPaths[i])&&cfb.FileIndex[i].content)return rowsFromHTML(decodeText(Uint8Array.from(cfb.FileIndex[i].content)));
+  }
+  throw userError('Ese .zip no trae un archivo de respuestas (CSV o Excel).');
+}
+/* PDF of the responses sheet: rebuild the table from where each piece of text sits on the page */
+var PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/',pdfReady=null;
+function loadScript(src){
+  return new Promise(function(res,rej){
+    var el=document.createElement('script');el.src=src;el.onload=function(){res();};
+    el.onerror=function(){rej(userError('No se pudo cargar el lector de PDF. Revisa la conexión e intenta de nuevo, o sube el Excel.'));};
+    document.head.appendChild(el);
+  });
+}
+function needPDF(){
+  if(!pdfReady){
+    pdfReady=loadScript(PDFJS+'pdf.worker.min.js').then(function(){return loadScript(PDFJS+'pdf.min.js');}).then(function(){
+      var lib=window.pdfjsLib;
+      if(!lib)throw userError('No se pudo cargar el lector de PDF. Sube el Excel o el CSV.');
+      lib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';
+      return lib;
+    });
+    pdfReady.catch(function(){pdfReady=null;});
+  }
+  return pdfReady;
+}
+function rowsFromPDF(u8){
+  return needPDF().then(function(lib){
+    return lib.getDocument({data:u8,isEvalSupported:false,disableFontFace:true,useSystemFonts:false}).promise;
+  }).then(function(doc){
+    var pages=[],chain=Promise.resolve(),n=Math.min(doc.numPages,80);
+    function one(p){
+      return doc.getPage(p).then(function(page){return page.getTextContent();}).then(function(tc){
+        var its=[];
+        tc.items.forEach(function(it){
+          if(typeof it.str!=='string'||!it.transform)return;
+          if(Math.abs(it.transform[1])>0.01||Math.abs(it.transform[2])>0.01)return;
+          its.push({x:it.transform[4],y:it.transform[5],w:it.width||0,h:Math.abs(it.transform[3])||it.height||8,str:it.str});
+        });
+        pages.push(its);
+      });
+    }
+    for(var p=1;p<=n;p++)chain=chain.then(one.bind(null,p));
+    return chain.then(function(){return tableFromPDF(pages);});
+  });
+}
+function median(a){if(!a.length)return 0;var s=a.slice().sort(function(x,y){return x-y;});return s[Math.floor(s.length/2)];}
+function tableFromPDF(pages){
+  var hs=[];pages.forEach(function(p){p.forEach(function(it){if(it.str.trim())hs.push(it.h);});});
+  var hm=median(hs)||8,lines=[];
+  pages.forEach(function(items,pi){
+    var pl=[];
+    items.forEach(function(it){
+      var L=null,i;
+      for(i=0;i<pl.length;i++){if(Math.abs(pl[i].y-it.y)<=Math.max(1,hm*0.35)){L=pl[i];break;}}
+      if(!L){L={y:it.y,page:pi,items:[]};pl.push(L);}
+      L.items.push(it);
+    });
+    pl.sort(function(a,b){return b.y-a.y;});
+    pl.forEach(function(L){
+      var real=L.items.filter(function(it){return it.str.trim();}),txt=real.map(function(it){return it.str;}).join(' ').trim();
+      if(!real.length)return;
+      var lh=median(real.map(function(it){return it.h;}));
+      if(Math.abs(lh-hm)>hm*0.3)return;
+      if(/^(p[aá]g\w*\.?|page)?\s*\d+(\s*(\/|de|of)\s*\d+)?$/i.test(txt))return;
+      L.items=real;
+      L.items.forEach(function(it,ix){
+        var prev=L.items[ix-1];
+        it.gap=prev?it.x-(prev.x+prev.w):Infinity;
+        it.back=!!prev&&it.x<prev.x-0.5;
+        it.strong=!prev||it.back||it.gap>hm*0.9;
+      });
+      lines.push(L);
+    });
+  });
+  if(lines.length<2)throw userError('Ese PDF no tiene texto que se pueda leer. Si es una foto o un escaneo, sube el Excel o el CSV de la hoja de respuestas.');
+  /* column starts: where cells begin on many lines */
+  var tol=Math.max(1.5,hm*0.45),pts=[];
+  lines.forEach(function(L,li){L.items.forEach(function(it){if(it.strong)pts.push({x:it.x,li:li});});});
+  pts.sort(function(a,b){return a.x-b.x;});
+  var cl=[],cur=null;
+  pts.forEach(function(p){
+    if(!cur||p.x-cur.last>tol){cur={xs:[],lines:{},last:p.x};cl.push(cur);}
+    cur.xs.push(p.x);cur.lines[p.li]=1;cur.last=p.x;
+  });
+  cl.forEach(function(c){c.x=median(c.xs);c.sup=Object.keys(c.lines).length;});
+  var minSup=lines.length>=3?2:1,starts=cl.filter(function(c){return c.sup>=minSup;}).map(function(c){return c.x;});
+  cl.filter(function(c){return c.sup<minSup;}).sort(function(a,b){return b.sup-a.sup;}).forEach(function(c){
+    if(starts.every(function(s){return Math.abs(s-c.x)>=hm*4;}))starts.push(c.x);
+  });
+  starts.sort(function(a,b){return a-b;});
+  if(starts.length<2)throw userError('No encontré una tabla en ese PDF. Sube el Excel o el CSV de la hoja de respuestas.');
+  function colOf(x){var c=0;for(var i=0;i<starts.length;i++){if(starts[i]<=x+tol)c=i;else break;}return c;}
+  function nearStart(x){for(var i=0;i<starts.length;i++){if(Math.abs(starts[i]-x)<=tol)return i;}return -1;}
+  lines.forEach(function(L){
+    var strongAt={};
+    L.items.forEach(function(it){if(it.strong){var s=nearStart(it.x);if(s>=0)strongAt[s]=1;}});
+    var cells={},col=-1,prev=null;
+    L.items.forEach(function(it){
+      var s=nearStart(it.x),brk=it.strong||(s>=0&&!strongAt[s]&&s>col);
+      if(brk){
+        col=colOf(it.x);
+        cells[col]=cells[col]?cells[col]+' '+it.str:it.str;
+      }else{
+        cells[col]+=(it.gap>hm*0.12||/\s$/.test(prev.str)?' ':'')+it.str;
+      }
+      prev=it;
+    });
+    L.cells=cells;
+  });
+  /* rows: lines close together belong to one wrapped row */
+  var gaps=[];
+  lines.forEach(function(L,i){var p=lines[i-1];if(p&&p.page===L.page)gaps.push(p.y-L.y);});
+  var u=gaps.filter(function(g){return g>0;}).sort(function(a,b){return a-b;}),thr=0,k;
+  for(k=1;k<u.length;k++){if(u[k]/u[k-1]>1.3&&u[k-1]<hm*1.6){thr=(u[k]+u[k-1])/2;break;}}
+  var ncol=starts.length,rows=[],row=null;
+  function blank(){var r=[],c;for(c=0;c<ncol;c++)r.push('');return r;}
+  lines.forEach(function(L,i){
+    var p=lines[i-1];
+    if(!row||!p||p.page!==L.page||p.y-L.y>thr){row=blank();rows.push(row);}
+    Object.keys(L.cells).forEach(function(c){var t=L.cells[c].replace(/\s+/g,' ').trim();if(t)row[c]=row[c]?row[c]+' '+t:t;});
+  });
+  var head=norm(rows[0].join(' '));
+  return rows.filter(function(r,ix){return ix===0||norm(r.join(' '))!==head;});
+}
+/* a sheet saved as a web page */
+function rowsFromHTML(text){
+  var doc=new DOMParser().parseFromString(text,'text/html'),best=null;
+  Array.prototype.forEach.call(doc.querySelectorAll('table'),function(t){if(!best||t.rows.length>best.rows.length)best=t;});
+  if(!best)throw userError('No encontré una tabla en esa página.');
+  return Array.prototype.map.call(best.rows,function(tr){
+    var out=[];
+    Array.prototype.forEach.call(tr.cells,function(td){var span=Math.min(+td.colSpan||1,50);out.push(td.textContent.replace(/\s+/g,' ').trim());for(var s=1;s<span;s++)out.push('');});
+    return out;
+  });
+}
+/* row numbers and column letters that Sheets can add to exports */
+function stripChrome(rows){
+  if(!rows.length)return rows;
+  var letters=rows[0].filter(function(c){return c!=='';});
+  if(letters.length>=2&&letters.every(function(c,i){return c===String.fromCharCode(65+i);}))rows=rows.slice(1);
+  var nums=rows.map(function(r){return r[0];}).filter(function(c){return c!=='';});
+  if(nums.length>=3&&nums.every(function(c,i){return String(c)===String(i+1);}))rows=rows.map(function(r){return r.slice(1);});
+  return rows;
+}
+function looksBinary(text){
+  var bad=0,n=Math.min(text.length,4000),i,c;
+  for(i=0;i<n;i++){c=text.charCodeAt(i);if(c===0xFFFD||(c<32&&c!==9&&c!==10&&c!==13))bad++;}
+  return n>0&&bad/n>0.02;
+}
+function readFile(file){
+  var name=file.name||'Respuestas',ext=(name.split('.').pop()||'').toLowerCase();
+  if(file.size>20*1024*1024){impError('El archivo pesa más de 20 MB. Descarga solo la hoja de respuestas.');return;}
+  var fr=new FileReader();
+  fr.onerror=function(){impError('No pude leer el archivo. Intenta de nuevo.');};
+  fr.onload=function(){
+    try{
+      var u8=new Uint8Array(fr.result),rows,pk=u8[0]===0x50&&u8[1]===0x4b,ole=u8[0]===0xD0&&u8[1]===0xCF;
+      var base=name.replace(/\.[^.]+$/,'');
+      if(ext==='pdf'||(u8[0]===0x25&&u8[1]===0x50&&u8[2]===0x44&&u8[3]===0x46)){
+        var el=$('#imp-class');if(el)ui.impName=el.value;
+        toast('Leyendo el PDF…');
+        rowsFromPDF(u8).then(function(r){startReview(r,base);}).catch(function(e){
+          impError(e&&e.user?e.message:'No pude leer ese PDF. Descarga la hoja de respuestas como Excel (.xlsx) o CSV y súbela.');
+        });
+        return;
+      }
+      if(/^(png|jpe?g|gif|webp|heic|bmp)$/.test(ext)||(u8[0]===0x89&&u8[1]===0x50)||(u8[0]===0xFF&&u8[1]===0xD8))throw userError('No se pueden leer imágenes ni capturas de pantalla. Sube el Excel, el CSV o el PDF de la hoja de respuestas.');
+      if(/^(docx?|pptx?|pages|numbers|key)$/.test(ext))throw userError('Ese tipo de archivo no se puede leer. Sube el Excel, el CSV o el PDF de la hoja de respuestas.');
+      if(ext==='zip')rows=rowsFromZip(u8);
+      else if(pk&&ext!=='xlsx'&&ext!=='xlsm'&&ext!=='ods'){try{rows=rowsFromWorkbook(u8);}catch(e1){rows=rowsFromZip(u8);}}
+      else if(pk||ole||/^(xlsx|xlsm|xls|ods)$/.test(ext))rows=rowsFromWorkbook(u8);
+      else{
+        var text=decodeText(u8);
+        if(looksBinary(text))throw userError('Ese tipo de archivo no se puede leer. Sube el Excel, el CSV o el PDF de la hoja de respuestas.');
+        rows=/^\s*</.test(text)&&/<table/i.test(text)?rowsFromHTML(text):parseDelimited(text);
+      }
+      startReview(rows,base);
+    }catch(e){impError(e&&e.user?e.message:'No pude leer ese archivo. Descárgalo desde Google Sheets como Excel (.xlsx) o CSV y vuelve a subirlo.');}
+  };
+  fr.readAsArrayBuffer(file);
+}
+function impError(msg){ui.impMsg=msg;imp=null;ui.importing=true;render();}
+function guessClassName(name){
+  return String(name).replace(/_+/g,' ').replace(/\s+/g,' ').replace(/\s*\((Respuestas|Responses)\).*$/i,'').replace(/\s*-\s*(Respuestas de formulario|Form Responses).*$/i,'').trim().slice(0,60)||'Clase importada';
+}
+function toTable(raw){
+  var rows=stripChrome((raw||[]).map(function(r){return (r||[]).map(function(c){return String(c==null?'':c).trim();});}).filter(function(r){return r.some(function(c){return c!=='';});}));
+  if(rows.length<2)return {error:'No encontré respuestas. Incluye la fila de títulos y al menos una fila de respuestas.'};
+  var w=0;rows.forEach(function(r){w=Math.max(w,r.length);});
+  rows.forEach(function(r){while(r.length<w)r.push('');});
+  var keep=[],ci;
+  for(ci=0;ci<w;ci++){if(rows.some(function(r){return r[ci]!=='';}))keep.push(ci);}
+  rows=rows.map(function(r){return keep.map(function(k){return r[k];});});
+  var headers=rows[0],data=rows.slice(1),T={headers:headers,rows:data,matrix:false};
+  if(headers.length<2)return {error:'Solo encontré una columna. Copia toda la hoja de respuestas, con sus títulos.'};
+  /* a names-by-names matrix, like the classic sociogram spreadsheet */
+  var TOT={total:1,totales:1,suma:1,sumas:1,elecciones:1,rechazos:1,'elecciones recibidas':1,'rechazos recibidos':1,er:1,rr:1,recibidas:1,recibidos:1};
+  var hk=headers.slice(1).map(norm).filter(function(k){return k&&!TOT[k];}),c0={},n0=0,hset={};
+  data.forEach(function(r){var k=norm(r[0]);if(k&&!TOT[k]&&!c0[k]){c0[k]=1;n0++;}});
+  hk.forEach(function(k){hset[k]=1;});
+  var overlap=hk.filter(function(k){return c0[k];}).length;
+  if(hk.length>=3&&overlap/hk.length>=0.6&&overlap/Math.max(n0,1)>=0.6){
+    T.matrix=true;T.rows=data.filter(function(r){return hset[norm(r[0])];});
+  }
+  return T;
+}
+
+/* name matching */
+function lev(a,b){
+  var m=a.length,n=b.length,prev=[],cur,i,j;
+  for(j=0;j<=n;j++)prev[j]=j;
+  for(i=1;i<=m;i++){cur=[i];for(j=1;j<=n;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a.charCodeAt(i-1)===b.charCodeAt(j-1)?0:1));prev=cur;}
+  return prev[n];
+}
+function tokSub(a,b,exact){
+  var at=a.split(' '),bt=b.split(' '),used={},i,j,ok;
+  if(at.length>bt.length)return false;
+  for(i=0;i<at.length;i++){
+    ok=false;
+    for(j=0;j<bt.length;j++){
+      if(used[j])continue;
+      if(bt[j]===at[i]||(!exact&&bt[j].indexOf(at[i])===0&&(at[i].length===1||at[i].length>=3))){used[j]=1;ok=true;break;}
+    }
+    if(!ok)return false;
+  }
+  return true;
+}
+function fuzzy(k,keys){
+  var ex=[],pre=[],i,c;
+  for(i=0;i<keys.length;i++){
+    c=keys[i];if(c===k)return {one:c};
+    if(tokSub(k,c,true)||tokSub(c,k,true))ex.push(c);
+    else if(tokSub(k,c,false)||tokSub(c,k,false))pre.push(c);
+  }
+  if(ex.length===1)return {one:ex[0]};if(ex.length>1)return {many:ex.length};
+  if(pre.length===1)return {one:pre[0]};if(pre.length>1)return {many:pre.length};
+  var best=null,bd=99,tie=false,lim=k.length<=5?1:2,d;
+  for(i=0;i<keys.length;i++){
+    c=keys[i];if(Math.abs(c.length-k.length)>lim)continue;
+    d=lev(k,c);if(d<bd){bd=d;best=c;tie=false;}else if(d===bd)tie=true;
+  }
+  if(best&&bd<=lim&&!tie)return {one:best};
+  return {};
+}
+function splitNames(cell,known){
+  var s=String(cell==null?'':cell).trim();if(!s)return [];
+  if(known[norm(s)])return [s];
+  var parts=s.split(/\s*[,;\n\r\/|]+\s*/).map(function(x){return x.trim();}).filter(Boolean),out=[],i=0,len,hit,j;
+  while(i<parts.length){
+    hit=0;
+    for(len=Math.min(3,parts.length-i);len>=2;len--){j=parts.slice(i,i+len).join(', ');if(known[norm(j)]){out.push(j);hit=len;break;}}
+    if(!hit){out.push(parts[i]);hit=1;}
+    i+=hit;
+  }
+  var fin=[];
+  out.forEach(function(t){
+    if(known[norm(t)]){fin.push(t);return;}
+    t.split(/\s+(?:y|e|and)\s+/i).forEach(function(x){x=x.trim();if(x)fin.push(x);});
+  });
+  return fin;
+}
+
+/* column roles */
+function polarity(h){return /\bno\b|\bnunca\b|\bni\b|rechaz|evit|menos|molest|incomod|disgust|desagrad|\bpeor|pelea|tampoco|\bmal\b|\bcuesta|\bcost(ar|aria|aba|o)\b|dificil/.test(norm(h))?'neg':'pos';}
+function valPol(v,qPol){
+  var raw=String(v).trim(),n=norm(raw);
+  if(/^[-−–]/.test(raw))return 'neg';
+  if(/^\+/.test(raw))return 'pos';
+  if(n===''||n==='no'||n==='0'||n==='false'||n==='falso'||n==='nunca'||/indiferent|neutral|me da igual|a veces|\bni\b/.test(n))return n===''&&raw!==''?qPol:'ignore';
+  if(/rechaz|no me|prefiero no|no quiero|evit|molest|disgust|\bmal\b/.test(n))return 'neg';
+  if(/elij|elecci|gusta|amig|quiero|me cae bien|prefiero|\bbien\b/.test(n))return 'pos';
+  return qPol;
+}
+function sampleOf(T,cols){
+  var seen={},out=[];
+  T.rows.some(function(r){return cols.some(function(ci){var v=r[ci];if(v&&!seen[v]){seen[v]=1;out.push(v);}return out.length>=2;});});
+  return out.join(' / ');
+}
+function colStats(T,ci){
+  var seen={},d=0,nl=0,n=0,time=0,mail=0;
+  T.rows.forEach(function(r){
+    var v=r[ci];if(!v)return;n++;
+    var k=norm(v);if(!seen[k]){seen[k]=1;d++;}
+    if(nameLike(v)&&v.split(',').length<=2&&!/[;\/|]/.test(v))nl++;
+    if(/^\d{1,4}[\/\-.]\d{1,2}[\/\-.]\d{1,4}/.test(v))time++;
+    if(v.indexOf('@')>0)mail++;
+  });
+  return {n:n,distinct:d,nameLike:n?nl/n:0,uniq:n?d/n:0,fill:T.rows.length?n/T.rows.length:0,time:n?time/n:0,mail:n?mail/n:0};
+}
+function guessValues(u,T,qPol){
+  var seen={},list=[];
+  T.rows.forEach(function(r){u.cols.forEach(function(ci){var v=r[ci];if(v&&!seen[v]&&list.length<24){seen[v]=1;list.push(v);}});});
+  u.valueList=list;u.values={};
+  list.forEach(function(v){u.values[v]=valPol(v,qPol);});
+}
+function makeUnits(T){
+  var units=[],H=T.headers,i;
+  if(T.matrix){
+    units.push({kind:'plain',title:H[0]||'Estudiante',cols:[0],role:'who',sample:sampleOf(T,[0])});
+    var c0={};T.rows.forEach(function(r){c0[norm(r[0])]=1;});
+    var mu={kind:'gridName',title:'Marcas de la matriz',cols:[],labels:{},role:'use'};
+    for(i=1;i<H.length;i++){if(c0[norm(H[i])]){mu.cols.push(i);mu.labels[i]=H[i];}}
+    mu.title='Marcas de la matriz';
+    guessValues(mu,T,'pos');mu.sample=mu.valueList.slice(0,3).join(' / ');
+    units.push(mu);
+    return units;
+  }
+  var byBase={},info=H.map(function(h,ci){
+    var m=/^(.*\S)\s*\[(.+)\]\s*$/.exec(h);
+    if(m){(byBase[m[1]]=byBase[m[1]]||[]).push(ci);return {base:m[1],label:m[2]};}
+    return null;
+  });
+  var done={};
+  H.forEach(function(h,ci){
+    var g=info[ci];
+    if(g&&byBase[g.base].length>=2){
+      if(done[g.base])return;done[g.base]=1;
+      var u={kind:'grid',title:g.base,cols:byBase[g.base],labels:{},role:'ignore'};
+      u.cols.forEach(function(c){u.labels[c]=info[c].label;});
+      u.sample=sampleOf(T,u.cols);units.push(u);
+    }else{
+      units.push({kind:'plain',title:h||('Columna '+(ci+1)),cols:[ci],role:'ignore',sample:sampleOf(T,[ci])});
+    }
+  });
+  /* who answers */
+  var best=null,bestScore=1.4;
+  units.forEach(function(u){
+    if(u.kind!=='plain')return;
+    var ci=u.cols[0],st=u.st=colStats(T,ci),h=norm(u.title);
+    u.skip=st.time>0.6||st.mail>0.6||/^(marca temporal|timestamp|puntuacion|score|puntaje)$/.test(h)||/correo|e ?mail/.test(h);
+    if(u.skip||st.n<2||st.fill<0.8||st.nameLike<0.7||st.uniq<0.7)return;
+    var score=st.uniq+st.nameLike-0.01*ci;
+    if(/nombre|quien eres|como te llamas|\bname\b|estudiante|alumn|yo soy/.test(h))score+=1;
+    if(/con quien|quienes|companer|amig|\bno\b|elig|elecci|opcion|rechaz|prefier|gusta/.test(h))score-=1;
+    if(score>bestScore){bestScore=score;best=u;}
+  });
+  if(best){best.role='who';guessRest(T,units,best);}
+  return units;
+}
+function guessRest(T,units,best){
+  var known={},keys=[],cache={},colCount={};
+  T.rows.forEach(function(r){var k=norm(r[best.cols[0]]);if(k&&!known[k]){known[k]=1;keys.push(k);}});
+  function hits(k){if(cache[k]===undefined)cache[k]=known[k]||fuzzy(k,keys).one?1:0;return cache[k];}
+  function tokens(cols,fn){
+    T.rows.forEach(function(r){cols.forEach(function(ci){splitNames(r[ci],known).forEach(function(t){var k=norm(tidyName(t));if(k&&!NOBODY[k])fn(k,t);});});});
+  }
+  units.forEach(function(u){
+    if(u===best||u.skip)return;var seen={};
+    tokens(u.cols,function(k){if(!seen[k]){seen[k]=1;colCount[k]=(colCount[k]||0)+1;}});
+  });
+  function ratio(cols){
+    var tot=0,ok=0,nl=0,fu=0,pool=0;
+    tokens(cols,function(k,t){tot++;if(hits(k))ok++;if(hits(k)||colCount[k]>=2)pool++;if(nameLike(t)){nl++;if(k.split(' ').length>=2)fu++;}});
+    return {tot:tot,match:tot?ok/tot:0,nameLike:tot?nl/tot:0,full:tot?fu/tot:0,pool:tot?pool/tot:0};
+  }
+  units.forEach(function(u){
+    if(u===best)return;
+    var h=norm(u.title),pol=polarity(u.title);
+    if(u.kind==='plain'){
+      if(u.skip)return;
+      var rt=ratio(u.cols);
+      if(/grado|seccion|curso|clase|salon|grupo|aula|nivel|paralelo/.test(h)&&!/quien|companer/.test(h)&&u.st.n>1&&u.st.distinct<=Math.max(1,u.st.n/4)&&rt.match<0.4){u.role='group';return;}
+      if(rt.tot&&(rt.match>=0.4||(rt.full>=0.6&&rt.pool>=0.3)||(rt.nameLike>=0.7&&/quien|companer|amig/.test(h))))u.role=pol;
+      return;
+    }
+    var labs=u.cols.map(function(c){return norm(u.labels[c]);}),labHit=labs.filter(function(k){return k&&hits(k);}).length/labs.length;
+    var rv=ratio(u.cols);
+    if(labHit>=0.4){u.kind='gridName';guessValues(u,T,pol);u.role=u.valueList.length&&u.valueList.length<=12?'use':'ignore';}
+    else if(rv.tot&&(rv.match>=0.4||(rv.full>=0.6&&rv.pool>=0.3))){u.kind='gridValue';u.role=pol;}
+    else{
+      var nameLabs=u.cols.filter(function(c){return nameLike(u.labels[c]);}).length/u.cols.length;
+      guessValues(u,T,pol);
+      if(nameLabs>=0.8&&u.valueList.length&&u.valueList.length<=6){u.kind='gridName';u.role='use';}
+      else{u.kind='gridValue';u.role='ignore';}
+    }
+  });
+  var seenGroup=false;
+  units.forEach(function(u){if(u.role==='group'){if(seenGroup)u.role='ignore';seenGroup=true;}});
+  return units;
+}
+
+/* build classes from the table and the column roles */
+function clusterNames(entries){
+  var keys=Object.keys(entries).sort(function(a,b){
+    return (b.split(' ').length-a.split(' ').length)||(b.length-a.length)||(entries[b].count-entries[a].count)||(a<b?-1:1);
+  });
+  var clusters=[],res={};
+  keys.forEach(function(k){
+    var e=entries[k],c1=[],c2=[],i,cl;
+    for(i=0;i<clusters.length;i++){
+      cl=clusters[i];if(e.responded&&cl.responded)continue;
+      if(tokSub(k,cl.k,true))c1.push(cl);else if(tokSub(k,cl.k,false))c2.push(cl);
+    }
+    var hit=c1.length===1?c1[0]:(!c1.length&&c2.length===1?c2[0]:null);
+    if(hit){res[k]=hit.k;if(e.responded)hit.responded=true;return;}
+    clusters.push({k:k,name:e.text,responded:e.responded});res[k]=k;
+  });
+  return {clusters:clusters,res:res};
+}
+function buildClass(part,wc,picks){
+  var T=imp.T,entries={},resp={},order=[],dup=0,junk=0;
+  function ent(k,text){return entries[k]||(entries[k]={k:k,text:text,count:0,responded:false,ment:false});}
+  function mention(k,name){var e=ent(k,name);if(!e.ment){e.text=name;e.ment=true;}e.count++;}
+  part.rows.forEach(function(r){
+    var k=norm(r[wc]);if(!k)return;
+    ent(k,tidyName(r[wc])||r[wc]).responded=true;
+    if(resp[k])dup++;else order.push(k);
+    resp[k]=r;
+  });
+  var known={};Object.keys(entries).forEach(function(k){known[k]=1;});
+  picks.forEach(function(u){
+    if(u.kind!=='gridName')return;
+    u.cols.forEach(function(c){var k=norm(u.labels[c]);if(!k)return;known[k]=1;var e=ent(k,tidyName(u.labels[c])||u.labels[c]);if(!e.ment){e.text=tidyName(u.labels[c])||u.labels[c];e.ment=true;}});
+  });
+  var questions=[],raw=[];
+  picks.forEach(function(u,ix){
+    if(u.kind==='gridName'){
+      u.valueList.forEach(function(v,vi){
+        var p=u.values[v];if(p!=='pos'&&p!=='neg')return;
+        var qid='q'+ix+'v'+vi;
+        questions.push({id:qid,text:clip(T.matrix?'Marca «'+v+'» en la matriz':u.title+': «'+v+'»',160),kind:p});
+        order.forEach(function(fk){var r=resp[fk];u.cols.forEach(function(c){if(r[c]===v){var k=norm(u.labels[c]);if(k){entries[k].count++;raw.push({from:fk,q:qid,k:k});}}});});
+      });
+      return;
+    }
+    var id='q'+ix;
+    questions.push({id:id,text:clip(u.title,160),kind:u.role});
+    order.forEach(function(fk){
+      var r=resp[fk];
+      u.cols.forEach(function(c){
+        splitNames(r[c],known).forEach(function(t){
+          var name=tidyName(t),k=norm(name);
+          if(!k||NOBODY[k])return;
+          if(!entries[k]&&!nameLike(name)){junk++;return;}
+          mention(k,name);raw.push({from:fk,q:id,k:k});
+        });
+      });
+    });
+  });
+  var cl=clusterNames(entries),ans={},posN=0,negN=0,kindOf={};
+  questions.forEach(function(q){kindOf[q.id]=q.kind;});
+  order.forEach(function(fk){var ck=cl.res[fk];ans[ck]=ans[ck]||{};questions.forEach(function(q){ans[ck][q.id]=ans[ck][q.id]||[];});});
+  raw.forEach(function(x){
+    var f=cl.res[x.from],t=cl.res[x.k];if(!t||t===f)return;
+    var l=ans[f][x.q];if(l.indexOf(t)>=0)return;
+    l.push(t);if(kindOf[x.q]==='pos')posN++;else negN++;
+  });
+  var students=cl.clusters.map(function(c){return {key:c.k,name:c.name};});
+  students.sort(function(a,b){return a.name.localeCompare(b.name,'es');});
+  return {name:part.label,students:students,questions:questions,ans:ans,dup:dup,junk:junk,responded:Object.keys(ans).length,posN:posN,negN:negN};
+}
+function buildImport(){
+  var T=imp.T,who=null,grp=null,picks=[];
+  imp.units.forEach(function(u){
+    if(u.role==='who')who=u;else if(u.role==='group')grp=u;
+    else if(u.role==='pos'||u.role==='neg'||u.role==='use')picks.push(u);
+  });
+  if(!who)return {error:'who',classes:[]};
+  if(!picks.length)return {error:'picks',classes:[]};
+  var wc=who.cols[0],gc=grp?grp.cols[0]:-1,parts={},order=[],noName=0;
+  T.rows.forEach(function(r){
+    if(!norm(r[wc])){noName++;return;}
+    var g=gc>=0?r[gc]:'',gk=gc>=0?(norm(g)||'sin grupo'):'_';
+    if(!parts[gk]){parts[gk]={label:gc>=0?((imp.given?imp.className+' ':'')+(g||'Sin grupo')):imp.className,rows:[]};order.push(gk);}
+    parts[gk].rows.push(r);
+  });
+  return {classes:order.map(function(gk){return buildClass(parts[gk],wc,picks);}),noName:noName,grouped:gc>=0};
+}
+function createFromImport(){
+  var made=[];
+  imp.result.classes.forEach(function(k){
+    if(k.students.length<3)return;
+    var c={id:uid('c'),name:String(k.name||'Clase importada').slice(0,60),questions:k.questions.map(function(q){return {id:q.id,text:q.text,kind:q.kind};}),students:[],answers:{},notDup:[]},idOf={};
+    k.students.forEach(function(st){var id=uid('s');idOf[st.key]=id;c.students.push({id:id,name:st.name});});
+    Object.keys(k.ans).forEach(function(fk){
+      var a={};Object.keys(k.ans[fk]).forEach(function(q){a[q]=k.ans[fk][q].map(function(t){return idOf[t];});});
+      c.answers[idOf[fk]]=a;
+    });
+    state.classes.push(c);made.push(c);
+  });
+  if(!made.length){toast('Se necesitan al menos 3 estudiantes');return;}
+  state.activeId=made[0].id;imp=null;
+  ui.importing=false;ui.view='results';ui.q='all';ui.selected=null;ui.editSid=null;ui.impName='';ui.impPaste='';ui.impMsg='';
+  $('#panel').innerHTML='';
+  touch();render();window.scrollTo(0,0);
+  toast(made.length===1?made[0].students.length+' estudiantes y '+made[0].questions.length+' preguntas importadas':made.length+' clases creadas');
+}
+function startReview(rows,name){
+  var el=$('#imp-class');if(el)ui.impName=el.value;
+  el=$('#imp-paste');if(el)ui.impPaste=el.value;
+  var T=toTable(rows);
+  if(T.error){impError(T.error);return;}
+  var given=ui.impName.trim();
+  imp={file:name,T:T,units:null,className:(given||guessClassName(name)).slice(0,60),given:!!given,result:null};
+  imp.units=makeUnits(T);
+  imp.result=buildImport();
+  var ok=!imp.result.error&&imp.result.classes.some(function(k){return k.students.length>=3;});
+  if(ok&&!ui.impCheck){createFromImport();return;}
+  ui.impMsg='';ui.importing=true;render();window.scrollTo(0,0);
+}
+
+/* ---------- views ---------- */
+function optionsHTML(list,val){return list.map(function(o){return '<option value="'+esc(o[0])+'"'+(o[0]===val?' selected':'')+'>'+esc(o[1])+'</option>';}).join('');}
+function kindBadge(k){return k==='pos'?'<span class="badge popular">Elección</span>':k==='neg'?'<span class="badge rechazo">Rechazo</span>':'<span class="badge promedio">No se usa</span>';}
+function isDark(){var t=document.documentElement.getAttribute('data-theme');if(t)return t==='dark';try{return window.matchMedia('(prefers-color-scheme: dark)').matches;}catch(e){return false;}}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('sociograma.theme',t);}catch(e){}renderTop();var b=document.querySelector('.theme-btn');if(b)b.focus();}
+function renderTop(){
+  var c=cls(),h='<div class="brand"><svg class="logo-mark" viewBox="115.68 176.51 54.68 51.98" aria-hidden="true"><path class="lb" d="M 157.01 193.46 L 155.34 198.43 C 155.34 198.43 144.86 191.86 137.11 196.96 C 137.11 196.96 138.31 200.46 140.98 201.75 L 138.67 207.39 C 138.67 207.39 132.44 202.38 130.25 193.95 C 130.25 193.95 141.33 185.32 157.01 193.46"/><path class="lb" d="M 149.03 184.46 C 147.89 187.22 144.74 188.54 141.98 187.41 C 139.22 186.27 137.9 183.12 139.04 180.36 C 140.17 177.6 143.33 176.29 146.09 177.42 C 148.84 178.55 150.16 181.71 149.03 184.46"/><path class="lt" d="M 148.19 226.8 L 144.88 222.75 C 144.88 222.75 156.04 217.39 155.86 208.12 C 155.86 208.12 152.26 207.25 149.75 208.83 L 146.21 203.86 C 146.21 203.86 153.78 201.27 162.07 203.93 C 162.07 203.93 163.45 217.9 148.19 226.8"/><path class="lt" d="M 160.06 224.86 C 158.33 222.43 158.9 219.06 161.34 217.33 C 163.77 215.61 167.14 216.18 168.86 218.61 C 170.59 221.05 170.02 224.41 167.59 226.14 C 165.16 227.87 161.79 227.3 160.06 224.86"/><path class="lg" d="M 124.63 205.09 L 129.77 204.04 C 129.77 204.04 129.34 216.41 137.64 220.55 C 137.64 220.55 140.07 217.76 139.84 214.8 L 145.89 213.98 C 145.89 213.98 144.68 221.88 138.47 228 C 138.47 228 125.45 222.74 124.63 205.09"/><path class="lg" d="M 120.85 216.51 C 123.81 216.11 126.53 218.18 126.93 221.13 C 127.34 224.09 125.27 226.81 122.31 227.21 C 119.36 227.61 116.63 225.54 116.23 222.59 C 115.83 219.63 117.9 216.91 120.85 216.51"/></svg><svg class="logo-word" viewBox="48.09 244.98 192.68 22.34" role="img" aria-label="Generación EPI"><path class="lb" d="M 59.09 254.49 L 69.59 254.49 L 69.59 256.15 C 69.59 259.09 68.56 261.61 66.5 263.7 C 64.46 265.79 61.98 266.83 59.09 266.83 C 56.19 266.83 53.71 265.79 51.67 263.7 C 49.61 261.61 48.59 259.09 48.59 256.15 C 48.59 253.21 49.61 250.7 51.67 248.61 C 53.71 246.53 56.19 245.48 59.09 245.48 C 61.07 245.48 62.89 246 64.57 247.05 C 66.25 248.09 67.54 249.51 68.45 251.3 L 65.46 252.8 C 64.85 251.57 63.97 250.59 62.83 249.88 C 61.69 249.17 60.45 248.81 59.09 248.81 C 57.11 248.81 55.42 249.53 54.02 250.96 C 52.61 252.4 51.91 254.13 51.91 256.15 C 51.91 258.18 52.61 259.91 54.02 261.35 C 55.42 262.79 57.11 263.5 59.09 263.5 C 60.78 263.5 62.27 262.96 63.57 261.88 C 64.87 260.81 65.7 259.46 66.07 257.82 L 59.09 257.82 Z M 59.09 254.49"/><path class="lb" d="M 82.66 257.02 C 82.34 256.13 81.79 255.41 81.03 254.85 C 80.25 254.29 79.38 254.01 78.42 254.01 C 77.46 254.01 76.6 254.29 75.82 254.85 C 75.06 255.41 74.51 256.13 74.18 257.02 Z M 84.89 263.07 C 84.24 264.06 83.4 264.87 82.36 265.48 C 81.14 266.21 79.83 266.57 78.42 266.57 C 76.27 266.57 74.44 265.8 72.91 264.25 C 71.39 262.71 70.63 260.85 70.63 258.66 C 70.63 256.47 71.39 254.61 72.91 253.06 C 74.44 251.52 76.27 250.74 78.42 250.74 C 80.57 250.74 82.4 251.52 83.93 253.06 C 85.45 254.61 86.21 256.47 86.21 258.66 L 86.21 260 L 74.18 260 C 74.45 261.02 74.99 261.84 75.82 262.46 C 76.6 263.02 77.46 263.31 78.42 263.31 C 79.99 263.31 81.2 262.68 82.06 261.43 Z M 84.89 263.07"/><path class="lb" d="M 94.82 250.59 C 96.8 250.59 98.48 251.34 99.88 252.87 C 101.28 254.38 101.98 256.21 101.98 258.35 L 101.98 266.42 L 98.8 266.42 L 98.8 258.35 C 98.8 257.09 98.41 256.02 97.63 255.12 C 96.85 254.23 95.91 253.78 94.82 253.78 C 93.73 253.78 92.8 254.23 92.02 255.12 C 91.25 256.02 90.87 257.09 90.87 258.35 L 90.87 266.42 L 87.67 266.42 L 87.67 250.89 L 90.87 250.89 L 90.87 251.88 C 92.06 251.02 93.38 250.59 94.82 250.59"/><path class="lb" d="M 115.46 257.02 C 115.14 256.13 114.59 255.41 113.83 254.85 C 113.05 254.29 112.18 254.01 111.22 254.01 C 110.27 254.01 109.4 254.29 108.62 254.85 C 107.86 255.41 107.31 256.13 106.98 257.02 Z M 117.69 263.07 C 117.04 264.06 116.2 264.87 115.15 265.48 C 113.95 266.21 112.63 266.57 111.22 266.57 C 109.07 266.57 107.24 265.8 105.71 264.25 C 104.2 262.71 103.43 260.85 103.43 258.66 C 103.43 256.47 104.2 254.61 105.71 253.06 C 107.24 251.52 109.07 250.74 111.22 250.74 C 113.36 250.74 115.2 251.52 116.73 253.06 C 118.25 254.61 119.02 256.47 119.02 258.66 L 119.02 260 L 106.98 260 C 107.25 261.02 107.79 261.84 108.62 262.46 C 109.4 263.02 110.27 263.31 111.22 263.31 C 112.79 263.31 114 262.68 114.86 261.43 Z M 117.69 263.07"/><path class="lb" d="M 123.66 252.19 C 124.86 251.33 126.18 250.89 127.62 250.89 L 129.23 250.89 L 129.23 254.09 L 127.62 254.09 C 126.54 254.09 125.6 254.54 124.82 255.43 C 124.05 256.32 123.66 257.39 123.66 258.64 L 123.66 266.42 L 120.47 266.42 L 120.47 250.89 L 123.66 250.89 Z M 123.66 252.19"/><path class="lb" d="M 136.91 263.3 C 138.15 263.3 139.21 262.86 140.11 261.95 C 140.99 261.04 141.43 259.95 141.43 258.66 C 141.43 257.37 140.99 256.27 140.11 255.36 C 139.21 254.46 138.15 254.01 136.91 254.01 C 135.66 254.01 134.59 254.46 133.7 255.36 C 132.82 256.27 132.39 257.37 132.39 258.66 C 132.39 259.95 132.82 261.04 133.7 261.95 C 134.59 262.86 135.66 263.3 136.91 263.3 M 144.7 266.42 L 141.43 266.42 L 141.43 265.08 C 140.08 266.08 138.57 266.57 136.91 266.57 C 134.76 266.57 132.92 265.8 131.4 264.25 C 129.88 262.71 129.12 260.85 129.12 258.66 C 129.12 256.47 129.88 254.61 131.4 253.07 C 132.92 251.52 134.76 250.74 136.91 250.74 C 138.57 250.74 140.08 251.23 141.43 252.22 L 141.43 250.89 L 144.7 250.89 Z M 144.7 266.42"/><path class="lb" d="M 153.8 254.01 C 152.55 254.01 151.49 254.46 150.61 255.36 C 149.72 256.27 149.28 257.37 149.28 258.66 C 149.28 259.95 149.72 261.04 150.61 261.95 C 151.49 262.86 152.55 263.3 153.8 263.3 C 155.33 263.3 156.55 262.67 157.46 261.41 L 160.13 263.29 C 158.56 265.48 156.45 266.57 153.8 266.57 C 151.65 266.57 149.82 265.8 148.29 264.25 C 146.77 262.71 146.01 260.85 146.01 258.66 C 146.01 256.47 146.77 254.61 148.29 253.07 C 149.82 251.52 151.65 250.74 153.8 250.74 C 156.45 250.74 158.56 251.83 160.13 254.02 L 157.46 255.91 C 156.55 254.64 155.33 254.01 153.8 254.01"/><path class="lb" d="M 161.38 266.42 L 164.58 266.42 L 164.58 250.89 L 161.38 250.89 Z M 164.24 246.23 C 164.58 246.57 164.75 246.98 164.75 247.47 C 164.75 247.96 164.58 248.38 164.24 248.72 C 163.91 249.06 163.48 249.23 162.99 249.23 C 162.5 249.23 162.09 249.06 161.74 248.72 C 161.4 248.38 161.23 247.96 161.23 247.47 C 161.23 246.98 161.4 246.57 161.74 246.23 C 162.09 245.88 162.5 245.71 162.99 245.71 C 163.48 245.71 163.91 245.88 164.24 246.23"/><path class="lb" d="M 171.88 249.68 L 174.58 245.84 L 178.2 245.84 L 175.5 249.68 Z M 173.99 263.31 C 175.23 263.31 176.3 262.86 177.19 261.95 C 178.07 261.04 178.52 259.95 178.52 258.66 C 178.52 257.37 178.07 256.27 177.19 255.36 C 176.3 254.46 175.23 254.01 173.99 254.01 C 172.74 254.01 171.67 254.46 170.78 255.36 C 169.91 256.27 169.47 257.37 169.47 258.66 C 169.47 259.95 169.91 261.04 170.78 261.95 C 171.67 262.86 172.74 263.31 173.99 263.31 M 173.99 250.74 C 176.13 250.74 177.97 251.52 179.5 253.06 C 181.02 254.61 181.79 256.47 181.79 258.66 C 181.79 260.85 181.02 262.71 179.5 264.25 C 177.97 265.8 176.13 266.57 173.99 266.57 C 171.84 266.57 170 265.8 168.48 264.25 C 166.96 262.71 166.2 260.85 166.2 258.66 C 166.2 256.47 166.96 254.61 168.48 253.06 C 170 251.52 171.84 250.74 173.99 250.74"/><path class="lb" d="M 190.39 250.59 C 192.37 250.59 194.05 251.34 195.45 252.87 C 196.85 254.38 197.55 256.21 197.55 258.35 L 197.55 266.42 L 194.37 266.42 L 194.37 258.35 C 194.37 257.09 193.98 256.02 193.2 255.12 C 192.42 254.23 191.48 253.78 190.39 253.78 C 189.3 253.78 188.37 254.23 187.59 255.12 C 186.82 256.02 186.43 257.09 186.43 258.35 L 186.43 266.42 L 183.24 266.42 L 183.24 250.89 L 186.43 250.89 L 186.43 251.88 C 187.62 251.02 188.95 250.59 190.39 250.59"/><path class="lg" d="M 204.29 245.67 L 217.57 245.67 L 217.57 250.08 L 208.7 250.08 L 208.7 253.81 L 217.57 253.81 L 217.57 258.22 L 208.7 258.22 L 208.7 262.01 L 217.57 262.01 L 217.57 266.42 L 204.29 266.42 Z M 204.29 245.67"/><path class="lg" d="M 227.07 254.39 C 227.44 254.39 227.78 254.19 228.07 253.8 C 228.39 253.36 228.55 252.84 228.55 252.23 C 228.55 251.63 228.39 251.12 228.07 250.68 C 227.78 250.29 227.44 250.09 227.07 250.09 L 224.39 250.09 L 224.39 254.39 Z M 227.07 245.67 C 228.69 245.67 230.08 246.31 231.24 247.6 C 232.39 248.88 232.97 250.43 232.97 252.23 C 232.97 254.05 232.39 255.59 231.24 256.88 C 230.08 258.17 228.69 258.81 227.07 258.81 L 224.39 258.81 L 224.39 266.42 L 219.96 266.42 L 219.96 245.67 Z M 227.07 245.67"/><path class="lg" d="M 235.86 245.67 L 240.27 245.67 L 240.27 266.42 L 235.86 266.42 Z M 235.86 245.67"/></svg><span class="app">Sociograma</span></div>';
+  if(state.classes.length&&(!CLOUD||cloud.status==='ready')){
+    h+='<label class="row" style="gap:8px"><span>Clase</span><select data-change="switchClass" style="width:auto;max-width:240px">';
+    state.classes.forEach(function(k){h+='<option value="'+k.id+'"'+(c&&k.id===c.id?' selected':'')+'>'+esc(k.name)+'</option>';});
+    h+='</select></label>';
+    if(!ui.importing)h+='<button class="btn small primary" data-action="impOpen">Nueva clase</button>';
+  }
+  if(!CLOUD||cloud.status==='ready')h+='<span class="save" id="save">'+esc(saveText())+'</span>';
+  if(CLOUD&&cloud.user)h+='<span class="acct" title="'+esc(cloud.email)+'">'+esc(cloud.email)+'</span><button class="btn small" data-action="cOut">Salir</button>';
+  var dark=isDark();h+='<button class="theme-btn" data-action="theme" aria-label="'+(dark?'Cambiar a modo claro':'Cambiar a modo oscuro')+'" title="'+(dark?'Modo claro':'Modo oscuro')+'">'+(dark?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>')+'</button>';
+  $('#top').innerHTML=h;
+}
+function viewImportSource(){
+  var first=!state.classes.length;
+  return '<div class="import">'+(first?'<svg class="logo-full" viewBox="44.98 362.53 192.90 108.33" role="img" aria-label="Generación EPI: Empoderadora, Positiva, Innovadora"><path class="lb" d="M 58.95 461.88 L 62.97 461.88 L 62.97 462.61 L 59.69 462.61 L 59.69 464.86 L 62.97 464.86 L 62.97 465.6 L 59.69 465.6 L 59.69 467.89 L 62.97 467.89 L 62.97 468.62 L 58.95 468.62 Z M 58.95 461.88"/><path class="lb" d="M 69.6 463.56 C 70.21 463.56 70.73 463.81 71.16 464.3 C 71.58 464.79 71.8 465.38 71.8 466.07 L 71.8 468.62 L 71.06 468.62 L 71.06 466.07 C 71.06 465.59 70.91 465.17 70.63 464.82 C 70.35 464.48 70 464.3 69.6 464.3 C 69.2 464.3 68.86 464.48 68.57 464.82 C 68.29 465.17 68.15 465.59 68.15 466.07 L 68.15 468.62 L 67.41 468.62 L 67.41 466.07 C 67.41 465.59 67.27 465.17 66.98 464.82 C 66.7 464.48 66.35 464.3 65.95 464.3 C 65.55 464.3 65.21 464.48 64.92 464.82 C 64.64 465.16 64.5 465.58 64.5 466.07 L 64.5 468.62 L 63.75 468.62 L 63.75 463.61 L 64.5 463.61 L 64.5 464.2 C 64.91 463.77 65.4 463.56 65.95 463.56 C 66.32 463.56 66.68 463.66 67 463.87 C 67.32 464.07 67.57 464.34 67.78 464.68 C 67.98 464.34 68.23 464.07 68.55 463.87 C 68.88 463.66 69.23 463.56 69.6 463.56"/><path class="lb" d="M 75.29 467.91 C 75.77 467.91 76.19 467.73 76.53 467.38 C 76.88 467.03 77.05 466.6 77.05 466.11 C 77.05 465.61 76.88 465.18 76.53 464.83 C 76.19 464.48 75.77 464.3 75.29 464.3 C 74.8 464.3 74.39 464.48 74.04 464.83 C 73.7 465.18 73.52 465.61 73.52 466.1 L 73.52 466.11 C 73.52 466.6 73.7 467.03 74.04 467.38 C 74.39 467.73 74.8 467.91 75.29 467.91 M 75.29 463.54 C 75.98 463.54 76.57 463.8 77.07 464.3 C 77.55 464.8 77.8 465.4 77.8 466.11 C 77.8 466.81 77.55 467.41 77.07 467.91 C 76.57 468.41 75.98 468.66 75.29 468.66 C 74.6 468.66 74.01 468.42 73.52 467.93 L 73.52 470.36 L 72.77 470.36 L 72.77 463.61 L 73.52 463.61 L 73.52 464.29 C 74.01 463.79 74.6 463.54 75.29 463.54"/><path class="lb" d="M 80.88 467.92 C 81.36 467.92 81.77 467.75 82.12 467.39 C 82.46 467.04 82.63 466.62 82.63 466.12 C 82.63 465.62 82.46 465.2 82.12 464.84 C 81.77 464.49 81.36 464.31 80.88 464.31 C 80.39 464.31 79.97 464.49 79.62 464.84 C 79.28 465.2 79.11 465.62 79.11 466.12 C 79.11 466.62 79.28 467.04 79.62 467.39 C 79.97 467.75 80.39 467.92 80.88 467.92 M 80.88 463.56 C 81.57 463.56 82.16 463.81 82.65 464.3 C 83.14 464.81 83.39 465.41 83.39 466.12 C 83.39 466.82 83.14 467.43 82.65 467.93 C 82.16 468.43 81.57 468.68 80.88 468.68 C 80.18 468.68 79.58 468.43 79.09 467.93 C 78.6 467.43 78.36 466.82 78.36 466.12 C 78.36 465.41 78.6 464.81 79.09 464.3 C 79.58 463.81 80.18 463.56 80.88 463.56"/><path class="lb" d="M 87.7 467.39 C 88.05 467.04 88.22 466.62 88.22 466.12 C 88.22 465.62 88.05 465.2 87.7 464.84 C 87.36 464.49 86.95 464.31 86.46 464.31 C 85.97 464.31 85.56 464.49 85.21 464.84 C 84.87 465.2 84.7 465.62 84.7 466.12 C 84.7 466.62 84.87 467.04 85.21 467.39 C 85.56 467.74 85.97 467.92 86.46 467.92 C 86.95 467.92 87.36 467.74 87.7 467.39 M 88.22 464.29 L 88.22 461.88 L 88.97 461.88 L 88.97 468.62 L 88.22 468.62 L 88.22 467.94 C 87.73 468.43 87.14 468.68 86.46 468.68 C 85.76 468.68 85.17 468.43 84.68 467.92 C 84.19 467.43 83.94 466.82 83.94 466.12 C 83.94 465.41 84.19 464.81 84.68 464.3 C 85.17 463.81 85.76 463.56 86.46 463.56 C 87.14 463.56 87.73 463.8 88.22 464.29"/><path class="lb" d="M 94.07 465.74 C 93.98 465.33 93.78 464.99 93.46 464.72 C 93.14 464.45 92.77 464.31 92.35 464.31 C 91.93 464.31 91.55 464.45 91.23 464.72 C 90.91 464.99 90.71 465.33 90.62 465.74 Z M 92.35 463.56 C 93.04 463.56 93.63 463.81 94.12 464.3 C 94.61 464.81 94.86 465.41 94.86 466.12 L 94.86 466.5 L 90.62 466.5 C 90.71 466.91 90.91 467.25 91.23 467.52 C 91.55 467.79 91.93 467.92 92.35 467.92 C 92.68 467.92 92.98 467.84 93.26 467.66 C 93.54 467.49 93.75 467.25 93.91 466.95 L 94.58 467.29 C 94.36 467.72 94.05 468.06 93.65 468.31 C 93.25 468.55 92.82 468.68 92.35 468.68 C 91.65 468.68 91.05 468.43 90.56 467.93 C 90.07 467.43 89.83 466.82 89.83 466.12 C 89.83 465.41 90.07 464.81 90.56 464.3 C 91.05 463.81 91.65 463.56 92.35 463.56"/><path class="lb" d="M 96.41 464.37 C 96.85 463.86 97.37 463.61 97.97 463.61 L 98.02 463.61 L 98.02 464.35 L 97.97 464.35 C 97.54 464.35 97.17 464.52 96.87 464.87 C 96.56 465.27 96.41 465.72 96.41 466.21 L 96.41 468.62 L 95.67 468.62 L 95.67 463.61 L 96.41 463.61 Z M 96.41 464.37"/><path class="lb" d="M 100.93 467.92 C 101.41 467.92 101.83 467.75 102.17 467.39 C 102.52 467.04 102.69 466.62 102.69 466.12 L 102.69 466.11 C 102.69 465.62 102.52 465.2 102.17 464.84 C 101.83 464.49 101.41 464.31 100.93 464.31 C 100.45 464.31 100.03 464.49 99.68 464.84 C 99.34 465.2 99.16 465.62 99.16 466.12 C 99.16 466.62 99.34 467.04 99.68 467.39 C 100.03 467.75 100.45 467.92 100.93 467.92 M 103.45 468.63 L 102.69 468.63 L 102.69 467.95 C 102.2 468.43 101.61 468.68 100.93 468.68 C 100.23 468.68 99.64 468.43 99.15 467.93 C 98.66 467.43 98.41 466.82 98.41 466.12 C 98.41 465.41 98.66 464.81 99.15 464.3 C 99.64 463.81 100.23 463.56 100.93 463.56 C 101.61 463.56 102.2 463.8 102.69 464.29 L 102.69 463.61 L 103.45 463.61 Z M 103.45 468.63"/><path class="lb" d="M 108.01 467.39 C 108.36 467.04 108.53 466.62 108.53 466.12 C 108.53 465.62 108.36 465.2 108.01 464.84 C 107.67 464.49 107.25 464.31 106.77 464.31 C 106.29 464.31 105.87 464.49 105.52 464.84 C 105.18 465.2 105 465.62 105 466.12 C 105 466.62 105.18 467.04 105.52 467.39 C 105.87 467.74 106.29 467.92 106.77 467.92 C 107.25 467.92 107.67 467.74 108.01 467.39 M 108.53 464.29 L 108.53 461.88 L 109.28 461.88 L 109.28 468.62 L 108.53 468.62 L 108.53 467.94 C 108.04 468.43 107.45 468.68 106.77 468.68 C 106.07 468.68 105.48 468.43 104.99 467.92 C 104.5 467.43 104.25 466.82 104.25 466.12 C 104.25 465.41 104.5 464.81 104.99 464.3 C 105.48 463.81 106.07 463.56 106.77 463.56 C 107.45 463.56 108.04 463.8 108.53 464.29"/><path class="lb" d="M 112.57 467.92 C 113.05 467.92 113.46 467.75 113.81 467.39 C 114.15 467.04 114.32 466.62 114.32 466.12 C 114.32 465.62 114.15 465.2 113.81 464.84 C 113.46 464.49 113.05 464.31 112.57 464.31 C 112.08 464.31 111.66 464.49 111.32 464.84 C 110.97 465.2 110.8 465.62 110.8 466.12 C 110.8 466.62 110.97 467.04 111.32 467.39 C 111.66 467.75 112.08 467.92 112.57 467.92 M 112.57 463.56 C 113.26 463.56 113.85 463.81 114.34 464.3 C 114.83 464.81 115.08 465.41 115.08 466.12 C 115.08 466.82 114.83 467.43 114.34 467.93 C 113.85 468.43 113.26 468.68 112.57 468.68 C 111.87 468.68 111.27 468.43 110.78 467.93 C 110.29 467.43 110.05 466.82 110.05 466.12 C 110.05 465.41 110.29 464.81 110.78 464.3 C 111.27 463.81 111.87 463.56 112.57 463.56"/><path class="lb" d="M 116.58 464.37 C 117.02 463.86 117.54 463.61 118.14 463.61 L 118.19 463.61 L 118.19 464.35 L 118.14 464.35 C 117.71 464.35 117.34 464.52 117.04 464.87 C 116.73 465.27 116.58 465.72 116.58 466.21 L 116.58 468.62 L 115.84 468.62 L 115.84 463.61 L 116.58 463.61 Z M 116.58 464.37"/><path class="lb" d="M 121.11 467.92 C 121.59 467.92 122 467.75 122.34 467.39 C 122.69 467.04 122.86 466.62 122.86 466.12 L 122.86 466.11 C 122.86 465.62 122.69 465.2 122.34 464.84 C 122 464.49 121.59 464.31 121.11 464.31 C 120.62 464.31 120.2 464.49 119.86 464.84 C 119.51 465.2 119.34 465.62 119.34 466.12 C 119.34 466.62 119.51 467.04 119.86 467.39 C 120.2 467.75 120.62 467.92 121.11 467.92 M 123.61 468.63 L 122.86 468.63 L 122.86 467.95 C 122.37 468.43 121.79 468.68 121.11 468.68 C 120.41 468.68 119.81 468.43 119.32 467.93 C 118.83 467.43 118.59 466.82 118.59 466.12 C 118.59 465.41 118.83 464.81 119.32 464.3 C 119.81 463.81 120.41 463.56 121.11 463.56 C 121.79 463.56 122.37 463.8 122.86 464.29 L 122.86 463.61 L 123.61 463.61 Z M 123.61 468.63"/><path class="lb" d="M 136.62 464.87 C 136.89 464.87 137.12 464.77 137.32 464.57 C 137.51 464.35 137.61 464.07 137.61 463.74 C 137.61 463.41 137.51 463.12 137.32 462.9 C 137.12 462.71 136.89 462.61 136.62 462.61 L 135.19 462.61 L 135.19 464.87 Z M 136.62 461.88 C 137.1 461.88 137.5 462.04 137.84 462.38 C 138.18 462.75 138.35 463.2 138.35 463.74 C 138.35 464.28 138.18 464.73 137.84 465.1 C 137.5 465.44 137.1 465.61 136.62 465.61 L 135.19 465.61 L 135.19 468.62 L 134.45 468.62 L 134.45 461.88 Z M 136.62 461.88"/><path class="lb" d="M 141.38 467.92 C 141.86 467.92 142.28 467.75 142.62 467.39 C 142.97 467.04 143.14 466.62 143.14 466.12 C 143.14 465.62 142.97 465.2 142.62 464.84 C 142.28 464.49 141.86 464.31 141.38 464.31 C 140.89 464.31 140.48 464.49 140.13 464.84 C 139.79 465.2 139.61 465.62 139.61 466.12 C 139.61 466.62 139.79 467.04 140.13 467.39 C 140.48 467.75 140.89 467.92 141.38 467.92 M 141.38 463.56 C 142.07 463.56 142.66 463.81 143.16 464.3 C 143.65 464.81 143.89 465.41 143.89 466.12 C 143.89 466.82 143.65 467.43 143.16 467.93 C 142.66 468.43 142.07 468.68 141.38 468.68 C 140.68 468.68 140.09 468.43 139.6 467.93 C 139.11 467.43 138.86 466.82 138.86 466.12 C 138.86 465.41 139.11 464.81 139.6 464.3 C 140.09 463.81 140.68 463.56 141.38 463.56"/><path class="lb" d="M 146.01 464.31 C 145.79 464.31 145.6 464.38 145.44 464.52 C 145.28 464.66 145.2 464.83 145.2 465.03 C 145.2 465.23 145.27 465.38 145.41 465.48 C 145.52 465.56 145.75 465.65 146.11 465.75 C 146.56 465.87 146.88 466.01 147.07 466.15 C 147.41 466.39 147.57 466.75 147.57 467.21 C 147.57 467.62 147.42 467.96 147.11 468.25 C 146.81 468.54 146.44 468.68 146.01 468.68 C 145.58 468.68 145.21 468.54 144.91 468.25 C 144.6 467.96 144.45 467.62 144.45 467.21 L 145.2 467.21 C 145.2 467.41 145.28 467.58 145.44 467.71 C 145.6 467.86 145.79 467.92 146.01 467.92 C 146.23 467.92 146.42 467.86 146.58 467.71 C 146.74 467.58 146.82 467.41 146.82 467.21 C 146.82 467 146.75 466.85 146.61 466.75 C 146.5 466.66 146.26 466.57 145.91 466.48 C 145.46 466.35 145.14 466.22 144.95 466.08 C 144.61 465.84 144.45 465.48 144.45 465.03 C 144.45 464.62 144.6 464.28 144.91 463.99 C 145.21 463.7 145.58 463.56 146.01 463.56 C 146.44 463.56 146.81 463.7 147.11 463.99 C 147.42 464.28 147.57 464.62 147.57 465.03 L 146.82 465.03 C 146.82 464.83 146.74 464.66 146.58 464.52 C 146.42 464.38 146.23 464.31 146.01 464.31"/><path class="lb" d="M 148.43 468.62 L 149.17 468.62 L 149.17 463.61 L 148.43 463.61 Z M 149.11 462.01 C 149.2 462.1 149.24 462.2 149.24 462.33 C 149.24 462.45 149.2 462.56 149.11 462.64 C 149.03 462.73 148.92 462.78 148.79 462.78 C 148.67 462.78 148.57 462.73 148.48 462.64 C 148.39 462.56 148.35 462.45 148.35 462.33 C 148.35 462.2 148.39 462.1 148.48 462.01 C 148.57 461.92 148.67 461.88 148.79 461.88 C 148.92 461.88 149.03 461.92 149.11 462.01"/><path class="lb" d="M 151.42 463.61 L 152.15 463.61 L 152.15 464.35 L 151.42 464.35 L 151.42 468.62 L 150.68 468.62 L 150.68 464.35 L 149.95 464.35 L 149.95 463.61 L 150.68 463.61 L 150.68 461.88 L 151.42 461.88 Z M 151.42 463.61"/><path class="lb" d="M 152.93 468.62 L 153.67 468.62 L 153.67 463.61 L 152.93 463.61 Z M 153.62 462.01 C 153.7 462.1 153.75 462.2 153.75 462.33 C 153.75 462.45 153.7 462.56 153.62 462.64 C 153.53 462.73 153.43 462.78 153.3 462.78 C 153.18 462.78 153.07 462.73 152.98 462.64 C 152.89 462.56 152.85 462.45 152.85 462.33 C 152.85 462.2 152.89 462.1 152.98 462.01 C 153.07 461.92 153.18 461.88 153.3 461.88 C 153.43 461.88 153.53 461.92 153.62 462.01"/><path class="lb" d="M 159.2 463.61 L 157.05 468.62 L 156.38 468.62 L 154.23 463.61 L 155.04 463.61 L 156.72 467.54 L 158.39 463.61 Z M 159.2 463.61"/><path class="lb" d="M 162.02 467.92 C 162.51 467.92 162.92 467.75 163.27 467.39 C 163.61 467.04 163.78 466.62 163.78 466.12 L 163.78 466.11 C 163.78 465.62 163.61 465.2 163.27 464.84 C 162.92 464.49 162.51 464.31 162.02 464.31 C 161.54 464.31 161.12 464.49 160.78 464.84 C 160.43 465.2 160.26 465.62 160.26 466.12 C 160.26 466.62 160.43 467.04 160.78 467.39 C 161.12 467.75 161.54 467.92 162.02 467.92 M 164.54 468.63 L 163.78 468.63 L 163.78 467.95 C 163.29 468.43 162.71 468.68 162.02 468.68 C 161.33 468.68 160.73 468.43 160.24 467.93 C 159.75 467.43 159.5 466.82 159.5 466.12 C 159.5 465.41 159.75 464.81 160.24 464.3 C 160.73 463.81 161.33 463.56 162.02 463.56 C 162.71 463.56 163.29 463.8 163.78 464.29 L 163.78 463.61 L 164.54 463.61 Z M 164.54 468.63"/><path class="lb" d="M 175.73 461.91 L 176.47 461.91 L 176.47 468.66 L 175.73 468.66 Z M 175.73 461.91"/><path class="lb" d="M 179.88 463.59 C 180.52 463.59 181.06 463.84 181.51 464.32 C 181.96 464.81 182.18 465.41 182.18 466.1 L 182.18 468.66 L 181.44 468.66 L 181.44 466.1 C 181.44 465.61 181.29 465.2 180.98 464.85 C 180.68 464.5 180.31 464.33 179.88 464.33 C 179.45 464.33 179.08 464.5 178.78 464.85 C 178.47 465.19 178.32 465.61 178.32 466.09 L 178.32 468.66 L 177.58 468.66 L 177.58 463.64 L 178.32 463.64 L 178.32 464.26 C 178.76 463.81 179.28 463.59 179.88 463.59"/><path class="lb" d="M 185.46 463.59 C 186.09 463.59 186.64 463.84 187.09 464.32 C 187.53 464.81 187.75 465.41 187.75 466.1 L 187.75 468.66 L 187.02 468.66 L 187.02 466.1 C 187.02 465.61 186.86 465.2 186.56 464.85 C 186.25 464.5 185.89 464.33 185.46 464.33 C 185.02 464.33 184.66 464.5 184.35 464.85 C 184.05 465.19 183.89 465.61 183.89 466.09 L 183.89 468.66 L 183.15 468.66 L 183.15 463.64 L 183.89 463.64 L 183.89 464.26 C 184.34 463.81 184.86 463.59 185.46 463.59"/><path class="lb" d="M 190.99 467.95 C 191.48 467.95 191.89 467.78 192.23 467.42 C 192.58 467.07 192.75 466.65 192.75 466.15 C 192.75 465.65 192.58 465.23 192.23 464.88 C 191.89 464.52 191.48 464.34 190.99 464.34 C 190.5 464.34 190.09 464.52 189.74 464.88 C 189.4 465.23 189.23 465.65 189.23 466.15 C 189.23 466.65 189.4 467.07 189.74 467.42 C 190.09 467.78 190.5 467.95 190.99 467.95 M 190.99 463.59 C 191.68 463.59 192.27 463.84 192.77 464.34 C 193.26 464.84 193.5 465.45 193.5 466.15 C 193.5 466.85 193.26 467.46 192.77 467.96 C 192.27 468.46 191.68 468.71 190.99 468.71 C 190.3 468.71 189.7 468.46 189.21 467.96 C 188.71 467.46 188.47 466.85 188.47 466.15 C 188.47 465.45 188.71 464.84 189.21 464.34 C 189.7 463.84 190.3 463.59 190.99 463.59"/><path class="lb" d="M 198.73 463.64 L 196.58 468.66 L 195.9 468.66 L 193.76 463.64 L 194.57 463.64 L 196.25 467.57 L 197.93 463.64 Z M 198.73 463.64"/><path class="lb" d="M 201.55 467.95 C 202.04 467.95 202.45 467.78 202.79 467.42 C 203.14 467.07 203.31 466.65 203.31 466.15 L 203.31 466.14 C 203.31 465.65 203.14 465.23 202.79 464.88 C 202.45 464.52 202.04 464.34 201.55 464.34 C 201.07 464.34 200.65 464.52 200.3 464.88 C 199.96 465.23 199.79 465.65 199.79 466.15 C 199.79 466.65 199.96 467.07 200.3 467.42 C 200.65 467.78 201.07 467.95 201.55 467.95 M 204.07 468.66 L 203.31 468.66 L 203.31 467.98 C 202.82 468.46 202.23 468.71 201.55 468.71 C 200.86 468.71 200.26 468.46 199.77 467.96 C 199.28 467.46 199.04 466.85 199.04 466.15 C 199.04 465.45 199.28 464.84 199.77 464.34 C 200.26 463.84 200.86 463.59 201.55 463.59 C 202.23 463.59 202.82 463.83 203.31 464.32 L 203.31 463.64 L 204.07 463.64 Z M 204.07 468.66"/><path class="lb" d="M 208.63 467.42 C 208.98 467.07 209.15 466.65 209.15 466.15 C 209.15 465.65 208.98 465.23 208.63 464.87 C 208.29 464.52 207.88 464.34 207.39 464.34 C 206.91 464.34 206.49 464.52 206.14 464.87 C 205.8 465.23 205.63 465.65 205.63 466.15 C 205.63 466.65 205.8 467.07 206.14 467.42 C 206.49 467.77 206.91 467.95 207.39 467.95 C 207.88 467.95 208.29 467.77 208.63 467.42 M 209.15 464.32 L 209.15 461.91 L 209.91 461.91 L 209.91 468.66 L 209.15 468.66 L 209.15 467.97 C 208.66 468.46 208.07 468.71 207.39 468.71 C 206.7 468.71 206.1 468.46 205.61 467.95 C 205.12 467.45 204.88 466.86 204.88 466.15 C 204.88 465.44 205.12 464.84 205.61 464.34 C 206.1 463.84 206.7 463.59 207.39 463.59 C 208.07 463.59 208.66 463.83 209.15 464.32"/><path class="lb" d="M 213.19 467.95 C 213.67 467.95 214.09 467.78 214.43 467.42 C 214.78 467.07 214.95 466.65 214.95 466.15 C 214.95 465.65 214.78 465.23 214.43 464.88 C 214.09 464.52 213.67 464.34 213.19 464.34 C 212.7 464.34 212.29 464.52 211.94 464.88 C 211.6 465.23 211.42 465.65 211.42 466.15 C 211.42 466.65 211.6 467.07 211.94 467.42 C 212.29 467.78 212.7 467.95 213.19 467.95 M 213.19 463.59 C 213.88 463.59 214.47 463.84 214.96 464.34 C 215.46 464.84 215.7 465.45 215.7 466.15 C 215.7 466.85 215.46 467.46 214.96 467.96 C 214.47 468.46 213.88 468.71 213.19 468.71 C 212.49 468.71 211.9 468.46 211.41 467.96 C 210.91 467.46 210.67 466.85 210.67 466.15 C 210.67 465.45 210.91 464.84 211.41 464.34 C 211.9 463.84 212.49 463.59 213.19 463.59"/><path class="lb" d="M 217.2 464.4 C 217.64 463.89 218.16 463.64 218.77 463.64 L 218.81 463.64 L 218.81 464.38 L 218.77 464.38 C 218.34 464.38 217.97 464.55 217.66 464.9 C 217.36 465.3 217.2 465.75 217.2 466.24 L 217.2 468.66 L 216.46 468.66 L 216.46 463.64 L 217.2 463.64 Z M 217.2 464.4"/><path class="lb" d="M 221.73 467.95 C 222.21 467.95 222.62 467.78 222.96 467.42 C 223.31 467.07 223.48 466.65 223.48 466.15 L 223.48 466.14 C 223.48 465.65 223.31 465.23 222.96 464.88 C 222.62 464.52 222.21 464.34 221.73 464.34 C 221.24 464.34 220.82 464.52 220.48 464.88 C 220.13 465.23 219.96 465.65 219.96 466.15 C 219.96 466.65 220.13 467.07 220.48 467.42 C 220.82 467.78 221.24 467.95 221.73 467.95 M 224.24 468.66 L 223.48 468.66 L 223.48 467.98 C 222.99 468.46 222.41 468.71 221.73 468.71 C 221.03 468.71 220.43 468.46 219.94 467.96 C 219.45 467.46 219.21 466.85 219.21 466.15 C 219.21 465.45 219.45 464.84 219.94 464.34 C 220.43 463.84 221.03 463.59 221.73 463.59 C 222.41 463.59 222.99 463.83 223.48 464.32 L 223.48 463.64 L 224.24 463.64 Z M 224.24 468.66"/><path class="lg" d="M 130.29 465.92 C 130.29 466.52 129.81 467 129.21 467 C 128.62 467 128.14 466.52 128.14 465.92 C 128.14 465.33 128.62 464.84 129.21 464.84 C 129.81 464.84 130.29 465.33 130.29 465.92"/><path class="lg" d="M 170.98 465.92 C 170.98 466.52 170.49 467 169.9 467 C 169.3 467 168.82 466.52 168.82 465.92 C 168.82 465.33 169.3 464.84 169.9 464.84 C 170.49 464.84 170.98 465.33 170.98 465.92"/><path class="lb" d="M 155.9 379.48 L 154.24 384.45 C 154.24 384.45 143.75 377.88 136.01 382.98 C 136.01 382.98 137.2 386.48 139.88 387.77 L 137.56 393.41 C 137.56 393.41 131.33 388.4 129.14 379.97 C 129.14 379.97 140.23 371.34 155.9 379.48"/><path class="lb" d="M 147.92 370.48 C 146.79 373.24 143.63 374.56 140.88 373.43 C 138.12 372.29 136.8 369.14 137.93 366.38 C 139.07 363.62 142.22 362.3 144.98 363.44 C 147.74 364.57 149.06 367.73 147.92 370.48"/><path class="lt" d="M 147.09 412.82 L 143.78 408.77 C 143.78 408.77 154.93 403.41 154.76 394.14 C 154.76 394.14 151.15 393.27 148.64 394.85 L 145.11 389.88 C 145.11 389.88 152.67 387.29 160.96 389.94 C 160.96 389.94 162.34 403.92 147.09 412.82"/><path class="lt" d="M 158.95 410.88 C 157.23 408.45 157.8 405.08 160.23 403.35 C 162.66 401.63 166.04 402.2 167.76 404.63 C 169.48 407.07 168.91 410.43 166.48 412.16 C 164.05 413.89 160.68 413.32 158.95 410.88"/><path class="lg" d="M 123.53 391.11 L 128.66 390.06 C 128.66 390.06 128.23 402.43 136.53 406.57 C 136.53 406.57 138.96 403.78 138.74 400.82 L 144.78 400 C 144.78 400 143.57 407.9 137.37 414.02 C 137.37 414.02 124.35 408.76 123.53 391.11"/><path class="lg" d="M 119.75 402.53 C 122.7 402.12 125.43 404.2 125.83 407.15 C 126.23 410.11 124.16 412.83 121.21 413.23 C 118.25 413.63 115.53 411.56 115.12 408.61 C 114.72 405.65 116.79 402.93 119.75 402.53"/><path class="lb" d="M 55.99 440.51 L 66.48 440.51 L 66.48 442.17 C 66.48 445.11 65.46 447.62 63.4 449.72 C 61.36 451.8 58.88 452.85 55.99 452.85 C 53.09 452.85 50.61 451.8 48.57 449.72 C 46.51 447.62 45.48 445.11 45.48 442.17 C 45.48 439.23 46.51 436.72 48.57 434.63 C 50.61 432.55 53.09 431.5 55.99 431.5 C 57.96 431.5 59.79 432.02 61.47 433.07 C 63.14 434.11 64.43 435.53 65.35 437.32 L 62.36 438.82 C 61.75 437.59 60.87 436.61 59.72 435.9 C 58.59 435.19 57.34 434.83 55.99 434.83 C 54.01 434.83 52.32 435.55 50.92 436.98 C 49.51 438.42 48.8 440.15 48.8 442.17 C 48.8 444.2 49.51 445.93 50.92 447.37 C 52.32 448.8 54.01 449.52 55.99 449.52 C 57.67 449.52 59.17 448.98 60.47 447.9 C 61.77 446.83 62.6 445.48 62.96 443.84 L 55.99 443.84 Z M 55.99 440.51"/><path class="lb" d="M 79.56 443.04 C 79.23 442.15 78.69 441.43 77.93 440.87 C 77.15 440.31 76.28 440.03 75.32 440.03 C 74.36 440.03 73.5 440.31 72.71 440.87 C 71.95 441.43 71.41 442.15 71.08 443.04 Z M 81.79 449.09 C 81.14 450.08 80.29 450.89 79.25 451.5 C 78.04 452.23 76.73 452.59 75.32 452.59 C 73.17 452.59 71.34 451.82 69.81 450.27 C 68.29 448.73 67.53 446.87 67.53 444.68 C 67.53 442.49 68.29 440.62 69.81 439.08 C 71.34 437.54 73.17 436.76 75.32 436.76 C 77.46 436.76 79.3 437.54 80.83 439.08 C 82.35 440.62 83.11 442.49 83.11 444.68 L 83.11 446.02 L 71.08 446.02 C 71.34 447.04 71.89 447.86 72.71 448.48 C 73.5 449.04 74.36 449.33 75.32 449.33 C 76.89 449.33 78.1 448.7 78.96 447.45 Z M 81.79 449.09"/><path class="lb" d="M 91.72 436.61 C 93.7 436.61 95.38 437.36 96.78 438.89 C 98.18 440.4 98.88 442.22 98.88 444.37 L 98.88 452.44 L 95.7 452.44 L 95.7 444.37 C 95.7 443.11 95.3 442.03 94.53 441.14 C 93.75 440.25 92.81 439.8 91.72 439.8 C 90.63 439.8 89.7 440.25 88.92 441.14 C 88.15 442.03 87.76 443.11 87.76 444.37 L 87.76 452.44 L 84.57 452.44 L 84.57 436.91 L 87.76 436.91 L 87.76 437.9 C 88.95 437.04 90.27 436.61 91.72 436.61"/><path class="lb" d="M 112.36 443.04 C 112.03 442.15 111.49 441.43 110.73 440.87 C 109.95 440.31 109.08 440.03 108.12 440.03 C 107.16 440.03 106.29 440.31 105.52 440.87 C 104.75 441.43 104.21 442.15 103.88 443.04 Z M 114.59 449.09 C 113.94 450.08 113.09 450.89 112.05 451.5 C 110.84 452.23 109.53 452.59 108.12 452.59 C 105.97 452.59 104.14 451.82 102.61 450.27 C 101.09 448.73 100.33 446.87 100.33 444.68 C 100.33 442.49 101.09 440.62 102.61 439.08 C 104.14 437.54 105.97 436.76 108.12 436.76 C 110.26 436.76 112.1 437.54 113.63 439.08 C 115.15 440.62 115.91 442.49 115.91 444.68 L 115.91 446.02 L 103.88 446.02 C 104.14 447.04 104.69 447.86 105.52 448.48 C 106.29 449.04 107.16 449.33 108.12 449.33 C 109.69 449.33 110.9 448.7 111.76 447.45 Z M 114.59 449.09"/><path class="lb" d="M 120.56 438.21 C 121.75 437.35 123.07 436.91 124.52 436.91 L 126.13 436.91 L 126.13 440.11 L 124.52 440.11 C 123.43 440.11 122.5 440.56 121.72 441.45 C 120.95 442.34 120.56 443.41 120.56 444.66 L 120.56 452.44 L 117.36 452.44 L 117.36 436.91 L 120.56 436.91 Z M 120.56 438.21"/><path class="lb" d="M 133.8 449.32 C 135.05 449.32 136.11 448.88 137 447.97 C 137.89 447.06 138.33 445.96 138.33 444.68 C 138.33 443.39 137.89 442.29 137 441.38 C 136.11 440.48 135.05 440.03 133.8 440.03 C 132.56 440.03 131.48 440.48 130.59 441.38 C 129.72 442.29 129.29 443.39 129.29 444.68 C 129.29 445.96 129.72 447.06 130.59 447.97 C 131.48 448.88 132.56 449.32 133.8 449.32 M 141.6 452.44 L 138.33 452.44 L 138.33 451.1 C 136.98 452.1 135.47 452.59 133.8 452.59 C 131.66 452.59 129.82 451.82 128.3 450.27 C 126.78 448.73 126.02 446.87 126.02 444.68 C 126.02 442.49 126.78 440.62 128.3 439.08 C 129.82 437.54 131.66 436.76 133.8 436.76 C 135.47 436.76 136.98 437.25 138.33 438.24 L 138.33 436.91 L 141.6 436.91 Z M 141.6 452.44"/><path class="lb" d="M 150.7 440.03 C 149.45 440.03 148.39 440.48 147.5 441.38 C 146.62 442.29 146.18 443.39 146.18 444.68 C 146.18 445.96 146.62 447.06 147.5 447.97 C 148.39 448.88 149.45 449.32 150.7 449.32 C 152.23 449.32 153.45 448.69 154.36 447.43 L 157.02 449.31 C 155.46 451.5 153.35 452.59 150.7 452.59 C 148.55 452.59 146.71 451.82 145.19 450.27 C 143.67 448.73 142.91 446.87 142.91 444.68 C 142.91 442.49 143.67 440.62 145.19 439.08 C 146.71 437.54 148.55 436.76 150.7 436.76 C 153.35 436.76 155.46 437.85 157.02 440.04 L 154.36 441.93 C 153.45 440.66 152.23 440.03 150.7 440.03"/><path class="lb" d="M 158.28 452.44 L 161.48 452.44 L 161.48 436.91 L 158.28 436.91 Z M 161.14 432.24 C 161.48 432.59 161.65 433 161.65 433.49 C 161.65 433.98 161.48 434.39 161.14 434.74 C 160.8 435.08 160.38 435.25 159.89 435.25 C 159.4 435.25 158.98 435.08 158.64 434.74 C 158.3 434.39 158.12 433.98 158.12 433.49 C 158.12 433 158.3 432.59 158.64 432.24 C 158.98 431.9 159.4 431.73 159.89 431.73 C 160.38 431.73 160.8 431.9 161.14 432.24"/><path class="lb" d="M 168.78 435.7 L 171.48 431.86 L 175.1 431.86 L 172.4 435.7 Z M 170.89 449.32 C 172.13 449.32 173.2 448.88 174.09 447.97 C 174.97 447.06 175.41 445.96 175.41 444.68 C 175.41 443.39 174.97 442.29 174.09 441.38 C 173.2 440.48 172.13 440.03 170.89 440.03 C 169.64 440.03 168.57 440.48 167.68 441.38 C 166.8 442.29 166.37 443.39 166.37 444.68 C 166.37 445.96 166.8 447.06 167.68 447.97 C 168.57 448.88 169.64 449.32 170.89 449.32 M 170.89 436.76 C 173.03 436.76 174.87 437.53 176.4 439.08 C 177.92 440.62 178.68 442.49 178.68 444.68 C 178.68 446.87 177.92 448.73 176.4 450.27 C 174.87 451.82 173.03 452.59 170.89 452.59 C 168.74 452.59 166.9 451.82 165.38 450.27 C 163.86 448.73 163.1 446.87 163.1 444.68 C 163.1 442.49 163.86 440.62 165.38 439.08 C 166.9 437.53 168.74 436.76 170.89 436.76"/><path class="lb" d="M 187.29 436.61 C 189.26 436.61 190.95 437.36 192.35 438.89 C 193.75 440.4 194.45 442.22 194.45 444.37 L 194.45 452.44 L 191.26 452.44 L 191.26 444.37 C 191.26 443.11 190.87 442.03 190.09 441.14 C 189.31 440.25 188.38 439.8 187.29 439.8 C 186.2 439.8 185.27 440.25 184.48 441.14 C 183.71 442.03 183.33 443.11 183.33 444.37 L 183.33 452.44 L 180.13 452.44 L 180.13 436.91 L 183.33 436.91 L 183.33 437.9 C 184.52 437.04 185.84 436.61 187.29 436.61"/><path class="lg" d="M 201.18 431.69 L 214.47 431.69 L 214.47 436.1 L 205.59 436.1 L 205.59 439.83 L 214.47 439.83 L 214.47 444.24 L 205.59 444.24 L 205.59 448.03 L 214.47 448.03 L 214.47 452.44 L 201.18 452.44 Z M 201.18 431.69"/><path class="lg" d="M 223.96 440.41 C 224.34 440.41 224.67 440.21 224.96 439.82 C 225.29 439.38 225.45 438.86 225.45 438.25 C 225.45 437.65 225.29 437.14 224.96 436.7 C 224.67 436.31 224.34 436.11 223.96 436.11 L 221.29 436.11 L 221.29 440.41 Z M 223.96 431.69 C 225.59 431.69 226.98 432.33 228.13 433.62 C 229.29 434.9 229.87 436.45 229.87 438.25 C 229.87 440.07 229.29 441.61 228.13 442.9 C 226.98 444.19 225.59 444.83 223.96 444.83 L 221.29 444.83 L 221.29 452.44 L 216.86 452.44 L 216.86 431.69 Z M 223.96 431.69"/><path class="lg" d="M 232.75 431.69 L 237.16 431.69 L 237.16 452.44 L 232.75 452.44 Z M 232.75 431.69"/><path class="lg" d="M 237.38 457.53 L 45.59 457.53 L 45.59 456.67 L 237.38 456.67 Z M 237.38 457.53"/></svg>':'')+'<h2>'+(first?'Mira quién queda fuera del grupo.':'Nueva clase')+'</h2>'+
+   '<p class="lead">Ponle nombre a la clase y sube las respuestas del formulario. El sociograma se arma solo.</p>'+
+   (ui.impMsg?'<p class="note" role="alert">'+esc(ui.impMsg)+'</p>':'')+
+   '<div class="field" style="max-width:420px;margin-top:22px"><label for="imp-class">Nombre de la clase</label><input type="text" id="imp-class" maxlength="60" placeholder="Ejemplo: 5.º B" value="'+esc(ui.impName)+'"></div>'+
+   '<div class="drop" id="drop"><p class="drop-title">Suelta aquí el archivo de respuestas</p><p class="lead" style="margin:6px auto 18px">Excel, CSV, PDF o el .zip que descarga Google Forms.</p><label class="btn primary"><input type="file" class="sr" data-change="impFile" accept=".csv,.tsv,.txt,.xlsx,.xlsm,.xls,.ods,.zip,.pdf,.html,.htm">Elegir archivo</label></div>'+
+   '<div class="manual-opt"><div><h3>¿Respondieron en papel?</h3><p class="lead" style="margin:0">Escribe la lista y las preguntas, y anota cada papelito aquí.</p></div><button class="btn" data-action="mOpen">Crear la clase a mano</button></div>'+
+   '<div class="section"><h3>O pega las celdas</h3><p class="lead" style="margin:0 0 10px">Selecciona toda la hoja de respuestas, con sus títulos, cópiala y pégala aquí.</p><textarea id="imp-paste" aria-label="Celdas copiadas de la hoja" placeholder="Pega aquí las celdas">'+esc(ui.impPaste)+'</textarea>'+
+   '<div class="row" style="margin-top:10px"><button class="btn" data-action="impPaste">Leer lo pegado</button><button class="btn" data-action="impSample">Probar con respuestas de ejemplo</button>'+(first?'':'<button class="btn" data-action="impCancel">Cancelar</button>')+'</div>'+
+   '<label class="check"><input type="checkbox" data-change="impCheck"'+(ui.impCheck?' checked':'')+'>Revisar las columnas antes de crear</label></div>'+
+   '<p class="method">Sirve la hoja de respuestas de Google Forms, Google Sheets, Excel o Microsoft Forms, en Excel, CSV o PDF. El archivo se lee en este dispositivo y solo se guarda la clase que crees.</p></div>';
+}
+var ROLES={plain:[['ignore','No usar'],['who','Nombre de quien responde'],['group','Clase o grado'],['pos','Elección'],['neg','Rechazo']],gridValue:[['ignore','No usar'],['pos','Elección'],['neg','Rechazo']],gridName:[['ignore','No usar'],['use','Usar las marcas']]};
+function viewImportMap(){
+  var R=imp.result,T=imp.T,ok=!R.error&&R.classes.some(function(k){return k.students.length>=3;});
+  var h='<h2>Revisa las columnas</h2><p class="lead">'+esc(imp.file)+': '+T.rows.length+' '+(T.rows.length===1?'fila':'filas')+' de respuestas y '+T.headers.length+' columnas.'+(T.matrix?' Se leyó como matriz de nombres contra nombres.':'')+'</p>';
+  if(R.error==='who')h+='<p class="note" role="alert">No se reconoció la columna con el nombre de quien responde. Elígela abajo en "Uso".</p>';
+  else if(R.error==='picks')h+='<p class="note" role="alert">No se reconocieron las preguntas. Marca abajo cuáles son de Elección y cuáles de Rechazo.</p>';
+  else{
+    R.classes.forEach(function(k){
+      h+='<div class="sum"><strong>'+esc(k.name)+'</strong><br>'+k.students.length+' estudiantes, '+k.responded+' respondieron. '+k.posN+' elecciones y '+k.negN+' rechazos.'+
+        (k.dup?' '+k.dup+' '+(k.dup===1?'respuesta repetida':'respuestas repetidas')+': se usó la más reciente.':'')+
+        (k.students.length<3?' Se necesitan al menos 3 estudiantes.':'')+'</div>';
+    });
+    if(R.noName)h+='<p class="note">'+R.noName+' '+(R.noName===1?'fila no tiene nombre y no se usó.':'filas no tienen nombre y no se usaron.')+'</p>';
+  }
+  h+='<div class="section"><h3>Columnas del archivo</h3><div class="table-wrap"><table class="results map"><thead><tr><th scope="col">Columna</th><th scope="col">Ejemplo</th><th scope="col">Uso</th></tr></thead><tbody>';
+  imp.units.forEach(function(u,ix){
+    var kind=u.kind==='grid'?'gridValue':u.kind;
+    h+='<tr><td>'+esc(clip(u.title,110))+(u.kind!=='plain'?' <span class="save">('+u.cols.length+' columnas)</span>':'')+'</td><td class="ex">'+esc(clip(u.sample||'',70))+'</td><td><select aria-label="Uso de '+esc(clip(u.title,60))+'" data-change="impRole" data-u="'+ix+'">'+optionsHTML(ROLES[kind],u.role)+'</select>';
+    if(u.kind==='gridName'&&u.role==='use'){
+      h+='<div class="vals">'+u.valueList.map(function(v,vi){return '<label><span>Marca «'+esc(clip(v,40))+'»</span><select data-change="impVal" data-u="'+ix+'" data-v="'+vi+'">'+optionsHTML([['pos','Elección'],['neg','Rechazo'],['ignore','No usar']],u.values[v])+'</select></label>';}).join('')+'</div>';
+    }
+    h+='</td></tr>';
+  });
+  h+='</tbody></table></div></div>';
+  h+='<div class="section"><div class="field" style="max-width:420px"><label for="map-class">Nombre de la clase</label><input type="text" id="map-class" maxlength="60" data-change="impClass" value="'+esc(imp.className)+'"></div></div>';
+  h+='<div class="section row"><button class="btn primary" data-action="impCreate"'+(ok?'':' disabled')+'>Crear sociograma</button><button class="btn" data-action="impOpen">Subir otro archivo</button><button class="btn" data-action="impCancel">Cancelar</button></div>';
+  return h;
+}
+function impRefresh(sel){
+  imp.result=buildImport();render();
+  if(sel){var el=document.querySelector(sel);if(el)el.focus();}
+}
+function namesOf(A,list){return list.length?list.map(function(id){return esc(A.names[id]);}).join(', '):'Nadie';}
+function detailHTML(c,A){
+  var id=ui.selected;
+  if(!id||!A.m[id])return '<p class="hint">Toca a un estudiante en el mapa para ver sus elecciones y rechazos. Arrastra los círculos para ordenar el mapa.</p>';
+  var n=A.m[id];
+  return '<div class="who-line"><h3>'+esc(A.names[id])+'</h3><span class="badge '+n.status+'">'+STATUS[n.status]+'</span>'+(n.answered?'':'<span class="hint">No respondió el formulario.</span>')+'</div>'+
+   '<dl><div><dt>Elige a</dt><dd>'+namesOf(A,n.pos)+'</dd></div><div><dt>Recibe elección de</dt><dd>'+namesOf(A,n.posBy)+'</dd></div>'+
+   '<div><dt>Rechaza a</dt><dd>'+namesOf(A,n.neg)+'</dd></div><div><dt>Recibe rechazo de</dt><dd>'+namesOf(A,n.negBy)+'</dd></div></dl>';
+}
+function viewResults(c){
+  var active=c.questions.filter(function(q){return q.kind!=='off';});
+  if(ui.q!=='all'&&!active.some(function(q){return q.id===ui.q;}))ui.q='all';
+  var A=analyze(c,ui.q),all=ui.q==='all'?A:analyze(c,'all');
+  var h='<div class="headrow"><h2>Sociograma de '+esc(c.name)+'</h2><div class="row"><button class="btn" data-action="view" data-view="entry">Anotar respuestas</button><button class="btn" data-action="view" data-view="edit">Editar</button></div></div>';
+  if(c.students.length<3||A.answered<1||!active.length){
+    if(c.students.length>=3&&active.length&&A.answered<1)return h+'<p class="lead">Todavía no hay respuestas anotadas.</p><div class="row" style="margin-top:18px"><button class="btn primary" data-action="view" data-view="entry">Anotar respuestas</button></div>';
+    return h+'<p class="lead">'+(c.students.length<3?'Esta clase tiene menos de 3 estudiantes.':'Ninguna pregunta está en uso.')+' Toca Editar para corregirlo.</p>';
+  }
+  var missing=c.students.length-A.answered;
+  h+='<p class="lead">'+A.answered+' de '+c.students.length+' estudiantes respondieron. Hay '+A.mutualPairs+' '+(A.mutualPairs===1?'elección mutua':'elecciones mutuas')+(ui.q==='all'?' en el grupo.':' en esta pregunta.')+'</p>';
+  if(missing>0)h+='<p class="note">'+(missing===1?'Falta 1 respuesta.':'Faltan '+missing+' respuestas.')+' Los resultados pueden cambiar cuando estén completas.</p>';
+  var dups=dupSuggestions(c,all);
+  if(dups.length){
+    h+='<div class="dups"><h3>¿Son la misma persona?</h3><p>Estos nombres se parecen. Si es la misma persona, únelos para no contarla dos veces.</p><ul>'+dups.map(function(d){
+      return '<li><span><strong>'+esc(d.from.name)+'</strong> y <strong>'+esc(d.into.name)+'</strong></span><span class="row"><button class="btn small primary" data-action="dupYes" data-from="'+d.from.id+'" data-into="'+d.into.id+'">Unir</button><button class="btn small" data-action="dupNo" data-key="'+d.key+'">Son distintas</button></span></li>';
+    }).join('')+'</ul></div>';
+  }
+  h+='<ul class="qlist" aria-label="Preguntas del formulario">'+c.questions.map(function(q){return '<li>'+kindBadge(q.kind)+'<span>'+esc(q.text)+'</span></li>';}).join('')+'</ul>';
+  h+='<div class="graph-layout"><div class="graph-card"><div class="graph-tools">'+
+    (active.length>1?'<label>Pregunta<select data-change="qFilter" class="mini">'+optionsHTML([['all','Todas']].concat(active.map(function(q){return [q.id,clip(q.text,58)];})),ui.q)+'</select></label>':'')+
+    '<label><input type="checkbox" data-change="show" data-k="pos"'+(ui.show.pos?' checked':'')+'>Elecciones</label>'+
+    '<label><input type="checkbox" data-change="show" data-k="neg"'+(ui.show.neg?' checked':'')+'>Rechazos</label>'+
+    '<label><input type="checkbox" data-change="show" data-k="mutual"'+(ui.show.mutual?' checked':'')+'>Solo mutuos</label>'+
+    '<span class="spacer"></span>'+
+    '<button class="btn small" data-action="relayout">Reordenar mapa</button>'+
+    (caps.downloads?'<button class="btn small" data-action="png">Descargar imagen</button>':'')+
+    '</div><div id="detail" aria-live="polite"></div><div id="graph"></div><div class="legend">'+
+    '<span><i class="l"></i>Elección</span><span><i class="l n"></i>Rechazo</span><span>Línea gruesa: mutuo</span><span>Número: compañeros que lo eligen</span>'+
+    Object.keys(STATUS).map(function(k){return '<span><i class="i-'+k+'"></i>'+STATUS[k]+'</span>';}).join('')+
+    '</div></div></div>';
+
+  var rej=A.ids.filter(function(id){return A.m[id].status==='rechazo';});
+  var none=A.ids.filter(function(id){return A.m[id].er===0;});
+  var noMut=A.ids.filter(function(id){var n=A.m[id];return n.answered&&n.pos.length>0&&n.mutPos===0&&n.er>0;});
+  function li(id,txt){return '<li><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button><span>'+txt+'</span></li>';}
+  h+='<div class="section"><h3>Requieren atención</h3>';
+  if(!rej.length&&!none.length&&!noMut.length){h+='<p class="lead" style="margin-top:0">Nadie aparece en riesgo con estas respuestas.</p>';}
+  else{
+    h+='<div class="attention">';
+    if(rej.length)h+='<div class="col"><h4>Rechazo alto</h4><p class="why">Reciben muchos más rechazos que el resto del grupo.</p><ul>'+rej.map(function(id){return li(id,A.m[id].rr+' rechazos, '+A.m[id].er+' elecciones');}).join('')+'</ul></div>';
+    if(none.length)h+='<div class="col b"><h4>Sin elecciones</h4><p class="why">Nadie los nombró en las preguntas de elección.</p><ul>'+none.map(function(id){return li(id,A.m[id].rr+' rechazos');}).join('')+'</ul></div>';
+    if(noMut.length)h+='<div class="col c"><h4>Sin elección mutua</h4><p class="why">Eligieron a compañeros que no los eligieron de vuelta.</p><ul>'+noMut.map(function(id){return li(id,A.m[id].er+' elecciones recibidas');}).join('')+'</ul></div>';
+    h+='</div>';
+  }
+  h+='</div>';
+
+  var order=A.ids.slice().sort(function(a,b){return (A.m[b].rr-A.m[a].rr)||(A.m[a].er-A.m[b].er);});
+  h+='<div class="section"><div class="row" style="justify-content:space-between;margin-bottom:12px"><h3>Resultados por estudiante</h3>'+(caps.downloads?'<button class="btn small" data-action="csv">Descargar tabla para Excel</button>':'')+'</div>'+
+   '<div class="table-wrap"><table class="results"><thead><tr><th scope="col">Estudiante</th><th scope="col">Lo eligen</th><th scope="col">Lo rechazan</th><th scope="col">Elecciones mutuas</th><th scope="col">Rechazos mutuos</th><th scope="col">Estatus</th></tr></thead><tbody>'+
+   order.map(function(id){var n=A.m[id];return '<tr><td><button class="linkish" data-action="select" data-id="'+id+'">'+esc(A.names[id])+'</button>'+(n.answered?'':' <span class="save">no respondió</span>')+'</td><td>'+n.er+'</td><td>'+n.rr+'</td><td>'+n.mutPos+'</td><td>'+n.mutNeg+'</td><td><span class="badge '+n.status+'">'+STATUS[n.status]+'</span></td></tr>';}).join('')+
+   '</tbody></table></div><p class="method">Los números cuentan compañeros distintos. El estatus compara las elecciones y los rechazos que recibe cada estudiante con el promedio de su grupo (método sociométrico de Coie y Dodge). Es una señal para observar, no un diagnóstico.</p></div>';
+  return h;
+}
+function viewEdit(c){
+  var h='<div class="headrow"><h2>Editar '+esc(c.name)+'</h2><button class="btn primary" data-action="view" data-view="results">Listo</button></div>'+
+   '<p class="lead">Corrige lo que no se haya leído bien. Cada cambio se guarda solo.</p>';
+  h+='<div class="section"><div class="field" style="max-width:420px"><label for="f-name">Nombre de la clase</label><input type="text" id="f-name" maxlength="60" data-change="className" value="'+esc(c.name)+'"></div></div>';
+  h+='<div class="section"><h3>Preguntas</h3><ul class="qrows">'+c.questions.map(function(q){
+    return '<li><span>'+esc(q.text)+'</span><select aria-label="Tipo de pregunta: '+esc(clip(q.text,60))+'" data-change="qKind" data-q="'+esc(q.id)+'">'+optionsHTML([['pos','Elección'],['neg','Rechazo'],['off','No usar']],q.kind)+'</select></li>';
+  }).join('')+'</ul></div>';
+  h+='<div class="section"><h3>Estudiantes ('+c.students.length+')</h3>';
+  if(c.students.length){
+    h+='<ul class="srows">'+c.students.map(function(s){
+      var others=[['','Unir con…']].concat(c.students.filter(function(o){return o.id!==s.id;}).map(function(o){return [o.id,o.name];}));
+      return '<li><input type="text" class="nm" maxlength="60" aria-label="Nombre" data-change="rename" data-id="'+s.id+'" value="'+esc(s.name)+'"><span class="st">'+(c.answers[s.id]?'Respondió':'No respondió')+'</span>'+
+        '<select class="mg" aria-label="Unir a '+esc(s.name)+' con otro estudiante" data-change="mergeInto" data-id="'+s.id+'">'+optionsHTML(others,'')+'</select>'+
+        '<button class="btn small" data-action="editWho" data-id="'+s.id+'">Respuestas</button>'+
+        '<button class="x" data-action="removeStudent" data-id="'+s.id+'" aria-label="Quitar a '+esc(s.name)+'">×</button></li>';
+    }).join('')+'</ul>';
+  }
+  h+='<div class="row" style="margin-top:12px"><input type="text" id="f-add" maxlength="60" style="max-width:320px" aria-label="Nombre del estudiante nuevo" placeholder="Nombre del estudiante que falta" value="'+esc(ui.addName)+'"><button class="btn" data-action="addStudent">Agregar estudiante</button></div></div>';
+  if(c.students.length>=2){
+    var sid=ui.editSid&&c.students.some(function(s){return s.id===ui.editSid;})?ui.editSid:c.students[0].id;ui.editSid=sid;
+    var a=c.answers[sid]||{},me=c.students.filter(function(s){return s.id===sid;})[0];
+    h+='<div class="section" id="ans"><h3>Respuestas</h3><div class="field" style="max-width:360px"><label for="f-sid">Estudiante</label><select id="f-sid" data-change="editSid">'+optionsHTML(c.students.map(function(s){return [s.id,s.name+(c.answers[s.id]?'':' (no respondió)')];}),sid)+'</select></div><div class="form" style="margin-top:14px">';
+    h+=answerFormHTML(c,sid);
+    if(c.answers[sid])h+='<div class="row" style="margin-top:22px"><button class="btn" data-action="clearOne">Marcar a '+esc(me.name)+' como "no respondió"</button></div>';
+    h+='</div></div>';
+  }
+  h+='<div class="section row"><button class="btn primary" data-action="view" data-view="results">Listo</button><button class="btn danger" data-action="arm" data-key="deleteClass" data-label="Eliminar clase" data-confirm="Confirmar: eliminar clase">Eliminar clase</button></div>';
+  return h;
+}
+
+/* ---------- manual class: answers written on paper ---------- */
+var DEFAULT_QS=[
+  {text:'¿Con qué compañero te gustaría compartir mesa o pupitre en clase?',kind:'pos'},
+  {text:'¿A quién elegirías para realizar un trabajo en equipo o tarea escolar?',kind:'pos'},
+  {text:'¿Con qué compañero te costaría más trabajar en grupo?',kind:'neg'},
+  {text:'¿Al lado de quién no te gustaría sentarte en clase?',kind:'neg'}
+];
+function manualState(){
+  if(!ui.manual)ui.manual={name:ui.impName||'',names:'',qs:DEFAULT_QS.map(function(q){return {text:q.text,kind:q.kind};})};
+  return ui.manual;
+}
+function syncManual(){
+  if(!ui.manual)return;
+  var M=ui.manual,el=$('#m-name');if(el)M.name=el.value;
+  el=$('#m-names');if(el)M.names=el.value;
+  if(document.querySelectorAll('[data-mq]').length!==M.qs.length)return;
+  M.qs.forEach(function(q,i){
+    var t=document.querySelector('[data-mq="'+i+'"]'),k=document.querySelector('[data-mk="'+i+'"]');
+    if(t)q.text=t.value;if(k)q.kind=k.value;
+  });
+}
+function manualNames(text){
+  var seen={},out=[];
+  String(text||'').split(/[\n\r\t;]+/).forEach(function(s){
+    var n=tidyName(s),k=norm(n);
+    if(!k||seen[k])return;seen[k]=1;out.push(n);
+  });
+  return out;
+}
+function viewManualSetup(){
+  var M=manualState(),count=manualNames(M.names).length;
+  var h='<div class="import"><h2>Crear la clase a mano</h2><p class="lead">Para cuando haces las preguntas en voz alta y los estudiantes responden en papelitos.</p>';
+  h+='<div class="field" style="max-width:420px;margin-top:22px"><label for="m-name">Nombre de la clase</label><input type="text" id="m-name" maxlength="60" placeholder="Ejemplo: 5.º B" value="'+esc(M.name)+'"></div>';
+  h+='<div class="section"><h3>Estudiantes</h3><p class="lead" style="margin:0 0 10px">Un nombre por línea. Puedes pegar la lista desde Excel.</p>'+
+     '<textarea id="m-names" data-change="mNames" aria-label="Nombres de los estudiantes, uno por línea" placeholder="Ana López&#10;Bruno Díaz&#10;Carla Ruiz" style="min-height:220px">'+esc(M.names)+'</textarea>'+
+     '<p class="save" id="m-count" style="margin-top:6px">'+(count===1?'1 estudiante':count+' estudiantes')+'</p></div>';
+  h+='<div class="section"><h3>Preguntas</h3><p class="lead" style="margin:0 0 10px">Escribe las preguntas que vas a hacer en voz alta.</p><ul class="mqs">'+M.qs.map(function(q,i){
+    return '<li><input type="text" maxlength="160" data-mq="'+i+'" aria-label="Pregunta '+(i+1)+'" placeholder="Escribe la pregunta" value="'+esc(q.text)+'">'+
+      '<select data-mk="'+i+'" aria-label="Tipo de la pregunta '+(i+1)+'">'+optionsHTML([['pos','Elección'],['neg','Rechazo']],q.kind)+'</select>'+
+      '<button class="x" data-action="mDelQ" data-i="'+i+'" aria-label="Quitar la pregunta '+(i+1)+'"'+(M.qs.length<=1?' disabled':'')+'>×</button></li>';
+  }).join('')+'</ul><div class="row" style="margin-top:10px"><button class="btn" data-action="mAddQ"'+(M.qs.length>=10?' disabled':'')+'>Agregar pregunta</button></div></div>';
+  h+='<div class="section row"><button class="btn primary" data-action="mCreate">Crear y anotar respuestas</button><button class="btn" data-action="mCancel">Volver</button></div></div>';
+  return h;
+}
+function answerFormHTML(c,sid){
+  var a=c.answers[sid]||{},h='',qs=c.questions.filter(function(q){return q.kind!=='off';});
+  if(!qs.length)return '<p class="lead" style="margin:0">Ninguna pregunta está en uso.</p>';
+  qs.forEach(function(q,qi){
+    var list=a[q.id]||[];
+    h+='<div class="q"'+(qi?'':' style="margin-top:0"')+'><div class="q-head"><strong>'+esc(q.text)+'</strong>'+kindBadge(q.kind)+'</div><div class="chips">'+c.students.filter(function(s){return s.id!==sid;}).map(function(s){
+      var on=list.indexOf(s.id)>=0;
+      return '<button class="chip '+q.kind+(on?' on':'')+'" data-action="pick" data-q="'+esc(q.id)+'" data-id="'+s.id+'" aria-pressed="'+on+'">'+esc(s.name)+'</button>';
+    }).join('')+'</div></div>';
+  });
+  return h;
+}
+function viewEntry(c){
+  var done=c.students.filter(function(s){return !!c.answers[s.id];}).length;
+  if(!ui.editSid||!c.students.some(function(s){return s.id===ui.editSid;})){
+    var first=c.students.filter(function(s){return !c.answers[s.id];})[0]||c.students[0];
+    ui.editSid=first?first.id:null;
+  }
+  var h='<div class="headrow"><div><h2>Anotar respuestas</h2><p class="lead">Toma cada papel, elige al estudiante que lo escribió y toca los nombres que puso.</p></div><button class="btn primary" data-action="view" data-view="results">Ver sociograma</button></div>';
+  if(c.students.length<2)return h+'<p class="note">Agrega estudiantes en Editar.</p>';
+  var me=c.students.filter(function(s){return s.id===ui.editSid;})[0];
+  h+='<p class="save" style="margin-top:14px">'+done+' de '+c.students.length+' papeles anotados</p>';
+  h+='<div class="entry"><div class="who-list" id="wholist" aria-label="Estudiantes">'+c.students.map(function(s){
+    var ok=!!c.answers[s.id];
+    return '<button class="who'+(s.id===ui.editSid?' on':'')+'" data-action="entryWho" data-id="'+s.id+'"'+(s.id===ui.editSid?' aria-current="true"':'')+'><span class="dot'+(ok?' ok':'')+'" aria-hidden="true"></span>'+esc(s.name)+'<span class="sr">'+(ok?', anotado':', pendiente')+'</span></button>';
+  }).join('')+'</div><div class="form"><h3 style="margin-bottom:4px">Papel de '+esc(me.name)+'</h3>'+answerFormHTML(c,me.id)+
+    '<div class="row" style="margin-top:24px"><button class="btn primary" data-action="entryNext">Guardar y pasar al siguiente</button>'+
+    (c.answers[me.id]?'<button class="btn" data-action="clearOne">No entregó papel</button>':'')+'</div></div></div>';
+  return h;
+}
+
+/* ---------- graph ---------- */
+var GW=900,GH=600;
+function setCanvas(n){var f=n<=16?1:n<=24?1.2:n<=32?1.4:1.65;GW=Math.round(900*f);GH=Math.round(600*f);}
+function nodeR(n){return 15+Math.min(n.er,8)*2.6;}
+function computeLayout(c,A,force){
+  var ids=A.ids,n=ids.length;
+  setCanvas(n);
+  var key=ids.map(function(id){return id+':'+A.m[id].pos.join(',')+'|'+A.m[id].neg.join(',');}).join(';');
+  var cached=layoutCache[c.id];
+  if(!force&&cached&&cached.key===key)return cached.pos;
+  var P={},k=120,i,j,it;
+  ids.forEach(function(id,ix){var a=2*Math.PI*ix/n;P[id]={x:Math.cos(a)*220,y:Math.sin(a)*220,dx:0,dy:0};});
+  var ITER=380;
+  for(it=0;it<ITER;it++){
+    var temp=55*(1-it/ITER)+1;
+    for(i=0;i<n;i++){P[ids[i]].dx=0;P[ids[i]].dy=0;}
+    for(i=0;i<n;i++)for(j=i+1;j<n;j++){
+      var a=P[ids[i]],b=P[ids[j]],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy)||0.01,f=k*k/d;
+      var neg=A.m[ids[i]].neg.indexOf(ids[j])>=0||A.m[ids[j]].neg.indexOf(ids[i])>=0;
+      if(neg)f*=1.5;
+      a.dx+=dx/d*f;a.dy+=dy/d*f;b.dx-=dx/d*f;b.dy-=dy/d*f;
+    }
+    for(i=0;i<n;i++){
+      var src=P[ids[i]];
+      A.m[ids[i]].pos.forEach(function(t){
+        var dst=P[t],ex=src.x-dst.x,ey=src.y-dst.y,ed=Math.sqrt(ex*ex+ey*ey)||0.01,ef=ed*ed/k*0.55;
+        src.dx-=ex/ed*ef;src.dy-=ey/ed*ef;dst.dx+=ex/ed*ef;dst.dy+=ey/ed*ef;
+      });
+      src.dx-=src.x*1.3;src.dy-=src.y*1.3;
+    }
+    for(i=0;i<n;i++){
+      var p=P[ids[i]],dl=Math.sqrt(p.dx*p.dx+p.dy*p.dy)||0.01,st=Math.min(dl,temp);
+      p.x+=p.dx/dl*st;p.y+=p.dy/dl*st;
+    }
+  }
+  var minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  ids.forEach(function(id){var p=P[id];minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);});
+  var padX=70,padT=50,padB=70,sx=(GW-2*padX)/Math.max(maxX-minX,1),sy=(GH-padT-padB)/Math.max(maxY-minY,1);
+  ids.forEach(function(id){var p=P[id];p.x=padX+(p.x-minX)*sx;p.y=padT+(p.y-minY)*sy;});
+  for(it=0;it<40;it++){
+    for(i=0;i<n;i++)for(j=i+1;j<n;j++){
+      var u=P[ids[i]],v=P[ids[j]],ox=u.x-v.x,oy=u.y-v.y,od=Math.sqrt(ox*ox+oy*oy)||0.01,min=nodeR(A.m[ids[i]])+nodeR(A.m[ids[j]])+34;
+      if(od<min){var push=(min-od)/2;u.x+=ox/od*push;u.y+=oy/od*push;v.x-=ox/od*push;v.y-=oy/od*push;}
+    }
+    ids.forEach(function(id){var p=P[id];p.x=clamp(p.x,45,GW-45);p.y=clamp(p.y,40,GH-52);});
+  }
+  var out={};ids.forEach(function(id){out[id]={x:P[id].x,y:P[id].y};});
+  layoutCache[c.id]={key:key,pos:out};
+  return out;
+}
+function colors(){
+  var s=getComputedStyle(document.documentElement),g=function(n){return s.getPropertyValue(n).trim();};
+  return {pos:g('--pos'),posFill:g('--pos-fill'),onPos:g('--on-pos'),neg:g('--neg'),amber:g('--amber'),onAmber:g('--on-amber'),grey:g('--grey'),ink:g('--ink'),surface:g('--surface'),blue:g('--blue'),on:g('--on-status')};
+}
+function graphSVG(c,A,P,o){
+  var col=o.colors,sel=o.selected&&A.m[o.selected]?o.selected:null,m=A.m,ids=A.ids,show=o.show,f=function(v){return v.toFixed(1);};
+  function related(id){if(!sel||id===sel)return true;var s=m[sel];return s.pos.indexOf(id)>=0||s.neg.indexOf(id)>=0||s.posBy.indexOf(id)>=0||s.negBy.indexOf(id)>=0;}
+  function edge(a,b,t,mutual,curved){
+    var pa=P[a],pb=P[b],dx=pb.x-pa.x,dy=pb.y-pa.y,d=Math.sqrt(dx*dx+dy*dy)||1;dx/=d;dy/=d;
+    var ra=nodeR(m[a]),rb=nodeR(m[b])+(mutual?0:4);
+    var x1=pa.x+dx*ra,y1=pa.y+dy*ra,x2=pb.x-dx*rb,y2=pb.y-dy*rb,path;
+    if(curved){path='M'+f(x1)+' '+f(y1)+'Q'+f((x1+x2)/2-dy*curved)+' '+f((y1+y2)/2+dx*curved)+' '+f(x2)+' '+f(y2);}
+    else{path='M'+f(x1)+' '+f(y1)+'L'+f(x2)+' '+f(y2);}
+    var dim=sel&&a!==sel&&b!==sel;
+    return '<path d="'+path+'" fill="none" stroke="'+col[t]+'" stroke-width="'+(mutual?4.5:1.8)+'" stroke-linecap="round"'+(t==='neg'?' stroke-dasharray="'+(mutual?'10 7':'6 5')+'"':'')+(mutual?'':' marker-end="url(#ah-'+t+(o.exp?'-x':'')+')"')+' opacity="'+(dim?0.08:(mutual?0.9:0.7))+'"/>';
+  }
+  var e='',i,j;
+  for(i=0;i<ids.length;i++)for(j=i+1;j<ids.length;j++){
+    var a=ids[i],b=ids[j],list=[];
+    ['pos','neg'].forEach(function(t){
+      if(!show[t])return;
+      var ab=m[a][t].indexOf(b)>=0,ba=m[b][t].indexOf(a)>=0;
+      if(ab&&ba)list.push([a,b,t,true]);
+      else if(!show.mutual){if(ab)list.push([a,b,t,false]);if(ba)list.push([b,a,t,false]);}
+    });
+    if(!list.length)continue;
+    var offs=list.length===1?[0]:list.length===2?[26,-26]:list.length===3?[0,36,-36]:[20,-20,50,-50];
+    list.forEach(function(L,ix){e+=edge(L[0],L[1],L[2],L[3],L[0]===a?offs[ix]:-offs[ix]);});
+  }
+  var nodes='';
+  ids.forEach(function(id){
+    var n=m[id],p=P[id],r=nodeR(n),fill=col.surface,txt=col.ink,stroke=col.ink,sw=2;
+    if(n.status==='popular'){fill=col.posFill;}else if(n.status==='rechazo'){fill=col.neg;}else if(n.status==='controversial'){fill=col.amber;}else if(n.status==='invisible'){fill=col.grey;}
+    if(n.status!=='promedio'){txt=n.status==='popular'?col.onPos:n.status==='controversial'?col.onAmber:col.on;stroke=col.surface;}
+    nodes+='<g class="node" data-id="'+id+'" tabindex="0" role="button" aria-label="'+esc(A.names[id])+': '+n.er+' elecciones, '+n.rr+' rechazos, '+STATUS[n.status]+'" opacity="'+(related(id)?1:0.18)+'">'+
+      (sel===id?'<circle cx="'+f(p.x)+'" cy="'+f(p.y)+'" r="'+f(r+6)+'" fill="none" stroke="'+col.blue+'" stroke-width="3"/>':'')+
+      '<circle class="body" cx="'+f(p.x)+'" cy="'+f(p.y)+'" r="'+f(r)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/>'+
+      '<text x="'+f(p.x)+'" y="'+f(p.y+5)+'" text-anchor="middle" font-size="15" font-weight="700" fill="'+txt+'">'+n.er+'</text>'+
+      '<text x="'+f(p.x)+'" y="'+f(p.y+r+17)+'" text-anchor="middle" font-size="14" fill="'+col.ink+'" stroke="'+col.surface+'" stroke-width="4" paint-order="stroke" stroke-linejoin="round">'+esc(shortName(A.names[id]))+'</text></g>';
+  });
+  function marker(t){return '<marker id="ah-'+t+(o.exp?'-x':'')+'" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0.5L10 5L0 9.5z" fill="'+col[t]+'"/></marker>';}
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+GW+' '+GH+'"'+(o.exp?' width="'+GW*2+'" height="'+GH*2+'"':'')+' font-family="Atkinson Hyperlegible, Arial, Helvetica, sans-serif" role="group" aria-label="Mapa del grupo"><defs>'+marker('pos')+marker('neg')+'</defs>'+
+    (o.exp?'<rect width="'+GW+'" height="'+GH+'" fill="'+col.surface+'"/>':'')+e+nodes+'</svg>';
+}
+function drawGraph(){
+  var c=cls(),host=$('#graph');if(!c||!host)return;
+  var A=analyze(c,ui.q),P=computeLayout(c,A);
+  host.innerHTML=graphSVG(c,A,P,{colors:colors(),selected:ui.selected,show:ui.show});
+  var d=$('#detail');if(d)d.innerHTML=detailHTML(c,A);
+}
+var drag=null;
+function mountGraph(){
+  var host=$('#graph');if(!host)return;
+  drawGraph();
+  host.onpointerdown=function(e){
+    var g=e.target.closest&&e.target.closest('.node');if(!g)return;
+    drag={id:g.getAttribute('data-id'),x0:e.clientX,y0:e.clientY,moved:false};
+    try{host.setPointerCapture(e.pointerId);}catch(err){}
+  };
+  host.onpointermove=function(e){
+    if(!drag)return;
+    if(!drag.moved&&Math.abs(e.clientX-drag.x0)+Math.abs(e.clientY-drag.y0)<6)return;
+    drag.moved=true;
+    var c=cls(),svg=host.querySelector('svg');if(!c||!svg||!layoutCache[c.id])return;
+    var r=svg.getBoundingClientRect(),p=layoutCache[c.id].pos[drag.id];if(!p)return;
+    p.x=clamp((e.clientX-r.left)/r.width*GW,30,GW-30);p.y=clamp((e.clientY-r.top)/r.height*GH,30,GH-45);
+    drawGraph();
+  };
+  host.onpointerup=function(e){
+    if(!drag){if(!(e.target.closest&&e.target.closest('.node'))&&ui.selected){ui.selected=null;drawGraph();}return;}
+    var d=drag;drag=null;try{host.releasePointerCapture(e.pointerId);}catch(err){}
+    if(!d.moved){ui.selected=ui.selected===d.id?null:d.id;drawGraph();}
+  };
+  host.onpointercancel=function(){drag=null;};
+  host.onkeydown=function(e){
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    var g=e.target.closest&&e.target.closest('.node');if(!g)return;
+    e.preventDefault();var id=g.getAttribute('data-id');
+    ui.selected=ui.selected===id?null:id;drawGraph();
+    var again=host.querySelector('.node[data-id="'+id+'"]');if(again)again.focus();
+  };
+}
+
+/* ---------- downloads ---------- */
+function fileSlug(c){return (c.name||'clase').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'clase';}
+function saveFile(filename,data){
+  if(!caps.downloads)return;
+  caps.downloads.save({filename:filename,data:data}).then(function(){toast('Archivo descargado');},function(e){
+    if(e&&e.code==='declined')return;
+    toast(e&&e.code==='rate_limited'?'Espera un momento y vuelve a intentarlo':'No se pudo descargar el archivo');
+  });
+}
+function downloadCSV(){
+  var c=cls();if(!c)return;var A=analyze(c,ui.q);
+  var q=function(v){return '"'+String(v).replace(/"/g,'""')+'"';};
+  var rows=[['Estudiante','Respondió','Lo eligen','Lo rechazan','Elecciones mutuas','Rechazos mutuos','Estatus','Elige a','Rechaza a']];
+  A.ids.forEach(function(id){var n=A.m[id];rows.push([A.names[id],n.answered?'Sí':'No',n.er,n.rr,n.mutPos,n.mutNeg,STATUS[n.status],n.pos.map(function(t){return A.names[t];}).join('; '),n.neg.map(function(t){return A.names[t];}).join('; ')]);});
+  saveFile('sociograma-'+fileSlug(c)+'.csv','\ufeff'+rows.map(function(r){return r.map(q).join(',');}).join('\r\n'));
+}
+function downloadPNG(){
+  var c=cls();if(!c)return;var A=analyze(c,ui.q),P=computeLayout(c,A);
+  var svg=graphSVG(c,A,P,{colors:colors(),selected:null,show:ui.show,exp:true});
+  var img=new Image();
+  img.onload=function(){
+    try{
+      var cv=document.createElement('canvas');cv.width=GW*2;cv.height=GH*2;cv.getContext('2d').drawImage(img,0,0,GW*2,GH*2);
+      cv.toBlob(function(b){if(b)saveFile('sociograma-'+fileSlug(c)+'.png',b);else toast('No se pudo crear la imagen');},'image/png');
+    }catch(e){toast('No se pudo crear la imagen');}
+  };
+  img.onerror=function(){toast('No se pudo crear la imagen');};
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+
+/* ---------- render ---------- */
+function render(){
+  var keep=$('#imp-class');if(keep)ui.impName=keep.value;
+  keep=$('#imp-paste');if(keep)ui.impPaste=keep.value;
+  keep=$('#f-add');if(keep)ui.addName=keep.value;
+  syncManual();
+  renderTop();
+  var c=cls(),panel=$('#panel');
+  if(CLOUD&&cloud.status!=='ready'){panel.innerHTML=viewCloud();return;}
+  if(ui.importing||!c){panel.innerHTML=ui.manualOn?viewManualSetup():imp?viewImportMap():viewImportSource();return;}
+  if(ui.view==='edit'){panel.innerHTML=viewEdit(c);return;}
+  if(ui.view==='entry'){
+    var wl=$('#wholist'),st=wl?wl.scrollTop:0;
+    panel.innerHTML=viewEntry(c);
+    wl=$('#wholist');if(wl)wl.scrollTop=st;
+    return;
+  }
+  panel.innerHTML=viewResults(c);mountGraph();
+}
+function unarm(){ui.armed=null;var b=document.querySelector('.btn.armed');if(b){b.classList.remove('armed');b.textContent=b.getAttribute('data-label');}}
+
+/* ---------- actions ---------- */
+var actions={
+  theme:function(){setTheme(isDark()?'light':'dark');},
+  view:function(b){ui.view=b.getAttribute('data-view');ui.selected=null;clearTimeout(armT);ui.armed=null;render();window.scrollTo(0,0);},
+  impOpen:function(){imp=null;ui.importing=true;ui.manualOn=false;ui.impMsg='';render();window.scrollTo(0,0);},
+  impCancel:function(){imp=null;ui.importing=false;ui.manualOn=false;ui.impMsg='';render();window.scrollTo(0,0);},
+  mOpen:function(){var el=$('#imp-class');if(el)ui.impName=el.value;manualState();if(!ui.manual.name)ui.manual.name=ui.impName;ui.manualOn=true;render();window.scrollTo(0,0);var f=$('#m-names');if(f&&ui.manual.name)f.focus();else{f=$('#m-name');if(f)f.focus();}},
+  mCancel:function(){syncManual();ui.manualOn=false;render();window.scrollTo(0,0);},
+  mAddQ:function(){syncManual();var M=manualState();if(M.qs.length>=10)return;M.qs.push({text:'',kind:'pos'});render();var el=document.querySelector('[data-mq="'+(M.qs.length-1)+'"]');if(el)el.focus();},
+  mDelQ:function(b){syncManual();var M=manualState();if(M.qs.length<=1)return;M.qs.splice(+b.getAttribute('data-i'),1);render();},
+  mCreate:function(){
+    syncManual();var M=manualState(),names=manualNames(M.names);
+    var qs=M.qs.map(function(q){return {text:q.text.trim().replace(/\s+/g,' ').slice(0,160),kind:q.kind==='neg'?'neg':'pos'};}).filter(function(q){return q.text;});
+    if(names.length<3){toast('Escribe al menos 3 estudiantes');var f=$('#m-names');if(f)f.focus();return;}
+    if(names.length>80){toast('El máximo es 80 estudiantes por clase');return;}
+    if(!qs.length){toast('Escribe al menos una pregunta');var g=document.querySelector('[data-mq="0"]');if(g)g.focus();return;}
+    names.sort(function(a,b){return a.localeCompare(b,'es');});
+    var c={id:uid('c'),name:(M.name.trim()||'Clase '+(state.classes.length+1)).slice(0,60),questions:qs.map(function(q,i){return {id:'m'+i,text:q.text,kind:q.kind};}),students:names.map(function(n){return {id:uid('s'),name:n};}),answers:{},notDup:[]};
+    state.classes.push(c);state.activeId=c.id;
+    ui.manual=null;ui.manualOn=false;ui.importing=false;ui.impName='';ui.view='entry';ui.editSid=c.students[0].id;ui.q='all';ui.selected=null;
+    touch();render();window.scrollTo(0,0);toast('Clase creada. Ahora anota los papeles.');
+  },
+  entryWho:function(b){ui.editSid=b.getAttribute('data-id');render();var f=document.querySelector('.form .chip');if(f)f.focus();if(window.innerWidth<860){var fm=document.querySelector('.form');if(fm)fm.scrollIntoView({block:'start'});}},
+  entryNext:function(){
+    var c=cls();if(!c||!ui.editSid)return;
+    if(!c.answers[ui.editSid])c.answers[ui.editSid]={};
+    var ids=c.students.map(function(s){return s.id;}),ix=ids.indexOf(ui.editSid),next=null,i;
+    for(i=1;i<ids.length;i++){var id=ids[(ix+i)%ids.length];if(!c.answers[id]){next=id;break;}}
+    touch();
+    if(next){ui.editSid=next;render();var f=document.querySelector('.form .chip');if(f)f.focus();var fm=document.querySelector('.form');if(fm&&fm.getBoundingClientRect().top<0)fm.scrollIntoView({block:'start'});}
+    else{render();toast('Todos los papeles están anotados');}
+  },
+  impPaste:function(){
+    var ta=$('#imp-paste');if(!ta||!ta.value.trim()){toast('Pega primero las celdas de la hoja');if(ta)ta.focus();return;}
+    startReview(parseDelimited(ta.value),'Respuestas pegadas');
+  },
+  impSample:function(){var el=$('#imp-class');if(el&&!el.value.trim())el.value='5.º B (ejemplo)';startReview(parseDelimited(sampleTSV()),'5.º B (ejemplo)');},
+  impCreate:function(){if(imp&&imp.result&&!imp.result.error)createFromImport();},
+  addStudent:function(){
+    var c=cls(),el=$('#f-add');if(!c||!el)return;
+    var name=el.value.trim().replace(/\s+/g,' ').slice(0,60);
+    if(!name){toast('Escribe el nombre');el.focus();return;}
+    if(c.students.length>=80){toast('El máximo es 80 estudiantes por clase');return;}
+    c.students.push({id:uid('s'),name:name});el.value='';ui.addName='';
+    touch();render();var again=$('#f-add');if(again)again.focus();
+  },
+  removeStudent:function(b){var c=cls();if(!c)return;removeStudent(c,b.getAttribute('data-id'));touch();render();},
+  editWho:function(b){ui.editSid=b.getAttribute('data-id');render();var s=$('#f-sid');if(s){s.scrollIntoView({block:'start',behavior:'smooth'});s.focus();}},
+  pick:function(b){
+    var c=cls();if(!c||!ui.editSid)return;var q=b.getAttribute('data-q'),id=b.getAttribute('data-id');
+    togglePick(c,ui.editSid,q,id);touch();render();
+    var again=document.querySelector('.chip[data-q="'+q+'"][data-id="'+id+'"]');if(again)again.focus();
+  },
+  clearOne:function(){var c=cls();if(!c)return;delete c.answers[ui.editSid];touch();render();},
+  arm:function(b){
+    var key=b.getAttribute('data-key'),c=cls();if(!c)return;
+    if(ui.armed!==key){
+      unarm();ui.armed=key;b.classList.add('armed');b.textContent=b.getAttribute('data-confirm');
+      clearTimeout(armT);armT=setTimeout(unarm,4000);return;
+    }
+    ui.armed=null;clearTimeout(armT);
+    state.classes=state.classes.filter(function(k){return k.id!==c.id;});delete layoutCache[c.id];
+    state.activeId=state.classes.length?state.classes[0].id:null;ui.view='results';ui.q='all';
+    touch();render();window.scrollTo(0,0);toast('Clase eliminada');
+  },
+  dupYes:function(b){var c=cls();if(!c)return;mergeStudents(c,b.getAttribute('data-from'),b.getAttribute('data-into'));ui.selected=null;touch();render();toast('Nombres unidos');},
+  dupNo:function(b){var c=cls();if(!c)return;c.notDup.push(b.getAttribute('data-key'));touch();render();},
+  select:function(b){ui.selected=b.getAttribute('data-id');drawGraph();var g=$('#graph');if(g&&g.scrollIntoView)g.scrollIntoView({block:'center',behavior:'smooth'});},
+  relayout:function(){var c=cls();if(!c)return;computeLayout(c,analyze(c,ui.q),true);drawGraph();},
+  png:downloadPNG,
+  csv:downloadCSV
+};
+var changes={
+  switchClass:function(el){imp=null;ui.importing=false;ui.manualOn=false;state.activeId=el.value;ui.selected=null;ui.editSid=null;ui.q='all';ui.view='results';saveLocal();render();},
+  className:function(el){var c=cls();if(!c)return;c.name=el.value.trim().slice(0,60)||'Clase sin nombre';touch();renderTop();},
+  qKind:function(el){
+    var c=cls();if(!c)return;var id=el.getAttribute('data-q');
+    c.questions.forEach(function(q){if(q.id===id)q.kind=el.value;});
+    touch();render();var again=document.querySelector('[data-change="qKind"][data-q="'+id+'"]');if(again)again.focus();
+  },
+  rename:function(el){
+    var c=cls();if(!c)return;var id=el.getAttribute('data-id'),s=c.students.filter(function(x){return x.id===id;})[0];if(!s)return;
+    var v=el.value.trim().replace(/\s+/g,' ').slice(0,60);if(!v){el.value=s.name;return;}s.name=v;touch();
+  },
+  mergeInto:function(el){
+    var c=cls();if(!c||!el.value)return;var from=el.getAttribute('data-id'),into=el.value;
+    if(c.answers[from]&&c.answers[into]){el.value='';toast('Los dos respondieron el formulario. Quita primero las respuestas de uno.');return;}
+    mergeStudents(c,from,into);if(ui.editSid===from)ui.editSid=into;touch();render();toast('Nombres unidos');
+  },
+  editSid:function(el){ui.editSid=el.value;render();var s=$('#f-sid');if(s)s.focus();},
+  qFilter:function(el){ui.q=el.value;ui.selected=null;render();var s=document.querySelector('[data-change="qFilter"]');if(s)s.focus();},
+  show:function(el){ui.show[el.getAttribute('data-k')]=el.checked;drawGraph();},
+  impCheck:function(el){ui.impCheck=el.checked;},
+  mNames:function(el){var n=manualNames(el.value).length,c=$('#m-count');if(c)c.textContent=n===1?'1 estudiante':n+' estudiantes';},
+  impFile:function(el){var f=el.files&&el.files[0];if(f)readFile(f);},
+  impRole:function(el){
+    if(!imp)return;var ix=+el.getAttribute('data-u'),u=imp.units[ix],v=el.value;if(!u)return;
+    if(v==='who'||v==='group')imp.units.forEach(function(o){if(o!==u&&o.role===v)o.role='ignore';});
+    u.role=v;
+    if(v==='who'&&!imp.units.some(function(o){return o.role==='pos'||o.role==='neg'||o.role==='use';}))guessRest(imp.T,imp.units,u);
+    if(v==='use'&&!u.valueList)guessValues(u,imp.T,polarity(u.title));
+    impRefresh('[data-change="impRole"][data-u="'+ix+'"]');
+  },
+  impVal:function(el){
+    if(!imp)return;var ix=+el.getAttribute('data-u'),vi=+el.getAttribute('data-v'),u=imp.units[ix];if(!u||!u.valueList)return;
+    u.values[u.valueList[vi]]=el.value;
+    impRefresh('[data-change="impVal"][data-u="'+ix+'"][data-v="'+vi+'"]');
+  },
+  impClass:function(el){if(!imp)return;var v=el.value.trim().slice(0,60);if(v){imp.className=v;imp.given=true;}imp.result=buildImport();}
+};
+document.addEventListener('input',function(e){if(e.target&&e.target.id==='m-names')changes.mNames(e.target);});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target&&e.target.id==='f-add'){e.preventDefault();actions.addStudent();}
+});
+document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-action]');if(!b||b.disabled)return;
+  var fn=actions[b.getAttribute('data-action')]||cloudActions[b.getAttribute('data-action')];if(fn)fn(b,e);
+});
+document.addEventListener('change',function(e){
+  var el=e.target.closest&&e.target.closest('[data-change]');if(!el)return;
+  var fn=changes[el.getAttribute('data-change')];if(fn)fn(el);
+});
+function canDrop(){return (!CLOUD||cloud.status==='ready')&&!imp&&!ui.manualOn&&(ui.importing||!cls());}
+document.addEventListener('dragover',function(e){if(!canDrop())return;e.preventDefault();var d=$('#drop');if(d)d.classList.add('over');});
+document.addEventListener('dragleave',function(e){if(e.relatedTarget)return;var d=$('#drop');if(d)d.classList.remove('over');});
+document.addEventListener('drop',function(e){
+  if(!canDrop())return;e.preventDefault();
+  var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+  if(f)readFile(f);else toast('Suelta un archivo de Excel o CSV');
+});
+
+/* redraw the map when the theme changes */
+try{
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){drawGraph();renderTop();});
+  new MutationObserver(function(){drawGraph();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+}catch(e){}
+
+boot();
+})();
+</script>
+</body>
+</html>
